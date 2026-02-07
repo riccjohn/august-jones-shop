@@ -2,11 +2,14 @@
   "name": "august-jones-shop",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.29.1",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
+    "test:e2e": "pnpm exec playwright test",
+    "test:e2e:ui": "pnpm exec playwright test --ui",
     "format": "biome format --write"
   },
   "dependencies": {
@@ -16,6 +19,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

@@ -30,12 +30,15 @@ Product purchases happen on a separate Shopify site; this site drives traffic th
 - `pnpm build` — Production build
 - `pnpm lint` — Lint with Biome (`biome check`)
 - `pnpm format` — Auto-format with Biome (`biome format --write`)
+- `pnpm test:e2e` — Run Playwright e2e tests
+- `pnpm test:e2e:ui` — Run Playwright tests in UI mode
 
 ## Tech Stack
 
 - **Next.js 16** with App Router, React 19, TypeScript (strict mode)
 - **React Compiler** enabled (`reactCompiler: true` in next.config.ts)
 - **Tailwind CSS v4** via PostCSS (imported with `@import "tailwindcss"` in globals.css)
+- **Playwright** for e2e testing (`e2e/` directory)
 - **Biome 2** for linting and formatting (space indent, width 2, recommended rules + Next/React domains)
 - **pnpm** as package manager
 
