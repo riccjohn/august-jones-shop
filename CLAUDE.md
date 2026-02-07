@@ -16,13 +16,25 @@ This is the main marketing website (not a storefront). Pages:
 
 Product purchases happen on a separate Shopify site; this site drives traffic there.
 
-## Design
+## Design System
+
+**Always use shadcn/ui components when building UI.** Components are copied into `src/components/ui` and fully customizable.
+
+### Brand Design
 
 - **Display font:** Bebas Neue Bold (headings, hero text)
 - **Colors:**
   - Charcoal `#222` — primary dark / text
   - Eggshell `#f6f4f0` — background / light surfaces
   - Yellow `#ffb612` — accent / CTAs
+
+### shadcn/ui Setup
+
+- **Style:** New York
+- **Base color:** Zinc
+- **Icons:** Lucide React
+- **Add components:** `pnpm dlx shadcn@latest add <component-name>`
+- **Config:** `components.json` (uses path aliases from tsconfig)
 
 ## Commands
 
@@ -38,13 +50,18 @@ Product purchases happen on a separate Shopify site; this site drives traffic th
 - **Next.js 16** with App Router, React 19, TypeScript (strict mode)
 - **React Compiler** enabled (`reactCompiler: true` in next.config.ts)
 - **Tailwind CSS v4** via PostCSS (imported with `@import "tailwindcss"` in globals.css)
+- **shadcn/ui** for component library (New York style, Lucide icons)
 - **Playwright** for e2e testing (`e2e/` directory)
 - **Biome 2** for linting and formatting (space indent, width 2, recommended rules + Next/React domains)
-- **pnpm** as package manager
+- **pnpm 10.29.1** as package manager (pinned via `packageManager` field)
 
 ## Code Conventions
 
-- Path alias: `@/*` maps to `./src/*`
-- Fonts: Geist Sans and Geist Mono loaded via `next/font/google`, exposed as CSS variables `--font-geist-sans` and `--font-geist-mono`
-- Dark mode: uses `prefers-color-scheme` media query with CSS custom properties (`--background`, `--foreground`)
-- Biome has `noUnknownAtRules` disabled (for Tailwind's `@theme` directive)
+- **Path aliases:**
+  - `@/*` maps to `./src/*`
+  - `@/components` for components
+  - `@/lib/utils` for utilities (includes `cn()` for className merging)
+- **Fonts:** Geist Sans and Geist Mono loaded via `next/font/google`, exposed as CSS variables `--font-geist-sans` and `--font-geist-mono`
+- **Dark mode:** Uses `prefers-color-scheme` media query with CSS custom properties (`--background`, `--foreground`)
+- **Biome:** `noUnknownAtRules` disabled (for Tailwind's `@theme` directive)
+- **shadcn components:** Installed to `src/components/ui/`, customizable after copying
