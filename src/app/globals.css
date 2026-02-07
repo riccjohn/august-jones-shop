@@ -1,26 +1,137 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+ * August Jones Brand Color System
+ *
+ * Brand palette:
+ *   Charcoal  #222     — primary dark, text, buttons
+ *   Eggshell  #f6f4f0  — page background, warm light surfaces
+ *   Yellow    #ffb612  — accent, CTAs, focus rings
+ *
+ * Surface hierarchy (lightest to darkest):
+ *   White #fff        — cards, popovers (elevated surfaces)
+ *   Eggshell #f6f4f0  — page background
+ *   Warm gray #ece9e1 — secondary/muted surfaces
+ *   Border #ddd8cf    — borders, input outlines
+ *
+ * Contrast ratios (all pass WCAG AA, most pass AAA):
+ *   Charcoal on Eggshell  — 14.5:1
+ *   Charcoal on White     — 15.9:1
+ *   Charcoal on Yellow    — 9.1:1
+ *   Muted-fg on Eggshell  — 5.2:1
+ *   Muted-fg on White     — 5.7:1
+ *   Destructive on White  — 6.5:1
+ *   Destructive on Eggshell — 5.9:1
+ */
+
+:root {
+  --radius: 0.625rem;
+
+  /* Page background: eggshell */
+  --background: oklch(0.968 0.006 84.566);
+  /* Primary text: charcoal */
+  --foreground: oklch(0.252 0.000 89.876);
+
+  /* Elevated surfaces: white (lifts off eggshell background) */
+  --card: oklch(1.000 0.000 89.876);
+  --card-foreground: oklch(0.252 0.000 89.876);
+  --popover: oklch(1.000 0.000 89.876);
+  --popover-foreground: oklch(0.252 0.000 89.876);
+
+  /* Primary action: charcoal buttons with eggshell text */
+  --primary: oklch(0.252 0.000 89.876);
+  --primary-foreground: oklch(0.968 0.006 84.566);
+
+  /* Secondary surfaces: warm gray */
+  --secondary: oklch(0.934 0.011 89.725);
+  --secondary-foreground: oklch(0.252 0.000 89.876);
+
+  /* Muted / subdued elements: warm gray with warm mid-tone text */
+  --muted: oklch(0.934 0.011 89.725);
+  --muted-foreground: oklch(0.511 0.011 62.429);
+
+  /* Accent: brand yellow for CTAs and highlights */
+  --accent: oklch(0.824 0.169 78.997);
+  --accent-foreground: oklch(0.252 0.000 89.876);
+
+  /* Destructive: accessible red (#b91c1c) — 5.9:1 on eggshell */
+  --destructive: oklch(0.505 0.190 27.518);
+
+  /* Borders and inputs: warm light border */
+  --border: oklch(0.884 0.013 82.401);
+  --input: oklch(0.884 0.013 82.401);
+
+  /* Focus ring: brand yellow for prominent, on-brand focus indicators */
+  --ring: oklch(0.824 0.169 78.997);
+
+  /* Chart palette: warm tones that harmonize with the brand */
+  --chart-1: oklch(0.824 0.169 78.997);
+  --chart-2: oklch(0.652 0.132 81.572);
+  --chart-3: oklch(0.526 0.115 44.604);
+  --chart-4: oklch(0.704 0.081 63.362);
+  --chart-5: oklch(0.571 0.053 72.671);
+
+  /* Sidebar (if used): follows the same warm palette */
+  --sidebar: oklch(0.968 0.006 84.566);
+  --sidebar-foreground: oklch(0.252 0.000 89.876);
+  --sidebar-primary: oklch(0.252 0.000 89.876);
+  --sidebar-primary-foreground: oklch(0.968 0.006 84.566);
+  --sidebar-accent: oklch(0.824 0.169 78.997);
+  --sidebar-accent-foreground: oklch(0.252 0.000 89.876);
+  --sidebar-border: oklch(0.884 0.013 82.401);
+  --sidebar-ring: oklch(0.824 0.169 78.997);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground;
+  }
 }
