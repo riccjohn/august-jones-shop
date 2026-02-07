@@ -1,0 +1,47 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## About the Business
+
+**August Jones** is a solo, female-owned brand selling hand-made, one-of-a-kind, upcycled sports fashion — streetwear hoodies, sweatpants, jackets, and more created from upcycled NFL jerseys.
+
+## Site Structure
+
+This is the main marketing website (not a storefront). Pages:
+
+- **Home (`/`)** — Landing page with brief brand description and CTA linking to the Shopify store
+- **About (`/about`)** — Background on the brand and maker
+- **Contact (`/contact`)** — Contact form
+
+Product purchases happen on a separate Shopify site; this site drives traffic there.
+
+## Design
+
+- **Display font:** Bebas Neue Bold (headings, hero text)
+- **Colors:**
+  - Charcoal `#222` — primary dark / text
+  - Eggshell `#f6f4f0` — background / light surfaces
+  - Yellow `#ffb612` — accent / CTAs
+
+## Commands
+
+- `pnpm dev` — Start dev server (http://localhost:3000)
+- `pnpm build` — Production build
+- `pnpm lint` — Lint with Biome (`biome check`)
+- `pnpm format` — Auto-format with Biome (`biome format --write`)
+
+## Tech Stack
+
+- **Next.js 16** with App Router, React 19, TypeScript (strict mode)
+- **React Compiler** enabled (`reactCompiler: true` in next.config.ts)
+- **Tailwind CSS v4** via PostCSS (imported with `@import "tailwindcss"` in globals.css)
+- **Biome 2** for linting and formatting (space indent, width 2, recommended rules + Next/React domains)
+- **pnpm** as package manager
+
+## Code Conventions
+
+- Path alias: `@/*` maps to `./src/*`
+- Fonts: Geist Sans and Geist Mono loaded via `next/font/google`, exposed as CSS variables `--font-geist-sans` and `--font-geist-mono`
+- Dark mode: uses `prefers-color-scheme` media query with CSS custom properties (`--background`, `--foreground`)
+- Biome has `noUnknownAtRules` disabled (for Tailwind's `@theme` directive)
