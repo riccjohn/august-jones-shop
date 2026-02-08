@@ -36,9 +36,11 @@ test.describe("Landing Page", () => {
     );
     await expect(shopLink).toHaveAttribute("target", "_blank");
 
-    const instagramLink = page.getByRole("link", {
-      name: /@augustjonesshop/i,
-    }).first();
+    const instagramLink = page
+      .getByRole("link", {
+        name: /@augustjonesshop/i,
+      })
+      .first();
     await expect(instagramLink).toBeVisible();
     await expect(instagramLink).toHaveAttribute(
       "href",
