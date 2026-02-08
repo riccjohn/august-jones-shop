@@ -194,10 +194,7 @@ const Footer = () => {
             aria-label="August Jones on Instagram"
             className="group flex items-center gap-2 rounded-md px-2 py-1"
           >
-            <InstagramIcon
-              className="h-5 w-5 shrink-0 opacity-80"
-              variant="white"
-            />
+            <InstagramIcon className="h-5 w-5 shrink-0 opacity-80" />
             <span className="text-background/90 transition-colors duration-200 group-hover:text-[#ffb612] group-hover:underline group-hover:underline-offset-2">
               @augustjonesshop
             </span>
