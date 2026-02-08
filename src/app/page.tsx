@@ -1,8 +1,8 @@
-import { Mail } from "lucide-react";
+import { ArrowRight, Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import InstagramIcon from "@/components/InstagramIcon";
+import { Button } from "@/components/ui/button";
 
 const productImages = [
   {
@@ -70,14 +70,20 @@ export default function Home() {
             <Button
               asChild
               size="lg"
-              className="h-14 w-full px-12 text-lg font-medium uppercase tracking-widest transition-all duration-200 hover:shadow-lg hover:shadow-accent/20 sm:h-16"
+              variant="brand"
+              className="group h-14 w-full px-12 text-lg font-medium uppercase tracking-widest sm:h-16"
             >
               <Link
                 href="https://www.etsy.com/shop/TheAugustJonesShop"
                 target="_blank"
                 rel="noopener"
               >
-                Shop Now
+                <span>Shop Now</span>
+                <ArrowRight
+                  className="h-5 w-5 -translate-x-2 opacity-0 transition-all duration-200
+                    group-hover:translate-x-0 group-hover:opacity-100"
+                  aria-hidden="true"
+                />
               </Link>
             </Button>
           </nav>
@@ -114,14 +120,15 @@ export default function Home() {
           <Button
             asChild
             size="lg"
-            className="h-12 w-full max-w-sm gap-3 px-8 text-base font-medium uppercase tracking-widest transition-all duration-200 hover:shadow-lg hover:shadow-accent/20 sm:h-14"
+            variant="brand-outline"
+            className="h-12 w-full max-w-sm gap-3 px-8 text-base font-medium uppercase tracking-widest sm:h-14"
           >
             <Link
               href="https://instagram.com/augustjonesshop"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <InstagramIcon className="h-5 w-5" variant="black" />
+              <InstagramIcon className="h-5 w-5" />
               <span>@augustjonesshop</span>
             </Link>
           </Button>
@@ -187,10 +194,7 @@ const Footer = () => {
             aria-label="August Jones on Instagram"
             className="group flex items-center gap-2 rounded-md px-2 py-1"
           >
-            <InstagramIcon
-              className="h-5 w-5 shrink-0 opacity-80"
-              variant="white"
-            />
+            <InstagramIcon className="h-5 w-5 shrink-0 opacity-80" />
             <span className="text-background/90 transition-colors duration-200 group-hover:text-[#ffb612] group-hover:underline group-hover:underline-offset-2">
               @augustjonesshop
             </span>
