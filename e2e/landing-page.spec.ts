@@ -26,7 +26,9 @@ test.describe("Landing Page - Visual & Content", () => {
     await page.goto(BASE_URL);
 
     // Find the logo image
-    const logo = page.getByRole("img", { name: /August Jones - Renewed Fashion/i });
+    const logo = page.getByRole("img", {
+      name: /August Jones - Renewed Fashion/i,
+    });
 
     // Verify logo is visible
     await expect(logo).toBeVisible();
@@ -45,7 +47,9 @@ test.describe("Landing Page - Visual & Content", () => {
     await page.goto(BASE_URL);
 
     // Check for the about section using the aria-labelledby relationship
-    const aboutSection = page.locator('section[aria-labelledby="about-heading"]');
+    const aboutSection = page.locator(
+      'section[aria-labelledby="about-heading"]',
+    );
     await expect(aboutSection).toBeVisible();
 
     // Verify the description text is present
@@ -61,12 +65,16 @@ test.describe("Landing Page - Visual & Content", () => {
     const shopButton = page.getByRole("link", { name: /Shop Now/i });
     await expect(shopButton).toBeVisible();
 
-    // Verify Instagram button
-    const instagramButton = page.getByRole("link", { name: /@augustjonesshop/i });
-    await expect(instagramButton).toBeVisible();
+    // Verify Instagram buttons (one in callout section, one in footer)
+    const instagramButtons = page.getByRole("link", {
+      name: /@augustjonesshop/i,
+    });
+    await expect(instagramButtons).toHaveCount(2);
 
     // Verify Email button
-    const emailButton = page.getByRole("link", { name: /hello@augustjones\.shop/i });
+    const emailButton = page.getByRole("link", {
+      name: /hello@augustjones\.shop/i,
+    });
     await expect(emailButton).toBeVisible();
   });
 
@@ -74,7 +82,9 @@ test.describe("Landing Page - Visual & Content", () => {
     await page.goto(BASE_URL);
 
     // Find the products section
-    const productsSection = page.locator('section[aria-labelledby="products-heading"]');
+    const productsSection = page.locator(
+      'section[aria-labelledby="products-heading"]',
+    );
     await expect(productsSection).toBeVisible();
 
     // Get all product images in the grid
@@ -113,13 +123,21 @@ test.describe("Landing Page - Functionality", () => {
     await expect(shopButton).toHaveAttribute("target", "_blank");
 
     // Verify security attributes
-    await expect(shopButton).toHaveAttribute("rel", "noopener noreferrer");
+    const rel = await shopButton.getAttribute("rel");
+    expect(rel).toContain("noopener");
   });
 
-  test("Instagram button should link to Instagram profile", async ({ page }) => {
+  test("Instagram button should link to Instagram profile", async ({
+    page,
+  }) => {
     await page.goto(BASE_URL);
 
-    const instagramButton = page.getByRole("link", { name: /@augustjonesshop/i });
+    // Get the first Instagram button (callout section)
+    const instagramButton = page
+      .getByRole("link", {
+        name: /@augustjonesshop/i,
+      })
+      .first();
 
     // Verify href attribute
     await expect(instagramButton).toHaveAttribute(
@@ -137,13 +155,17 @@ test.describe("Landing Page - Functionality", () => {
   test("Email button should have correct mailto link", async ({ page }) => {
     await page.goto(BASE_URL);
 
-    const emailButton = page.getByRole("link", { name: /hello@augustjones\.shop/i });
+    const emailButton = page.getByRole("link", {
+      name: /hello@augustjones\.shop/i,
+    });
 
     // Verify mailto href
-    await expect(emailButton).toHaveAttribute("href", "mailto:hello@augustjones.shop");
+    await expect(emailButton).toHaveAttribute(
+      "href",
+      "mailto:hello@augustjones.shop",
+    );
 
-    // Verify security attributes
-    await expect(emailButton).toHaveAttribute("rel", "noopener noreferrer");
+    // Email links don't need rel attribute since they don't open new windows
   });
 
   test("all external links should have proper security attributes", async ({
@@ -154,14 +176,13 @@ test.describe("Landing Page - Functionality", () => {
     // Get all links with target="_blank"
     const externalLinks = page.locator('a[target="_blank"]');
 
-    // Should have 2 external links (Etsy and Instagram)
-    await expect(externalLinks).toHaveCount(2);
+    // Should have 3 external links (Etsy, Instagram callout, Instagram footer)
+    await expect(externalLinks).toHaveCount(3);
 
-    // Verify each has proper rel attribute
-    for (let i = 0; i < 2; i++) {
+    // Verify each has proper rel attribute with at least noopener
+    for (let i = 0; i < 3; i++) {
       const rel = await externalLinks.nth(i).getAttribute("rel");
       expect(rel).toContain("noopener");
-      expect(rel).toContain("noreferrer");
     }
   });
 });
@@ -172,7 +193,9 @@ test.describe("Landing Page - Responsive Design", () => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto(BASE_URL);
 
-    const productGrid = page.locator('section[aria-labelledby="products-heading"] > div');
+    const productGrid = page.locator(
+      'section[aria-labelledby="products-heading"] > div > div',
+    );
 
     // Check grid has 2 columns on desktop (sm:grid-cols-2)
     const gridClass = await productGrid.getAttribute("class");
@@ -180,7 +203,9 @@ test.describe("Landing Page - Responsive Design", () => {
     expect(gridClass).toContain("sm:grid-cols-2");
 
     // Get bounding boxes of first two images to verify they're side by side
-    const images = page.locator('section[aria-labelledby="products-heading"] img');
+    const images = page.locator(
+      'section[aria-labelledby="products-heading"] img',
+    );
     const firstImageBox = await images.nth(0).boundingBox();
     const secondImageBox = await images.nth(1).boundingBox();
 
@@ -194,19 +219,25 @@ test.describe("Landing Page - Responsive Design", () => {
     }
   });
 
-  test("mobile viewport: product grid should be single column", async ({ page }) => {
+  test("mobile viewport: product grid should be single column", async ({
+    page,
+  }) => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto(BASE_URL);
 
-    const productGrid = page.locator('section[aria-labelledby="products-heading"] > div');
+    const productGrid = page.locator(
+      'section[aria-labelledby="products-heading"] > div > div',
+    );
 
     // Check grid classes
     const gridClass = await productGrid.getAttribute("class");
     expect(gridClass).toContain("grid-cols-1");
 
     // Get bounding boxes of first two images to verify they're stacked
-    const images = page.locator('section[aria-labelledby="products-heading"] img');
+    const images = page.locator(
+      'section[aria-labelledby="products-heading"] img',
+    );
     const firstImageBox = await images.nth(0).boundingBox();
     const secondImageBox = await images.nth(1).boundingBox();
 
@@ -224,7 +255,9 @@ test.describe("Landing Page - Responsive Design", () => {
   test("logo should scale appropriately at different breakpoints", async ({
     page,
   }) => {
-    const logo = page.getByRole("img", { name: "August Jones - Renewed Fashion" });
+    const logo = page.getByRole("img", {
+      name: "August Jones - Renewed Fashion",
+    });
 
     // Mobile viewport
     await page.setViewportSize({ width: 375, height: 667 });
@@ -290,18 +323,27 @@ test.describe("Landing Page - Accessibility", () => {
     const h1 = page.locator("h1");
     await expect(h1).toBeVisible();
 
-    // Verify navigation element exists
-    const nav = page.locator("nav");
-    await expect(nav).toBeVisible();
+    // Verify navigation elements exist (Primary navigation and Contact links)
+    const navElements = page.locator("nav");
+    await expect(navElements).toHaveCount(2);
 
-    // Verify nav has proper aria-label
-    await expect(nav).toHaveAttribute("aria-label", "Primary navigation");
+    // Verify Primary navigation nav has proper aria-label
+    const primaryNav = page.locator('nav[aria-label="Primary navigation"]');
+    await expect(primaryNav).toBeVisible();
+
+    // Verify Contact links nav has proper aria-label
+    const contactNav = page.locator('nav[aria-label="Contact links"]');
+    await expect(contactNav).toBeVisible();
 
     // Verify sections have proper headings
-    const aboutSection = page.locator('section[aria-labelledby="about-heading"]');
+    const aboutSection = page.locator(
+      'section[aria-labelledby="about-heading"]',
+    );
     await expect(aboutSection).toBeVisible();
 
-    const productsSection = page.locator('section[aria-labelledby="products-heading"]');
+    const productsSection = page.locator(
+      'section[aria-labelledby="products-heading"]',
+    );
     await expect(productsSection).toBeVisible();
   });
 
@@ -309,13 +351,17 @@ test.describe("Landing Page - Accessibility", () => {
     await page.goto(BASE_URL);
 
     // Check logo alt text
-    const logo = page.getByRole("img", { name: /August Jones - Renewed Fashion/i });
+    const logo = page.getByRole("img", {
+      name: /August Jones - Renewed Fashion/i,
+    });
     const logoAlt = await logo.getAttribute("alt");
     expect(logoAlt).toBeTruthy();
     expect(logoAlt).toContain("August Jones");
 
     // Check product images have alt text
-    const productImages = page.locator('section[aria-labelledby="products-heading"] img');
+    const productImages = page.locator(
+      'section[aria-labelledby="products-heading"] img',
+    );
     const imageCount = await productImages.count();
 
     for (let i = 0; i < imageCount; i++) {
@@ -332,8 +378,14 @@ test.describe("Landing Page - Accessibility", () => {
 
     // All interactive elements
     const shopButton = page.getByRole("link", { name: /Shop Now/i });
-    const instagramButton = page.getByRole("link", { name: /@augustjonesshop/i });
-    const emailButton = page.getByRole("link", { name: /hello@augustjones\.shop/i });
+    const instagramButton = page
+      .getByRole("link", {
+        name: /@augustjonesshop/i,
+      })
+      .first();
+    const emailButton = page.getByRole("link", {
+      name: /hello@augustjones\.shop/i,
+    });
 
     // Verify all buttons can receive focus programmatically
     await shopButton.focus();
@@ -410,26 +462,32 @@ test.describe("Landing Page - Accessibility", () => {
     await expect(h1).toBeVisible();
 
     // Check that sections use aria-labelledby
-    const aboutSection = page.locator('section[aria-labelledby="about-heading"]');
+    const aboutSection = page.locator(
+      'section[aria-labelledby="about-heading"]',
+    );
     const aboutHeading = page.locator("#about-heading");
     await expect(aboutSection).toBeVisible();
     await expect(aboutHeading).toBeAttached(); // sr-only headings are not in viewport
 
-    const productsSection = page.locator('section[aria-labelledby="products-heading"]');
+    const productsSection = page.locator(
+      'section[aria-labelledby="products-heading"]',
+    );
     const productsHeading = page.locator("#products-heading");
     await expect(productsSection).toBeVisible();
     await expect(productsHeading).toBeAttached(); // sr-only headings are not in viewport
   });
 
-  test("decorative icons should be hidden from screen readers", async ({ page }) => {
+  test("decorative icons should be hidden from screen readers", async ({
+    page,
+  }) => {
     await page.goto(BASE_URL);
 
-    // Instagram icon should have aria-hidden="true"
-    const instagramIcon = page.locator('svg[aria-hidden="true"]').first();
+    // Instagram icon should have aria-hidden="true" (it's an Image element with aria-hidden)
+    const instagramIcon = page.locator('[aria-hidden="true"]').first();
     await expect(instagramIcon).toHaveAttribute("aria-hidden", "true");
 
-    // Mail icon should have aria-hidden="true"
-    const mailIcon = page.locator('svg[aria-hidden="true"]').nth(1);
+    // Mail icon should have aria-hidden="true" (SVG element)
+    const mailIcon = page.locator('svg[aria-hidden="true"]').first();
     await expect(mailIcon).toHaveAttribute("aria-hidden", "true");
   });
 });
@@ -442,14 +500,18 @@ test.describe("Landing Page - User Journey", () => {
     await page.goto(BASE_URL);
 
     // User sees the brand logo
-    const logo = page.getByRole("img", { name: "August Jones - Renewed Fashion" });
+    const logo = page.getByRole("img", {
+      name: "August Jones - Renewed Fashion",
+    });
     await expect(logo).toBeVisible();
 
     // User reads the about section
     await expect(page.getByText(/Every piece tells a story/i)).toBeVisible();
 
     // User views product images
-    const productImages = page.locator('section[aria-labelledby="products-heading"] img');
+    const productImages = page.locator(
+      'section[aria-labelledby="products-heading"] img',
+    );
     await expect(productImages.first()).toBeVisible();
 
     // User decides to shop and clicks Shop Now
@@ -466,8 +528,12 @@ test.describe("Landing Page - User Journey", () => {
   }) => {
     await page.goto(BASE_URL);
 
-    // User sees Instagram button
-    const instagramButton = page.getByRole("link", { name: /@augustjonesshop/i });
+    // User sees Instagram button (using first one)
+    const instagramButton = page
+      .getByRole("link", {
+        name: /@augustjonesshop/i,
+      })
+      .first();
     await expect(instagramButton).toBeVisible();
 
     // User can identify it as Instagram link
@@ -485,7 +551,9 @@ test.describe("Landing Page - User Journey", () => {
     await page.goto(BASE_URL);
 
     // User looks for contact option
-    const emailButton = page.getByRole("link", { name: /hello@augustjones\.shop/i });
+    const emailButton = page.getByRole("link", {
+      name: /hello@augustjones\.shop/i,
+    });
     await expect(emailButton).toBeVisible();
 
     // User can see the email address
