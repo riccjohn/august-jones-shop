@@ -1,8 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# August Jones
+
+Marketing website for **August Jones** — a solo, female-owned brand selling hand-made, one-of-a-kind, upcycled sports fashion created from upcycled NFL jerseys.
+
+This is a [Next.js](https://nextjs.org) marketing site (not a storefront) that drives traffic to the external Etsy shop.
+
+## Tech Stack
+
+- **Next.js 16** with App Router, React 19, TypeScript
+- **Tailwind CSS v4** via PostCSS
+- **shadcn/ui** component library (New York style)
+- **Cloudflare Web Analytics** for tracking
+- **pnpm** as package manager
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+pnpm install
+```
+
+Run the development server:
 
 ```bash
 pnpm dev
@@ -10,21 +28,98 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Available Commands
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `pnpm dev` — Start dev server
+- `pnpm build` — Production build (static export)
+- `pnpm lint` — Run Biome linter
+- `pnpm format` — Auto-format code with Biome
+- `pnpm test:e2e` — Run Playwright e2e tests
+- `pnpm test:e2e:ui` — Run Playwright tests in UI mode
 
-## Learn More
+## Analytics Setup
 
-To learn more about Next.js, take a look at the following resources:
+The site uses **Cloudflare Web Analytics** for privacy-first tracking (no cookies, no consent banner required).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 1. Get Your Analytics Token
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Log in to [Cloudflare Dashboard](https://dash.cloudflare.com)
+2. Navigate to your domain → **Analytics & Logs** → **Web Analytics**
+3. If you haven't set up Web Analytics yet:
+   - Click **"Add a site"**
+   - Enter your site name (e.g., "August Jones")
+   - Choose **"Automatic setup"** (we'll use the token manually)
+4. You'll see a code snippet with a token like:
+   ```html
+   <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+           data-cf-beacon='{"token": "abc123def456ghi789"}'></script>
+   ```
+5. Copy just the token value (e.g., `abc123def456ghi789`)
 
-## Deploy on Vercel
+### 2. Configure Local Development
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Create a `.env.local` file in the project root (it's already gitignored):
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN=abc123def456ghi789
+```
+
+Replace `abc123def456ghi789` with your actual token from step 1.
+
+### 3. Configure Production (Cloudflare Pages)
+
+1. Go to your Cloudflare Pages project dashboard
+2. Navigate to **Settings** → **Environment Variables**
+3. Add a new variable for **Production**:
+   - **Variable name:** `NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN`
+   - **Value:** Your token from step 1
+   - Click **Save**
+4. (Optional) Add the same variable for **Preview** environment to track preview deployments
+
+### 4. Verify Setup
+
+After deploying:
+
+1. Visit your live site and interact with it (click links, navigate pages)
+2. Wait 5-10 minutes for data to appear
+3. Check **Cloudflare Dashboard** → **Analytics & Logs** → **Web Analytics**
+4. Verify you see:
+   - Page views and visitor counts
+   - Custom events: `shopify_store_click`, `instagram_click`
+   - Traffic sources and geographic data
+
+### What Gets Tracked
+
+**Automatic (built-in):**
+- Page views and unique visitors
+- Traffic sources (direct, social, search, referral)
+- Geographic distribution
+- Devices, browsers, operating systems
+- Session duration
+
+**Custom Events:**
+- `shopify_store_click` — When users click "Shop Now" CTA
+- `instagram_click` — When users click Instagram links (includes location: "hero" or "footer")
+- `contact_form_submit` — When contact form is submitted (future)
+
+All tracking is privacy-first, fully anonymous, and GDPR/CCPA compliant by default.
+
+## Deployment
+
+This site is configured for deployment on **Cloudflare Pages** as a static export.
+
+1. Push changes to GitHub
+2. Cloudflare Pages automatically builds and deploys
+3. Don't forget to set the `NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN` environment variable (see Analytics Setup above)
+
+## Project Structure
+
+```
+src/
+├── app/              # Next.js App Router pages
+├── components/       # React components
+│   └── ui/          # shadcn/ui components
+└── lib/             # Utilities (analytics, etc.)
+```
+
+See [CLAUDE.md](./CLAUDE.md) for detailed development guidelines and conventions.
