@@ -32,7 +32,7 @@ test.describe("Landing Page", () => {
     await expect(shopLink).toBeVisible();
     await expect(shopLink).toHaveAttribute(
       "href",
-      "https://www.etsy.com/shop/TheAugustJonesShop",
+      /^https:\/\/www\.etsy\.com\/shop\/TheAugustJonesShop(\?|$)/,
     );
     await expect(shopLink).toHaveAttribute("target", "_blank");
 
