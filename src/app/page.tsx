@@ -1,7 +1,9 @@
-import { ArrowRight, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import InstagramIcon from "@/components/InstagramIcon";
+import { InstagramLink } from "@/components/InstagramLink";
+import { ShopifyCtaButton } from "@/components/ShopifyCtaButton";
 import { Button } from "@/components/ui/button";
 
 const productImages = [
@@ -40,7 +42,7 @@ export default function Home() {
           {/* Brand Logo - Larger with black border */}
           <header className="flex flex-col items-center">
             <h1>
-              <div className="border-2 border-foreground">
+              <div className="border-6 border-foreground">
                 <Image
                   src="/logos/August_Jones_Logo.svg"
                   alt="August Jones - Renewed Fashion"
@@ -67,25 +69,7 @@ export default function Home() {
 
           {/* Primary CTA - Enhanced presence */}
           <nav aria-label="Primary navigation" className="w-full max-w-sm">
-            <Button
-              asChild
-              size="lg"
-              variant="brand"
-              className="group h-14 w-full px-12 text-lg font-medium uppercase tracking-widest sm:h-16"
-            >
-              <Link
-                href="https://www.etsy.com/shop/TheAugustJonesShop"
-                target="_blank"
-                rel="noopener"
-              >
-                <span>Shop Now</span>
-                <ArrowRight
-                  className="h-5 w-5 -translate-x-2 opacity-0 transition-all duration-200
-                    group-hover:translate-x-0 group-hover:opacity-100"
-                  aria-hidden="true"
-                />
-              </Link>
-            </Button>
+            <ShopifyCtaButton />
           </nav>
         </div>
       </section>
@@ -123,14 +107,10 @@ export default function Home() {
             variant="brand-outline"
             className="h-12 w-full max-w-sm gap-3 px-8 text-base font-medium uppercase tracking-widest sm:h-14"
           >
-            <Link
-              href="https://instagram.com/augustjonesshop"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <InstagramLink location="hero">
               <InstagramIcon className="h-5 w-5" />
               <span>@augustjonesshop</span>
-            </Link>
+            </InstagramLink>
           </Button>
         </div>
       </section>
@@ -187,10 +167,8 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col gap-4 items-center sm:flex-row sm:justify-center sm:gap-8">
-          <Link
-            href="https://instagram.com/augustjonesshop"
-            target="_blank"
-            rel="noopener noreferrer"
+          <InstagramLink
+            location="footer"
             aria-label="August Jones on Instagram"
             className="group flex items-center gap-2 rounded-md px-2 py-1"
           >
@@ -198,7 +176,7 @@ const Footer = () => {
             <span className="text-background/90 transition-colors duration-200 group-hover:text-[#ffb612] group-hover:underline group-hover:underline-offset-2">
               @augustjonesshop
             </span>
-          </Link>
+          </InstagramLink>
           <Link
             href="mailto:hello@augustjones.shop"
             rel="noopener noreferrer"
