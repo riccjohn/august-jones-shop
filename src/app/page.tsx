@@ -9,27 +9,27 @@ import { Button } from "@/components/ui/button";
 const productImages = [
   {
     id: 1,
-    title: "Upcycled Streetwear",
+    title: "Upcycled Sports Jersey Hoodie",
     src: "/images/product/pablo-lara-i1JJP5S6skw-unsplash.jpg",
-    alt: "August Jones upcycled streetwear piece",
+    alt: "Hand-made upcycled sports jersey hoodie by August Jones",
   },
   {
     id: 2,
-    title: "Hand-Made Fashion",
+    title: "Hand-Made Jersey Streetwear",
     src: "/images/product/pablo-lara-i1JJP5S6skw-unsplash.jpg",
-    alt: "August Jones hand-made fashion item",
+    alt: "Hand-made streetwear created from pre-loved sports jerseys",
   },
   {
     id: 3,
-    title: "Renewed Jersey Design",
+    title: "Reworked NFL Jersey Design",
     src: "/images/product/pablo-lara-i1JJP5S6skw-unsplash.jpg",
-    alt: "August Jones renewed jersey design",
+    alt: "Upcycled NFL jersey transformed into a one-of-a-kind fashion piece",
   },
   {
     id: 4,
-    title: "One-of-a-Kind Creation",
+    title: "One-of-a-Kind Game Day Look",
     src: "/images/product/pablo-lara-i1JJP5S6skw-unsplash.jpg",
-    alt: "August Jones one-of-a-kind creation",
+    alt: "Unique game day outfit made from upcycled sports jerseys",
   },
 ] as const;
 
@@ -43,27 +43,25 @@ export default function Home() {
       {/* Hero Section - Full viewport impact with eggshell background */}
       <section className="flex min-h-[85vh] flex-col items-center justify-center bg-background px-6 py-20 sm:py-28">
         <div className="flex w-full max-w-2xl flex-col items-center gap-8 text-center lg:max-w-3xl lg:gap-10">
-          {/* Brand Logo - Larger with black border */}
-          <header className="flex flex-col items-center">
-            <h1>
-              <div className="border-6 border-foreground">
-                <Image
-                  src="/logos/August_Jones_Logo.svg"
-                  alt="August Jones - Renewed Fashion"
-                  width={500}
-                  height={500}
-                  priority
-                  className="h-auto w-48 bg-background sm:w-64 lg:w-72"
-                />
-              </div>
+          {/* Brand Logo and Primary Heading */}
+          <header className="flex flex-col items-center gap-6">
+            <div className="border-6 border-foreground" aria-hidden="true">
+              <Image
+                src="/logos/August_Jones_Logo.svg"
+                alt=""
+                width={500}
+                height={500}
+                priority
+                className="h-auto w-48 bg-background sm:w-64 lg:w-72"
+              />
+            </div>
+            <h1 className="font-bebas-neue text-4xl tracking-wider text-foreground sm:text-5xl lg:text-6xl">
+              {TITLE}
             </h1>
           </header>
 
-          {/* Hero Headline - Bold typography with Bebas Neue */}
+          {/* Hero Description */}
           <div className="space-y-4">
-            <h2 className="font-bebas-neue text-4xl tracking-wider text-foreground sm:text-5xl lg:text-6xl">
-              {TITLE}
-            </h2>
             <p className="mx-auto max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
               {DESCRIPTION}
             </p>
