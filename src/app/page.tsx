@@ -1,9 +1,11 @@
-import type { Metadata } from "next";
 import { Mail } from "lucide-react";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { FooterShopLink } from "@/components/FooterShopLink";
 import InstagramIcon from "@/components/InstagramIcon";
 import { InstagramLink } from "@/components/InstagramLink";
+import { ProductGalleryLink } from "@/components/ProductGalleryLink";
 import { ProductGallerySchema } from "@/components/ProductGallerySchema";
 import { ShopifyCtaButton } from "@/components/ShopifyCtaButton";
 import { Button } from "@/components/ui/button";
@@ -18,30 +20,40 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+const ETSY_SHOP_URL = "https://www.etsy.com/shop/TheAugustJonesShop";
+
 const productImages = [
   {
     id: 1,
     title: "Upcycled Sports Jersey Hoodie",
     src: "/images/product/pablo-lara-i1JJP5S6skw-unsplash.jpg",
     alt: "Hand-made upcycled sports jersey hoodie by August Jones",
+    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_hoodie`,
+    category: "hoodies",
   },
   {
     id: 2,
     title: "Hand-Made Jersey Streetwear",
     src: "/images/product/pablo-lara-i1JJP5S6skw-unsplash.jpg",
     alt: "Hand-made streetwear created from pre-loved sports jerseys",
+    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_streetwear`,
+    category: "streetwear",
   },
   {
     id: 3,
     title: "Reworked NFL Jersey Design",
     src: "/images/product/pablo-lara-i1JJP5S6skw-unsplash.jpg",
     alt: "Upcycled NFL jersey transformed into a one-of-a-kind fashion piece",
+    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_reworked`,
+    category: "reworked",
   },
   {
     id: 4,
     title: "One-of-a-Kind Game Day Look",
     src: "/images/product/pablo-lara-i1JJP5S6skw-unsplash.jpg",
     alt: "Unique game day outfit made from upcycled sports jerseys",
+    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_gameday`,
+    category: "gameday",
   },
 ] as const;
 
@@ -135,27 +147,11 @@ export default function Home() {
             id="products-heading"
             className="mb-12 text-center font-bebas-neue text-3xl tracking-wider text-foreground sm:mb-16 sm:text-4xl"
           >
-            Past Work
+           Past Work
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-2 lg:gap-8">
             {productImages.map((product) => (
-              <div
-                key={product.id}
-                className="group flex flex-col gap-2 sm:gap-3"
-              >
-                <h3 className="font-bebas-neue text-lg tracking-wider text-foreground sm:text-xl">
-                  {product.title}
-                </h3>
-                <div className="relative aspect-3/4 overflow-hidden rounded-sm">
-                  <Image
-                    src={product.src}
-                    alt={product.alt}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-              </div>
+              <ProductGalleryLink key={product.id} product={product} />
             ))}
           </div>
         </div>
@@ -177,15 +173,11 @@ const Footer = () => {
             <p className="text-xs font-medium uppercase tracking-widest text-background/50">
               Navigate
             </p>
-            <nav aria-label="Footer navigation" className="flex flex-col items-center gap-2 sm:items-start">
-              <a
-                href="https://www.etsy.com/shop/TheAugustJonesShop"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm text-background/90 transition-colors hover:text-[#ffb612]"
-              >
-                Shop Now
-              </a>
+            <nav
+              aria-label="Footer navigation"
+              className="flex flex-col items-center gap-2 sm:items-start"
+            >
+              <FooterShopLink />
             </nav>
           </div>
 

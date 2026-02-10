@@ -11,7 +11,7 @@ import { trackShopifyClick } from "@/lib/analytics";
  */
 export function ShopifyCtaButton() {
   const handleClick = () => {
-    trackShopifyClick();
+    trackShopifyClick("hero");
   };
 
   return (
