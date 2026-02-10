@@ -33,9 +33,9 @@ const productImages = [
   },
 ] as const;
 
-const TITLE = 'One-of-a-Kind Upcycled Streetwear'
-const DESCRIPTION = 'Hand-crafted from pre-loved NFL and other pro sports jerseys into exclusive streetwear pieces. Each design celebrates sustainable style and creative reinvention.'
-const ABOUT = 'Every piece tells a story. We transform pre-loved NFL and other pro sports jerseys into one-of-a-kind streetwear — hoodies, sweatpants, vests, and jackets that are as unique as you are. Hand-crafted with care, each design is a celebration of sustainable fashion and creative reinvention.'
+const TITLE = 'Upcycled Fashion for Every Fan'
+const DESCRIPTION = 'Reimagined from pre-loved sports apparel into elevated, one-of-a-kind statements. Each piece embodies creative reinvention and a more sustainable approach to fan fashion.'
+const ABOUT = 'August Jones transforms vintage sportswear into one-of-a-kind pieces designed for game day and beyond. Handmade in Wisconsin from upcycled materials, each design is as original as the fans who wear it.'
 
 export default function Home() {
   return (
