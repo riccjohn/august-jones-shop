@@ -49,7 +49,7 @@ node_modules/
 /playwright/.auth/
 
 # Claude Code local settings
-.claude/settings.local.json
+.claude/
 
 .playwright-mcp
 
