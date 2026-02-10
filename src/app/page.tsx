@@ -1,10 +1,22 @@
+import type { Metadata } from "next";
 import { Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import InstagramIcon from "@/components/InstagramIcon";
 import { InstagramLink } from "@/components/InstagramLink";
+import { ProductGallerySchema } from "@/components/ProductGallerySchema";
 import { ShopifyCtaButton } from "@/components/ShopifyCtaButton";
 import { Button } from "@/components/ui/button";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: 'August Jones | Upcycled Sports Fashion from Wisconsin',
+    description: 'Hand-made, one-of-a-kind upcycled sports fashion. Streetwear vests, hoodies, sweatpants, and jackets created from upcycled sports wear by a solo female-owned brand in Madison, WI.',
+    alternates: {
+      canonical: '/',
+    },
+  };
+}
 
 const productImages = [
   {
@@ -117,6 +129,7 @@ export default function Home() {
         aria-labelledby="products-heading"
         className="bg-background px-6 py-20 sm:py-28"
       >
+        <ProductGallerySchema products={productImages} />
         <div className="mx-auto w-full max-w-6xl">
           <h2
             id="products-heading"
@@ -157,6 +170,17 @@ const Footer = () => {
   return (
     <footer className="bg-foreground px-6 py-16 text-background">
       <div className="mx-auto flex max-w-4xl flex-col items-center gap-8">
+        <nav aria-label="Footer navigation" className="flex flex-wrap justify-center gap-6 text-sm">
+          <a
+            href="https://www.etsy.com/shop/TheAugustJonesShop"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-background/90 hover:text-[#ffb612] transition-colors"
+          >
+            Shop on Etsy
+          </a>
+        </nav>
+
         <div className="text-center">
           <h2 className="font-bebas-neue text-2xl tracking-wider sm:text-3xl">
             Get in Touch
