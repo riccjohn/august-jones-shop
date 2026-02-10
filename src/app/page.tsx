@@ -12,10 +12,11 @@ import { Button } from "@/components/ui/button";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'August Jones | Upcycled Sports Fashion from Wisconsin',
-    description: 'Hand-made, one-of-a-kind upcycled sports fashion. Streetwear vests, hoodies, sweatpants, and jackets created from upcycled sports wear by a solo female-owned brand in Madison, WI.',
+    title: "August Jones | Upcycled Sports Fashion from Wisconsin",
+    description:
+      "Hand-made, one-of-a-kind upcycled sports fashion. Streetwear vests, hoodies, sweatpants, and jackets created from upcycled sports wear by a solo female-owned brand in Madison, WI.",
     alternates: {
-      canonical: '/',
+      canonical: "/",
     },
   };
 }
@@ -57,9 +58,11 @@ const productImages = [
   },
 ] as const;
 
-const TITLE = 'Upcycled Fashion for Every Fan'
-const DESCRIPTION = 'Reimagined from pre-loved sports apparel into elevated, one-of-a-kind statements. Each piece embodies creative reinvention and a more sustainable approach to fan fashion.'
-const ABOUT = 'August Jones transforms vintage sportswear into one-of-a-kind pieces designed for game day and beyond. Handmade in Wisconsin from upcycled materials, each design is as original as the fans who wear it.'
+const TITLE = "Upcycled Fashion for Every Fan";
+const DESCRIPTION =
+  "Reimagined from pre-loved sports apparel into elevated, one-of-a-kind statements. Each piece embodies creative reinvention and a more sustainable approach to fan fashion.";
+const ABOUT =
+  "August Jones transforms vintage sportswear into one-of-a-kind pieces designed for game day and beyond. Handmade in Wisconsin from upcycled materials, each design is as original as the fans who wear it.";
 
 export default function Home() {
   return (
@@ -147,7 +150,7 @@ export default function Home() {
             id="products-heading"
             className="mb-12 text-center font-bebas-neue text-3xl tracking-wider text-foreground sm:mb-16 sm:text-4xl"
           >
-           Past Work
+            Past Work
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-2 lg:gap-8">
             {productImages.map((product) => (
@@ -199,10 +202,12 @@ const Footer = () => {
               </InstagramLink>
               <Link
                 href="mailto:hello@augustjones.shop"
-                rel="noopener noreferrer"
                 className="group flex items-center gap-2"
               >
-                <Mail className="h-4 w-4 shrink-0 opacity-80" aria-hidden="true" />
+                <Mail
+                  className="h-4 w-4 shrink-0 opacity-80"
+                  aria-hidden="true"
+                />
                 <span className="text-sm text-background/90 transition-colors duration-200 group-hover:text-[#ffb612]">
                   hello@augustjones.shop
                 </span>

@@ -20,11 +20,12 @@ const bebasNeue = Bebas_Neue({
   display: "swap",
 });
 
-const TITLE = 'August Jones | Renewed Fashion'
-const DESCRIPTION = 'Hand-made, one-of-a-kind upcycled sports fashion. Streetwear vests, hoodies, sweatpants, and jackets created from upcycled sports wear by a solo female-owned brand.'
+const TITLE = "August Jones | Renewed Fashion";
+const DESCRIPTION =
+  "Hand-made, one-of-a-kind upcycled sports fashion. Streetwear vests, hoodies, sweatpants, and jackets created from upcycled sports wear by a solo female-owned brand.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.augustjones.shop'),
+  metadataBase: new URL("https://www.augustjones.shop"),
   title: TITLE,
   description: DESCRIPTION,
   keywords: [
