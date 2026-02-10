@@ -33,6 +33,10 @@ const productImages = [
   },
 ] as const;
 
+const TITLE = 'One-of-a-Kind Upcycled Streetwear'
+const DESCRIPTION = 'Hand-crafted from pre-loved NFL and other pro sports jerseys into exclusive streetwear pieces. Each design celebrates sustainable style and creative reinvention.'
+const ABOUT = 'Every piece tells a story. We transform pre-loved NFL and other pro sports jerseys into one-of-a-kind streetwear — hoodies, sweatpants, vests, and jackets that are as unique as you are. Hand-crafted with care, each design is a celebration of sustainable fashion and creative reinvention.'
+
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col">
@@ -58,12 +62,10 @@ export default function Home() {
           {/* Hero Headline - Bold typography with Bebas Neue */}
           <div className="space-y-4">
             <h2 className="font-bebas-neue text-4xl tracking-wider text-foreground sm:text-5xl lg:text-6xl">
-              One-of-a-Kind Upcycled Streetwear
+              {TITLE}
             </h2>
             <p className="mx-auto max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Hand-crafted from pre-loved NFL jerseys into exclusive fashion
-              pieces. Each design celebrates sustainable style and creative
-              reinvention.
+              {DESCRIPTION}
             </p>
           </div>
 
@@ -87,10 +89,7 @@ export default function Home() {
             Renewed Fashion
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Every piece tells a story. We transform pre-loved NFL jerseys into
-            one-of-a-kind streetwear — hoodies, sweatpants, and jackets that are
-            as unique as you are. Hand-crafted with care, each design is a
-            celebration of sustainable fashion and creative reinvention.
+            {ABOUT}
           </p>
         </div>
       </section>

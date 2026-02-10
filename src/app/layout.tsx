@@ -20,10 +20,12 @@ const bebasNeue = Bebas_Neue({
   display: "swap",
 });
 
+const TITLE = 'August Jones | Renewed Fashion'
+const DESCRIPTION = 'Hand-made, one-of-a-kind upcycled sports fashion. Streetwear hoodies, sweatpants, and jackets created from upcycled NFL jerseys by a solo female-owned brand.'
+
 export const metadata: Metadata = {
-  title: "August Jones | Renewed Fashion",
-  description:
-    "Hand-made, one-of-a-kind upcycled sports fashion. Streetwear hoodies, sweatpants, and jackets created from upcycled NFL jerseys by a solo female-owned brand.",
+  title: TITLE,
+  description: DESCRIPTION,
   keywords: [
     "upcycled fashion",
     "sustainable streetwear",
@@ -36,14 +38,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    title: "August Jones | Renewed Fashion",
-    description: "Hand-made, one-of-a-kind upcycled sports fashion.",
+    title: TITLE,
+    description: DESCRIPTION,
     siteName: "August Jones",
   },
   twitter: {
     card: "summary_large_image",
-    title: "August Jones | Renewed Fashion",
-    description: "Hand-made, one-of-a-kind upcycled sports fashion.",
+    title: TITLE,
+    description: DESCRIPTION,
     creator: "@augustjonesshop",
   },
 };
