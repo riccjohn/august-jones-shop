@@ -1,0 +1,6 @@
+# August Jones - Robots.txt
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://www.augustjones.shop/sitemap.xml

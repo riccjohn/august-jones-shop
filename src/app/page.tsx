@@ -1,37 +1,66 @@
-import { Mail } from "lucide-react";
+import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
+import { Footer } from "@/components/Footer";
 import InstagramIcon from "@/components/InstagramIcon";
 import { InstagramLink } from "@/components/InstagramLink";
+import { ProductGalleryLink } from "@/components/ProductGalleryLink";
+import { ProductGallerySchema } from "@/components/ProductGallerySchema";
 import { ShopifyCtaButton } from "@/components/ShopifyCtaButton";
 import { Button } from "@/components/ui/button";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    title: "August Jones | Upcycled Sports Fashion from Wisconsin",
+    description:
+      "Hand-made, one-of-a-kind upcycled sports fashion. Streetwear vests, hoodies, sweatpants, and jackets created from upcycled sports wear by a solo female-owned brand in Madison, WI.",
+    alternates: {
+      canonical: "/",
+    },
+  };
+}
+
+const ETSY_SHOP_URL = "https://www.etsy.com/shop/TheAugustJonesShop";
 
 const productImages = [
   {
     id: 1,
-    title: "Upcycled Streetwear",
+    title: "Upcycled Sports Jersey Hoodie",
     src: "/images/product/pablo-lara-i1JJP5S6skw-unsplash.jpg",
-    alt: "August Jones upcycled streetwear piece",
+    alt: "Hand-made upcycled sports jersey hoodie by August Jones",
+    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_hoodie`,
+    category: "hoodies",
   },
   {
     id: 2,
-    title: "Hand-Made Fashion",
+    title: "Hand-Made Jersey Streetwear",
     src: "/images/product/pablo-lara-i1JJP5S6skw-unsplash.jpg",
-    alt: "August Jones hand-made fashion item",
+    alt: "Hand-made streetwear created from pre-loved sports jerseys",
+    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_streetwear`,
+    category: "streetwear",
   },
   {
     id: 3,
-    title: "Renewed Jersey Design",
+    title: "Reworked NFL Jersey Design",
     src: "/images/product/pablo-lara-i1JJP5S6skw-unsplash.jpg",
-    alt: "August Jones renewed jersey design",
+    alt: "Upcycled NFL jersey transformed into a one-of-a-kind fashion piece",
+    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_reworked`,
+    category: "reworked",
   },
   {
     id: 4,
-    title: "One-of-a-Kind Creation",
+    title: "One-of-a-Kind Game Day Look",
     src: "/images/product/pablo-lara-i1JJP5S6skw-unsplash.jpg",
-    alt: "August Jones one-of-a-kind creation",
+    alt: "Unique game day outfit made from upcycled sports jerseys",
+    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_gameday`,
+    category: "gameday",
   },
 ] as const;
+
+const TITLE = "Upcycled Fashion for Every Fan";
+const DESCRIPTION =
+  "Reimagined from pre-loved sports apparel into elevated, one-of-a-kind statements. Each piece embodies creative reinvention and a more sustainable approach to fan fashion.";
+const ABOUT =
+  "August Jones transforms vintage sportswear into one-of-a-kind pieces designed for game day and beyond. Handmade in Wisconsin from upcycled materials, each design is as original as the fans who wear it.";
 
 export default function Home() {
   return (
@@ -39,31 +68,27 @@ export default function Home() {
       {/* Hero Section - Full viewport impact with eggshell background */}
       <section className="flex min-h-[85vh] flex-col items-center justify-center bg-background px-6 py-20 sm:py-28">
         <div className="flex w-full max-w-2xl flex-col items-center gap-8 text-center lg:max-w-3xl lg:gap-10">
-          {/* Brand Logo - Larger with black border */}
-          <header className="flex flex-col items-center">
-            <h1>
-              <div className="border-6 border-foreground">
-                <Image
-                  src="/logos/August_Jones_Logo.svg"
-                  alt="August Jones - Renewed Fashion"
-                  width={500}
-                  height={500}
-                  priority
-                  className="h-auto w-48 bg-background sm:w-64 lg:w-72"
-                />
-              </div>
+          {/* Brand Logo and Primary Heading */}
+          <header className="flex flex-col items-center gap-6">
+            <div className="border-6 border-foreground" aria-hidden="true">
+              <Image
+                src="/logos/August_Jones_Logo.svg"
+                alt=""
+                width={500}
+                height={500}
+                priority
+                className="h-auto w-48 bg-background sm:w-64 lg:w-72"
+              />
+            </div>
+            <h1 className="font-bebas-neue text-4xl tracking-wider text-foreground sm:text-5xl lg:text-6xl">
+              {TITLE}
             </h1>
           </header>
 
-          {/* Hero Headline - Bold typography with Bebas Neue */}
+          {/* Hero Description */}
           <div className="space-y-4">
-            <h2 className="font-bebas-neue text-4xl tracking-wider text-foreground sm:text-5xl lg:text-6xl">
-              One-of-a-Kind Upcycled Streetwear
-            </h2>
             <p className="mx-auto max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Hand-crafted from pre-loved NFL jerseys into exclusive fashion
-              pieces. Each design celebrates sustainable style and creative
-              reinvention.
+              {DESCRIPTION}
             </p>
           </div>
 
@@ -87,10 +112,7 @@ export default function Home() {
             Renewed Fashion
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            Every piece tells a story. We transform pre-loved NFL jerseys into
-            one-of-a-kind streetwear — hoodies, sweatpants, and jackets that are
-            as unique as you are. Hand-crafted with care, each design is a
-            celebration of sustainable fashion and creative reinvention.
+            {ABOUT}
           </p>
         </div>
       </section>
@@ -120,6 +142,7 @@ export default function Home() {
         aria-labelledby="products-heading"
         className="bg-background px-6 py-20 sm:py-28"
       >
+        <ProductGallerySchema products={productImages} />
         <div className="mx-auto w-full max-w-6xl">
           <h2
             id="products-heading"
@@ -129,23 +152,7 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-2 lg:gap-8">
             {productImages.map((product) => (
-              <div
-                key={product.id}
-                className="group flex flex-col gap-2 sm:gap-3"
-              >
-                <h3 className="font-bebas-neue text-lg tracking-wider text-foreground sm:text-xl">
-                  {product.title}
-                </h3>
-                <div className="relative aspect-3/4 overflow-hidden rounded-sm">
-                  <Image
-                    src={product.src}
-                    alt={product.alt}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </div>
-              </div>
+              <ProductGalleryLink key={product.id} product={product} />
             ))}
           </div>
         </div>
@@ -155,47 +162,3 @@ export default function Home() {
     </main>
   );
 }
-
-const Footer = () => {
-  return (
-    <footer className="bg-foreground px-6 py-16 text-background">
-      <div className="mx-auto flex max-w-4xl flex-col items-center gap-8">
-        <div className="text-center">
-          <h2 className="font-bebas-neue text-2xl tracking-wider sm:text-3xl">
-            Get in Touch
-          </h2>
-        </div>
-
-        <div className="flex flex-col gap-4 items-center sm:flex-row sm:justify-center sm:gap-8">
-          <InstagramLink
-            location="footer"
-            aria-label="August Jones on Instagram"
-            className="group flex items-center gap-2 rounded-md px-2 py-1"
-          >
-            <InstagramIcon className="h-5 w-5 shrink-0 opacity-80" />
-            <span className="text-background/90 transition-colors duration-200 group-hover:text-[#ffb612] group-hover:underline group-hover:underline-offset-2">
-              @augustjonesshop
-            </span>
-          </InstagramLink>
-          <Link
-            href="mailto:hello@augustjones.shop"
-            rel="noopener noreferrer"
-            className="group flex items-center gap-2 rounded-md px-2 py-1"
-          >
-            <Mail className="h-5 w-5 shrink-0 opacity-80" aria-hidden="true" />
-            <span className="text-background/90 transition-colors duration-200 group-hover:text-[#ffb612] group-hover:underline group-hover:underline-offset-2">
-              hello@augustjones.shop
-            </span>
-          </Link>
-        </div>
-
-        <div className="text-center text-sm text-background/70">
-          <p>&copy; 2026 August Jones. All rights reserved.</p>
-          <p>
-            Made with <span className="text-[#ffb612]">❤️</span> in Madison, WI
-          </p>
-        </div>
-      </div>
-    </footer>
-  );
-};

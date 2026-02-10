@@ -20,31 +20,66 @@ const bebasNeue = Bebas_Neue({
   display: "swap",
 });
 
+const TITLE = "August Jones | Renewed Fashion";
+const DESCRIPTION =
+  "Hand-made, one-of-a-kind upcycled sports fashion. Streetwear vests, hoodies, sweatpants, and jackets created from upcycled sports wear by a solo female-owned brand.";
+
 export const metadata: Metadata = {
-  title: "August Jones | Renewed Fashion",
-  description:
-    "Hand-made, one-of-a-kind upcycled sports fashion. Streetwear hoodies, sweatpants, and jackets created from upcycled NFL jerseys by a solo female-owned brand.",
+  metadataBase: new URL("https://www.augustjones.shop"),
+  title: TITLE,
+  description: DESCRIPTION,
   keywords: [
-    "upcycled fashion",
+    // Core product/service (most specific → general)
+    "upcycled sports fashion",
+    "reworked sportswear",
+    "recycled jerseys",
+    "vintage sportswear",
+
+    // Sports leagues & teams
+    "NFL upcycling",
+    "NBA upcycling",
+    "MLB upcycling",
+    "NHL upcycling",
+    "Wisconsin Badgers",
+
+    // Product categories
     "sustainable streetwear",
-    "NFL jersey upcycling",
+    "one-of-a-kind apparel",
+    "hand-made fashion",
+
+    // Location (local SEO)
+    "Madison WI",
+    "Wisconsin",
+
+    // Brand values/differentiators
     "female-owned business",
-    "hand-made clothing",
+    "eco-friendly fashion",
+    "thrift flips",
   ],
   authors: [{ name: "August Jones" }],
   creator: "August Jones",
   openGraph: {
     type: "website",
     locale: "en_US",
-    title: "August Jones | Renewed Fashion",
-    description: "Hand-made, one-of-a-kind upcycled sports fashion.",
+    title: TITLE,
+    description: DESCRIPTION,
     siteName: "August Jones",
+    url: "https://www.augustjones.shop",
+    images: [
+      {
+        url: "/metadata/august-jones-og-placeholder.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Upcycled sports jersey streetwear by August Jones",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "August Jones | Renewed Fashion",
-    description: "Hand-made, one-of-a-kind upcycled sports fashion.",
+    title: TITLE,
+    description: DESCRIPTION,
     creator: "@augustjonesshop",
+    images: ["/metadata/august-jones-og-placeholder.jpg"],
   },
 };
 
@@ -68,6 +103,35 @@ export default function RootLayout({
             strategy="afterInteractive"
           />
         )}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+            "@id": "https://www.augustjones.shop/#localbusiness",
+            name: "August Jones",
+            description: DESCRIPTION,
+            url: "https://www.augustjones.shop",
+            email: "hello@augustjones.shop",
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: "Madison",
+              addressRegion: "WI",
+              addressCountry: "US",
+            },
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: "43.0731",
+              longitude: "-89.4012",
+            },
+            logo: "https://www.augustjones.shop/logos/August_Jones_Logo.svg",
+            image: "https://www.augustjones.shop/logos/August_Jones_Logo.svg",
+            sameAs: [
+              "https://www.instagram.com/augustjonesshop",
+              "https://www.etsy.com/shop/TheAugustJonesShop",
+            ],
+            priceRange: "$$",
+          })}
+        </script>
       </body>
     </html>
   );

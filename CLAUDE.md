@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## About the Business
 
-**August Jones** is a solo, female-owned brand selling hand-made, one-of-a-kind, upcycled sports fashion — streetwear hoodies, sweatpants, jackets, and more created from upcycled NFL jerseys.
+**August Jones** is a solo, female-owned brand selling hand-made, one-of-a-kind, upcycled sports fashion — streetwear hoodies, sweatpants, jackets, and more created from upcycled pro sports jerseys and fan gear.
 
 ## Site Structure
 
@@ -15,6 +15,34 @@ This is the main marketing website (not a storefront). Pages:
 - **Contact (`/contact`)** — Contact form
 
 Product purchases happen on a separate Shopify site; this site drives traffic there.
+
+## Key Priorities
+
+### SEO is Critical
+As a small business, **strong SEO is essential** for long-term growth through organic search traffic. All design and development decisions should consider SEO impact:
+- Maintain semantic HTML and proper heading hierarchy
+- Preserve structured data (LocalBusiness, Product schemas)
+- Keep location-specific keywords (Madison, WI, Wisconsin)
+- Ensure metadata, canonical URLs, and sitemap remain intact
+- Optimize for "upcycled sports fashion" and related search terms
+
+### Traffic & Conversion Path
+**Current state:** Most customers arrive via Instagram bio link. **Goal:** Build organic search traffic and word-of-mouth referrals as primary channels.
+
+Regardless of source, the conversion path must be frictionless:
+- Clear, prominent CTAs to the store on every page
+- Fast page load to prevent drop-off (especially mobile)
+- Mobile-first design (current Instagram users + future mobile search)
+- Minimize steps between landing and "Shop Now" button
+
+### Visual Design & Brand Positioning
+Design should convey **sports-centered custom streetwear** that feels high-quality but attainable:
+- **Sports aesthetic:** Lean into athletic/streetwear culture, not high fashion
+- **Custom/handmade vibe:** One-of-a-kind pieces, personal craftsmanship
+- **Quality without luxury pricing:** Professional and well-made, but accessible
+- **Brand colors:** Charcoal `#222`, eggshell `#f6f4f0`, yellow `#ffb612` accent
+- **Typography:** Bebas Neue for bold, sports-inspired headings
+- Balance personality (heart emoji, handmade touches) with clean, modern design
 
 ## Design System
 

@@ -44,9 +44,10 @@ export function trackEvent(
 
 /**
  * Track clicks to the Shopify/Etsy store
+ * @param source - Where the click originated (e.g., "hero", "footer", "gallery_hoodie")
  */
-export function trackShopifyClick() {
-  trackEvent("shopify_store_click");
+export function trackShopifyClick(source?: string) {
+  trackEvent("shopify_store_click", source ? { source } : undefined);
 }
 
 /**
