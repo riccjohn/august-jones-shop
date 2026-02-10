@@ -24,19 +24,36 @@ const TITLE = 'August Jones | Renewed Fashion'
 const DESCRIPTION = 'Hand-made, one-of-a-kind upcycled sports fashion. Streetwear vests, hoodies, sweatpants, and jackets created from upcycled sports wear by a solo female-owned brand.'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.augustjones.shop'),
   title: TITLE,
   description: DESCRIPTION,
   keywords: [
-    "upcycled fashion",
-    "sustainable streetwear",
+    // Core product/service (most specific → general)
+    "upcycled sports fashion",
+    "reworked sportswear",
+    "recycled jerseys",
+    "vintage sportswear",
+
+    // Sports leagues & teams
     "NFL upcycling",
     "NBA upcycling",
     "MLB upcycling",
     "NHL upcycling",
-    "reworked sportswear",
-    "thrift flips",
-    "female-owned business",
+    "Wisconsin Badgers",
+
+    // Product categories
+    "sustainable streetwear",
+    "one-of-a-kind apparel",
     "hand-made fashion",
+
+    // Location (local SEO)
+    "Madison WI",
+    "Wisconsin",
+
+    // Brand values/differentiators
+    "female-owned business",
+    "eco-friendly fashion",
+    "thrift flips",
   ],
   authors: [{ name: "August Jones" }],
   creator: "August Jones",
@@ -88,14 +105,30 @@ export default function RootLayout({
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "Organization",
+            "@type": "LocalBusiness",
+            "@id": "https://www.augustjones.shop/#localbusiness",
             name: "August Jones",
+            description: DESCRIPTION,
             url: "https://www.augustjones.shop",
+            email: "hello@augustjones.shop",
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: "Madison",
+              addressRegion: "WI",
+              addressCountry: "US",
+            },
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: "43.0731",
+              longitude: "-89.4012",
+            },
+            logo: "https://www.augustjones.shop/logos/August_Jones_Logo.svg",
+            image: "https://www.augustjones.shop/logos/August_Jones_Logo.svg",
             sameAs: [
               "https://www.instagram.com/augustjonesshop",
               "https://www.etsy.com/shop/TheAugustJonesShop",
             ],
-            logo: "https://www.augustjones.shop/logos/August_Jones_Logo.svg",
+            priceRange: "$$",
           })}
         </script>
       </body>
