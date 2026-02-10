@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## About the Business
 
-**August Jones** is a solo, female-owned brand selling hand-made, one-of-a-kind, upcycled sports fashion — streetwear hoodies, sweatpants, jackets, and more created from upcycled NFL jerseys.
+**August Jones** is a solo, female-owned brand selling hand-made, one-of-a-kind, upcycled sports fashion — streetwear hoodies, sweatpants, jackets, and more created from upcycled pro sports jerseys and fan gear.
 
 ## Site Structure
 
