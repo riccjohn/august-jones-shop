@@ -59,9 +59,11 @@ test.describe("Landing Page", () => {
     );
 
     // Test Instagram link (hero section)
-    const instagramLink = page.getByRole("link", {
-      name: /@augustjonesshop/i,
-    }).first();
+    const instagramLink = page
+      .getByRole("link", {
+        name: /@augustjonesshop/i,
+      })
+      .first();
     await expect(instagramLink).toBeVisible();
     await expect(instagramLink).toHaveAttribute(
       "href",
@@ -105,35 +107,35 @@ test.describe("Landing Page", () => {
     await expect(gallery).toBeVisible();
 
     // Test individual product links have UTM parameters
-    const hoodieLink = page.getByRole("link", {
-      name: /Upcycled Sports Jersey Hoodie/i,
+    const vestsLink = page.getByRole("link", {
+      name: /Vests/i,
     });
-    await expect(hoodieLink).toBeVisible();
-    await expect(hoodieLink).toHaveAttribute(
+    await expect(vestsLink).toBeVisible();
+    await expect(vestsLink).toHaveAttribute(
       "href",
       /utm_source=augustjones&utm_medium=website&utm_campaign=gallery_hoodie/,
     );
 
-    const streetwearLink = page.getByRole("link", {
-      name: /Hand-Made Jersey Streetwear/i,
+    const tshirtsLink = page.getByRole("link", {
+      name: /T-Shirts/i,
     });
-    await expect(streetwearLink).toHaveAttribute(
+    await expect(tshirtsLink).toHaveAttribute(
       "href",
       /utm_campaign=gallery_streetwear/,
     );
 
-    const reworkedLink = page.getByRole("link", {
-      name: /Reworked NFL Jersey Design/i,
+    const hoodiesLink = page.getByRole("link", {
+      name: /Hoodies/i,
     });
-    await expect(reworkedLink).toHaveAttribute(
+    await expect(hoodiesLink).toHaveAttribute(
       "href",
       /utm_campaign=gallery_reworked/,
     );
 
-    const gamedayLink = page.getByRole("link", {
-      name: /One-of-a-Kind Game Day Look/i,
+    const jacketsLink = page.getByRole("link", {
+      name: /Jackets/i,
     });
-    await expect(gamedayLink).toHaveAttribute(
+    await expect(jacketsLink).toHaveAttribute(
       "href",
       /utm_campaign=gallery_gameday/,
     );
@@ -172,9 +174,7 @@ test.describe("Landing Page", () => {
     await expect(
       footer.getByText(/© 2026 August Jones. All rights reserved./),
     ).toBeVisible();
-    await expect(
-      footer.getByText(/Made with ❤️ in Madison, WI/),
-    ).toBeVisible();
+    await expect(footer.getByText(/Made with ❤️ in Madison, WI/)).toBeVisible();
   });
 
   test("has structured data for SEO", async ({ page }) => {

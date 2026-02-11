@@ -20,7 +20,14 @@ export function ProductGallerySchema({ products }: ProductGallerySchemaProps) {
         "@type": "Product",
         "@id": `https://www.augustjones.shop/#product-${product.id}`,
         name: product.title,
-        image: `https://www.augustjones.shop${product.src}`,
+        image: {
+          "@type": "ImageObject",
+          url: `https://www.augustjones.shop${product.src}`,
+          description: product.alt,
+          caption: product.alt,
+          inLanguage: "en-US",
+          representativeOfPage: false,
+        },
         description: product.alt,
         category: "Apparel & Accessories > Clothing",
         brand: {
@@ -58,6 +65,7 @@ export function ProductGallerySchema({ products }: ProductGallerySchemaProps) {
   return (
     <script
       type="application/ld+json"
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: Safe for JSON-LD structured data
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
   );
