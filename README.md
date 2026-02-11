@@ -37,6 +37,25 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - `pnpm test:e2e` — Run Playwright e2e tests
 - `pnpm test:e2e:ui` — Run Playwright tests in UI mode
 
+## Favicon/Icon Setup
+
+The site uses custom favicons located in `public/`:
+- `icon.svg` — SVG favicon (preferred by modern browsers)
+- `icon.png` — 32x32 PNG fallback
+- `apple-icon.png` — 180x180 Apple touch icon
+- `favicon.ico` — Legacy ICO format (generated from icon.png)
+
+**When to regenerate favicon.ico:**
+If you update `public/icon.png` with a new design, regenerate the `.ico` file:
+
+```bash
+node scripts/generate-favicon.mjs
+```
+
+Then restart the dev server and hard refresh your browser (Cmd+Shift+R on Mac, Ctrl+Shift+R on Windows/Linux) to see changes.
+
+> **Note:** Icons are referenced via metadata in `src/app/layout.tsx` rather than using Next.js file-based icon generation to avoid a Turbopack bug in Next.js 16.1.6.
+
 ## Analytics Setup
 
 The site uses **Cloudflare Web Analytics** for privacy-first tracking (no cookies, no consent banner required).
