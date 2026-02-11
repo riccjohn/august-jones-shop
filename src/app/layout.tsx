@@ -67,7 +67,7 @@ export const metadata: Metadata = {
     url: "https://www.augustjones.shop",
     images: [
       {
-        url: "/images/social_02-1200.jpg",
+        url: "/images/social_02-1200.webp",
         width: 1200,
         height: 628,
         alt: "Upcycled sports jersey streetwear by August Jones",
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     creator: "@augustjonesshop",
-    images: ["/images/social_02-1200.jpg"],
+    images: ["/images/social_02-1200.webp"],
   },
 };
 
@@ -124,7 +124,7 @@ export default function RootLayout({
               longitude: "-89.4012",
             },
             logo: "https://www.augustjones.shop/logos/August_Jones_Logo.svg",
-            image: "https://www.augustjones.shop/images/social_02-1200.jpg",
+            image: "https://www.augustjones.shop/images/social_02-1200.webp",
             sameAs: [
               "https://www.instagram.com/augustjonesshop",
               "https://www.etsy.com/shop/TheAugustJonesShop",
