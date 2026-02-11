@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, content-updates]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.29.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify images are optimized
+        run: |
+          echo "Checking for unoptimized images in public/images..."
+          if find public/images -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" \) | grep -v ".gitkeep" | grep -q .; then
+            echo "❌ Error: Found unoptimized JPG/PNG images in public/images"
+            echo "Please run 'pnpm optimize:images' to convert them to WebP"
+            echo ""
+            echo "Found files:"
+            find public/images -type f \( -name "*.jpg" -o -name "*.jpeg" -o -name "*.png" \)
+            exit 1
+          fi
+          echo "✅ All images are optimized (WebP only)"
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build
+        run: pnpm build
+
+      - name: Install Playwright Browsers
+        run: pnpm exec playwright install --with-deps
+
+      - name: Run E2E tests
+        run: pnpm test:e2e
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

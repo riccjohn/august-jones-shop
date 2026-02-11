@@ -58,4 +58,4 @@ node_modules/
 .dev.vars
 
 # Image optimization - original source files (not for deployment)
-/original_images/
+original_images/
