@@ -59,9 +59,11 @@ test.describe("Landing Page", () => {
     );
 
     // Test Instagram link (hero section)
-    const instagramLink = page.getByRole("link", {
-      name: /@augustjonesshop/i,
-    }).first();
+    const instagramLink = page
+      .getByRole("link", {
+        name: /@augustjonesshop/i,
+      })
+      .first();
     await expect(instagramLink).toBeVisible();
     await expect(instagramLink).toHaveAttribute(
       "href",
@@ -172,9 +174,7 @@ test.describe("Landing Page", () => {
     await expect(
       footer.getByText(/© 2026 August Jones. All rights reserved./),
     ).toBeVisible();
-    await expect(
-      footer.getByText(/Made with ❤️ in Madison, WI/),
-    ).toBeVisible();
+    await expect(footer.getByText(/Made with ❤️ in Madison, WI/)).toBeVisible();
   });
 
   test("has structured data for SEO", async ({ page }) => {

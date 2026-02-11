@@ -65,6 +65,7 @@ export function ProductGallerySchema({ products }: ProductGallerySchemaProps) {
   return (
     <script
       type="application/ld+json"
+      // biome-ignore lint/security/noDangerouslySetInnerHtml: Safe for JSON-LD structured data
       dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
     />
   );

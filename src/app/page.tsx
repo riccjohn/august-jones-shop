@@ -70,7 +70,6 @@ const productImages = [
     href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_gameday`,
     category: "accessories",
   },
-
 ] as const;
 
 const TITLE = "Upcycled Fashion for Every Fan";

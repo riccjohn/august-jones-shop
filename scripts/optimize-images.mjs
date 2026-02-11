@@ -14,10 +14,10 @@
  *   pnpm optimize:images --force      # Re-optimize even if WebP exists
  */
 
-import sharp from "sharp";
-import { readdir, mkdir, copyFile, stat } from "node:fs/promises";
-import { join, dirname, basename, extname } from "node:path";
+import { copyFile, mkdir, readdir, stat } from "node:fs/promises";
+import { basename, dirname, extname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import sharp from "sharp";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, "..");
@@ -82,7 +82,7 @@ async function optimizeImage(imagePath) {
   const originalSizeKB = (originalStats.size / 1024).toFixed(0);
 
   // Create backup in original/ directory
-  const relativePath = imagePath.replace(IMAGES_DIR + "/", "");
+  const relativePath = imagePath.replace(`${IMAGES_DIR}/`, "");
   const backupPath = join(ORIGINAL_DIR, relativePath);
   const backupDir = dirname(backupPath);
 
@@ -113,7 +113,7 @@ async function optimizeImage(imagePath) {
   const savings = ((1 - newStats.size / originalStats.size) * 100).toFixed(0);
 
   console.log(
-    `✅ ${basename(imagePath)} → ${baseName}.webp (${originalSizeKB}KB → ${newSizeKB}KB, ${savings}% smaller)`
+    `✅ ${basename(imagePath)} → ${baseName}.webp (${originalSizeKB}KB → ${newSizeKB}KB, ${savings}% smaller)`,
   );
 
   return {
@@ -157,7 +157,10 @@ async function main() {
         results.push(result);
       }
     } catch (error) {
-      console.error(`❌ Error optimizing ${basename(imagePath)}:`, error.message);
+      console.error(
+        `❌ Error optimizing ${basename(imagePath)}:`,
+        error.message,
+      );
     }
   }
 
