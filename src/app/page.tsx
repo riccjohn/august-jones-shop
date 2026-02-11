@@ -93,6 +93,7 @@ export default function Home() {
                 width={500}
                 height={500}
                 priority
+                fetchPriority="high"
                 className="h-auto w-48 bg-background sm:w-64 lg:w-72"
               />
             </div>
