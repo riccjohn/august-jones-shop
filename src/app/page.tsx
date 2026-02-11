@@ -25,7 +25,7 @@ const productImages = [
   {
     id: 1,
     title: "Vests",
-    src: "/images/product/vests.jpg",
+    src: "/images/product/vests.webp",
     alt: "Hand-made upcycled sports jersey puffer vest by August Jones",
     href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_hoodie`,
     category: "vests",
@@ -33,7 +33,7 @@ const productImages = [
   {
     id: 2,
     title: "Jackets",
-    src: "/images/product/jackets.jpg",
+    src: "/images/product/jackets.webp",
     alt: "Unique game day outfit made from upcycled sports jerseys and thrifted military jacket",
     href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_gameday`,
     category: "jackets",
@@ -41,7 +41,7 @@ const productImages = [
   {
     id: 3,
     title: "T-Shirts",
-    src: "/images/product/tshirts.jpg",
+    src: "/images/product/tshirts.webp",
     alt: "Custom cropped Milwaukee Brewers t-shirt made from upcycled fan gear",
     href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_streetwear`,
     category: "tshirts",
@@ -49,7 +49,7 @@ const productImages = [
   {
     id: 4,
     title: "Hoodies",
-    src: "/images/product/hoodies.jpg",
+    src: "/images/product/hoodies.webp",
     alt: "One-of-a-kind Green Bay Packers hoodie made from upcycled fan gear",
     href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_reworked`,
     category: "sweatshirts",
@@ -57,7 +57,7 @@ const productImages = [
   {
     id: 5,
     title: "Sweatpants",
-    src: "/images/product/sweatpants.jpg",
+    src: "/images/product/sweatpants.webp",
     alt: "One-of-a-kind Milwaukee Bucks sweatpants made from upcycled fan gear",
     href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_gameday`,
     category: "sweatpants",
@@ -65,7 +65,7 @@ const productImages = [
   {
     id: 6,
     title: "Accessories",
-    src: "/images/product/accessories_04.jpg",
+    src: "/images/product/accessories_04.webp",
     alt: "Hand-made Green Bay Packers and Denver Broncosfanny packs made from upcycled NFL jerseys and fan gear",
     href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_gameday`,
     category: "accessories",

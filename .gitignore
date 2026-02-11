@@ -56,3 +56,6 @@ node_modules/
 # Cloudflare
 .wrangler/
 .dev.vars
+
+# Image optimization - original source files (not for deployment)
+/original_images/
