@@ -14,6 +14,7 @@ function getUtmParams(): Pick<
   AnalyticsPayload,
   "utm_source" | "utm_medium" | "utm_campaign"
 > {
+  if (typeof window === "undefined") return {};
   const params = new URLSearchParams(window.location.search);
   return {
     utm_source: params.get("utm_source") ?? undefined,

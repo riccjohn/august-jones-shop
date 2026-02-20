@@ -84,9 +84,10 @@ async function runQuery(name) {
   }
 
   if (!/^[a-z_][a-z0-9_]*$/i.test(AE_DATASET_NAME)) {
-    throw new Error(
+    console.error(
       `Invalid dataset name "${AE_DATASET_NAME}". Must match /^[a-z_][a-z0-9_]*$/i (letters, digits, and underscores only, cannot start with a digit).`,
     );
+    process.exit(1);
   }
 
   const queryFn = QUERIES[name];

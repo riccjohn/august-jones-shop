@@ -48,11 +48,6 @@ function deriveDeviceType(
 
   const s = ua.toLowerCase();
 
-  // iPadOS 13+ uses a desktop-class UA — detect via client hints or heuristic
-  if (uaMobile === "?0" && /macintosh/.test(s)) {
-    // Could be iPadOS 13+ masquerading as Mac; treat as desktop (can't distinguish server-side without client hints)
-  }
-
   if (/tablet|ipad|playbook|silk/.test(s)) return "tablet";
   // Android without "mobile" = tablet
   if (/android(?!.*mobile)/.test(s)) return "tablet";
@@ -70,10 +65,16 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return new Response(null, { status: 400 });
   }
 
-  // Validate Origin header — allow missing origin (local dev) but reject mismatched origins
+  // Known limitation: requests without an Origin header (e.g. server-to-server curl) bypass this check.
+  // Acceptable for an append-only analytics endpoint with no auth or sensitive data.
   const origin = request.headers.get("Origin");
   if (origin !== null && !ALLOWED_ORIGINS.has(origin)) {
     return new Response(null, { status: 403 });
+  }
+
+  const contentType = request.headers.get("Content-Type") ?? "";
+  if (!contentType.includes("application/json")) {
+    return new Response(null, { status: 415 });
   }
 
   let payload: AnalyticsPayload;

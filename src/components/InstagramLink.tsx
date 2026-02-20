@@ -20,18 +20,14 @@ export function InstagramLink({
   className,
   "aria-label": ariaLabel,
 }: InstagramLinkProps) {
-  const handleClick = () => {
-    trackInstagramClick(location);
-  };
-
   return (
     <Link
       href="https://instagram.com/augustjonesshop"
       target="_blank"
-      rel="noopener"
+      rel="noopener noreferrer"
       aria-label={ariaLabel}
       className={className}
-      onClick={handleClick}
+      onClick={() => trackInstagramClick(location)}
     >
       {children}
     </Link>

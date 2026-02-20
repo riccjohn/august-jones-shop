@@ -10,10 +10,6 @@ import { trackShopifyClick } from "@/lib/analytics";
  * Client component to handle click tracking
  */
 export function ShopifyCtaButton() {
-  const handleClick = () => {
-    trackShopifyClick("hero");
-  };
-
   return (
     <Button
       asChild
@@ -24,8 +20,8 @@ export function ShopifyCtaButton() {
       <Link
         href="https://www.etsy.com/shop/TheAugustJonesShop?utm_source=augustjones&utm_medium=website&utm_campaign=shop_cta"
         target="_blank"
-        rel="noopener"
-        onClick={handleClick}
+        rel="noopener noreferrer"
+        onClick={() => trackShopifyClick("hero")}
       >
         <span>Shop Now</span>
         <ArrowRight

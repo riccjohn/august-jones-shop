@@ -19,17 +19,12 @@ interface ProductGalleryLinkProps {
  * Client component to handle click tracking with product metadata
  */
 export function ProductGalleryLink({ product }: ProductGalleryLinkProps) {
-  const handleClick = () => {
-    // Track with source matching the UTM campaign parameter
-    trackShopifyClick(`gallery_${product.category}`);
-  };
-
   return (
     <a
       href={product.href}
       target="_blank"
-      rel="noopener"
-      onClick={handleClick}
+      rel="noopener noreferrer"
+      onClick={() => trackShopifyClick(`gallery_${product.category}`)}
       className="group flex flex-col gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 rounded-sm sm:gap-3"
     >
       <h3 className="font-bebas-neue text-lg tracking-wider text-foreground transition-colors group-hover:text-accent sm:text-xl">

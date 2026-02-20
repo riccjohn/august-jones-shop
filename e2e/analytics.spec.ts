@@ -1,7 +1,5 @@
 import { expect, type Page, test } from "@playwright/test";
 
-const BASE_URL = "http://localhost:3000";
-
 // WebKit does not expose navigator.sendBeacon bodies via Playwright's network
 // interception. We spy on sendBeacon at the JS level in the page context
 // instead, storing payloads in window.__analyticsPayloads so all browsers work.
@@ -17,7 +15,8 @@ async function capturePayload(page: Page): Promise<Record<string, unknown>> {
     { timeout: 5000 },
   );
   const payload = await page.evaluate(() => window.__analyticsPayloads.shift());
-  return payload ?? {};
+  if (!payload) throw new Error("No analytics payload captured");
+  return payload;
 }
 
 test.describe("Analytics event tracking", () => {
@@ -55,7 +54,7 @@ test.describe("Analytics event tracking", () => {
   test("hero Shop Now click sends shopify_store_click with source=hero", async ({
     page,
   }) => {
-    await page.goto(BASE_URL);
+    await page.goto("/");
 
     await page
       .getByLabel("Primary navigation")
@@ -71,7 +70,7 @@ test.describe("Analytics event tracking", () => {
   test("footer Shop Now click sends shopify_store_click with source=footer", async ({
     page,
   }) => {
-    await page.goto(BASE_URL);
+    await page.goto("/");
 
     await page
       .getByLabel("Footer navigation")
@@ -86,7 +85,7 @@ test.describe("Analytics event tracking", () => {
   test("gallery item click sends shopify_store_click with source starting with gallery_", async ({
     page,
   }) => {
-    await page.goto(BASE_URL);
+    await page.goto("/");
 
     const galleryLink = page
       .locator('section[aria-labelledby="products-heading"]')
@@ -103,7 +102,7 @@ test.describe("Analytics event tracking", () => {
   test("hero Instagram link click sends instagram_click with source=hero", async ({
     page,
   }) => {
-    await page.goto(BASE_URL);
+    await page.goto("/");
 
     await page
       .getByRole("link", { name: /@augustjonesshop/i })
@@ -118,7 +117,7 @@ test.describe("Analytics event tracking", () => {
   test("footer Instagram link click sends instagram_click with source=footer", async ({
     page,
   }) => {
-    await page.goto(BASE_URL);
+    await page.goto("/");
 
     await page
       .getByLabel("August Jones on Instagram")
@@ -130,11 +129,23 @@ test.describe("Analytics event tracking", () => {
   });
 
   test("email link click sends email_click with page=/", async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto("/");
 
-    await page
-      .getByRole("link", { name: /hello@augustjones\.shop/i })
-      .click({ modifiers: ["Alt"] });
+    // Prevent the mailto: href from triggering a navigation/mail-client launch
+    // in WebKit on Linux CI. The async Blob.text() spy never resolves if the
+    // page context is disrupted before the Promise settles.
+    await page.evaluate(() => {
+      document.addEventListener(
+        "click",
+        (e) => {
+          const anchor = (e.target as Element).closest('a[href^="mailto:"]');
+          if (anchor) e.preventDefault();
+        },
+        { capture: true },
+      );
+    });
+
+    await page.getByRole("link", { name: /hello@augustjones\.shop/i }).click();
 
     const payload = await capturePayload(page);
     expect(payload.event).toBe("email_click");
@@ -145,7 +156,7 @@ test.describe("Analytics event tracking", () => {
     page,
   }) => {
     await page.goto(
-      `${BASE_URL}?utm_source=instagram&utm_medium=bio&utm_campaign=spring_drop`,
+      "/?utm_source=instagram&utm_medium=bio&utm_campaign=spring_drop",
     );
 
     await page
