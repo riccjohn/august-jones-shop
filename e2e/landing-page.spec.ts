@@ -5,11 +5,9 @@ import { expect, test } from "@playwright/test";
  * Focus on critical content, key links, and basic accessibility — not implementation details.
  */
 
-const BASE_URL = "http://localhost:3000";
-
 test.describe("Landing Page", () => {
   test("loads with correct title and key content visible", async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto("/");
 
     await expect(page).toHaveTitle(
       "August Jones | Upcycled Sports Fashion from Wisconsin",
@@ -35,7 +33,7 @@ test.describe("Landing Page", () => {
   test("primary CTA and contact links are present and work", async ({
     page,
   }) => {
-    await page.goto(BASE_URL);
+    await page.goto("/");
 
     // Test hero CTA button specifically (in primary navigation)
     const heroCTA = page
@@ -82,7 +80,7 @@ test.describe("Landing Page", () => {
   });
 
   test("has basic accessibility structure", async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto("/");
 
     await expect(page.getByRole("main")).toBeVisible();
     await expect(page.locator("h1")).toBeVisible();
@@ -100,7 +98,7 @@ test.describe("Landing Page", () => {
   test("product gallery has correct links with UTM tracking", async ({
     page,
   }) => {
-    await page.goto(BASE_URL);
+    await page.goto("/");
 
     // Check that product gallery section exists
     const gallery = page.locator('section[aria-labelledby="products-heading"]');
@@ -142,7 +140,7 @@ test.describe("Landing Page", () => {
   });
 
   test("footer is present with all expected links", async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto("/");
 
     const footer = page.locator("footer");
     await expect(footer).toBeVisible();
@@ -178,7 +176,7 @@ test.describe("Landing Page", () => {
   });
 
   test("has structured data for SEO", async ({ page }) => {
-    await page.goto(BASE_URL);
+    await page.goto("/");
 
     // Get all schema scripts
     const schemaScripts = page.locator('script[type="application/ld+json"]');
@@ -211,7 +209,7 @@ test.describe("Landing Page", () => {
   test("Instagram links in different sections have correct tracking", async ({
     page,
   }) => {
-    await page.goto(BASE_URL);
+    await page.goto("/");
 
     // Hero Instagram link
     const heroInstagram = page
@@ -222,7 +220,7 @@ test.describe("Landing Page", () => {
       "https://instagram.com/augustjonesshop",
     );
     await expect(heroInstagram).toHaveAttribute("target", "_blank");
-    await expect(heroInstagram).toHaveAttribute("rel", "noopener");
+    await expect(heroInstagram).toHaveAttribute("rel", "noopener noreferrer");
 
     // Footer Instagram link
     const footerInstagram = page.getByLabel("August Jones on Instagram");

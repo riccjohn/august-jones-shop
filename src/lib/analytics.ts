@@ -1,66 +1,77 @@
-/**
- * Cloudflare Web Analytics utility
- * Provides type-safe event tracking for custom analytics events
- */
+const ENDPOINT = "/api/analytics";
 
-// Extend Window interface for Cloudflare beacon API
-declare global {
-  interface Window {
-    __cfBeacon?: {
-      load: (
-        type: string,
-        options?: { event: { name: string; [key: string]: unknown } },
-      ) => void;
-    };
-  }
+// Keep in sync with functions/api/analytics.ts
+interface AnalyticsPayload {
+  event: string;
+  source?: string;
+  page?: string;
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
 }
 
-/**
- * Track a custom event in Cloudflare Web Analytics
- * @param eventName - Name of the event to track
- * @param metadata - Optional metadata to attach to the event
- */
+function getUtmParams(): Pick<
+  AnalyticsPayload,
+  "utm_source" | "utm_medium" | "utm_campaign"
+> {
+  if (typeof window === "undefined") return {};
+  const params = new URLSearchParams(window.location.search);
+  return {
+    utm_source: params.get("utm_source") ?? undefined,
+    utm_medium: params.get("utm_medium") ?? undefined,
+    utm_campaign: params.get("utm_campaign") ?? undefined,
+  };
+}
+
 export function trackEvent(
-  eventName: string,
-  metadata?: Record<string, string | number | boolean>,
+  event: string,
+  extra?: Omit<
+    AnalyticsPayload,
+    "event" | "page" | "utm_source" | "utm_medium" | "utm_campaign"
+  >,
 ) {
-  if (typeof window === "undefined" || !window.__cfBeacon) {
-    // Analytics not loaded or server-side rendering
-    return;
-  }
+  if (!event) return;
+  if (typeof window === "undefined") return;
+
+  const payload: AnalyticsPayload = {
+    event,
+    page: window.location.pathname,
+    ...getUtmParams(),
+    ...extra,
+  };
+
+  const body = JSON.stringify(payload);
+
+  const sendViaFetch = () => {
+    fetch(ENDPOINT, {
+      method: "POST",
+      body,
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+    }).catch(() => {});
+  };
 
   try {
-    window.__cfBeacon.load("single-page-application", {
-      event: {
-        name: eventName,
-        ...metadata,
-      },
-    });
-  } catch (error) {
-    // Silently fail - don't break user experience for analytics
-    console.warn("Analytics tracking failed:", error);
+    const sent = navigator.sendBeacon(
+      ENDPOINT,
+      new Blob([body], { type: "application/json" }),
+    );
+    if (!sent) {
+      sendViaFetch();
+    }
+  } catch {
+    sendViaFetch();
   }
 }
 
-/**
- * Track clicks to the Shopify/Etsy store
- * @param source - Where the click originated (e.g., "hero", "footer", "gallery_hoodie")
- */
 export function trackShopifyClick(source?: string) {
   trackEvent("shopify_store_click", source ? { source } : undefined);
 }
 
-/**
- * Track clicks to Instagram
- * @param location - Where on the page the Instagram link was clicked
- */
 export function trackInstagramClick(location: "hero" | "footer") {
-  trackEvent("instagram_click", { location });
+  trackEvent("instagram_click", { source: location });
 }
 
-/**
- * Track contact form submissions (future use)
- */
-export function trackContactFormSubmit() {
-  trackEvent("contact_form_submit");
+export function trackEmailClick() {
+  trackEvent("email_click");
 }

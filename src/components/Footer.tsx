@@ -1,8 +1,7 @@
-import { Mail } from "lucide-react";
-import Link from "next/link";
 import { FooterShopLink } from "@/components/FooterShopLink";
 import InstagramIcon from "@/components/InstagramIcon";
 import { InstagramLink } from "@/components/InstagramLink";
+import { TrackedEmailLink } from "@/components/TrackedEmailLink";
 
 export const Footer = () => {
   return (
@@ -39,18 +38,7 @@ export const Footer = () => {
                   @augustjonesshop
                 </span>
               </InstagramLink>
-              <Link
-                href="mailto:hello@augustjones.shop"
-                className="group flex items-center gap-2"
-              >
-                <Mail
-                  className="h-4 w-4 shrink-0 opacity-80"
-                  aria-hidden="true"
-                />
-                <span className="text-sm text-background/90 transition-colors duration-200 group-hover:text-[#ffb612]">
-                  hello@augustjones.shop
-                </span>
-              </Link>
+              <TrackedEmailLink />
             </div>
           </div>
         </div>
