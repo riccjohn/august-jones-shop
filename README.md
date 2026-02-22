@@ -9,7 +9,7 @@ This is a [Next.js](https://nextjs.org) marketing site (not a storefront) that d
 - **Next.js 16** with App Router, React 19, TypeScript
 - **Tailwind CSS v4** via PostCSS
 - **shadcn/ui** component library (New York style)
-- **Cloudflare Web Analytics** for tracking
+- **Umami Cloud** for analytics
 - **pnpm** as package manager
 
 ## Getting Started
@@ -58,12 +58,9 @@ Then restart the dev server and hard refresh your browser (Cmd+Shift+R on Mac, C
 
 ## Analytics Setup
 
-The site uses two analytics layers:
+The site uses **Umami Cloud** for analytics — pageviews, referrers, countries, and custom event tracking (Shop Now clicks, Instagram clicks, email clicks). Configured via `NEXT_PUBLIC_UMAMI_WEBSITE_ID` in Cloudflare Pages Settings → Environment Variables.
 
-- **Cloudflare Web Analytics** — passive pageview tracking (no cookies, no consent banner). Configured via `NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN` environment variable in Cloudflare Pages Settings → Variables and Secrets.
-- **Analytics Engine** — queryable custom event tracking (Shop Now clicks, Instagram clicks, email clicks). Requires a one-time binding setup in Cloudflare Pages Settings → Bindings.
-
-See **[docs/analytics.md](./docs/analytics.md)** for full setup instructions, the data schema, and how to run SQL queries against your event data.
+See **[docs/analytics.md](./docs/analytics.md)** for full setup instructions and how to share the dashboard with August.
 
 ## Deployment
 
@@ -71,7 +68,7 @@ This site is configured for deployment on **Cloudflare Pages** as a static expor
 
 1. Push changes to GitHub
 2. Cloudflare Pages automatically builds and deploys
-3. Don't forget to set the `NEXT_PUBLIC_CLOUDFLARE_ANALYTICS_TOKEN` environment variable (see Analytics Setup above)
+3. Set `NEXT_PUBLIC_UMAMI_WEBSITE_ID` in Cloudflare Pages Settings → Environment Variables (see Analytics Setup above)
 
 ## Project Structure
 

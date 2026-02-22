@@ -66,14 +66,9 @@ Design should convey **sports-centered custom streetwear** that feels high-quali
 
 ## Analytics
 
-Two layers — both are additive, Web Analytics is passive:
+**Umami Cloud** — custom event tracking via `window.umami.track()`. Tracks Shopify clicks, Instagram clicks, email clicks. Dashboard at `cloud.umami.is`. See `docs/analytics.md` for setup, event reference, and sharing the dashboard.
 
-- **Cloudflare Web Analytics** — pageviews/bounce rate via beacon in `layout.tsx` (no config needed)
-- **Analytics Engine** — queryable custom events via `POST /api/analytics` (Cloudflare Pages Function). Tracks Shopify clicks, Instagram clicks, email clicks with source, page, UTM params, country, device type. See `docs/analytics.md` for schema, dashboard setup, and query usage.
-
-Key files: `src/lib/analytics.ts` (client), `functions/api/analytics.ts` (server), `scripts/query-analytics.mjs`.
-
-**The `functions/` directory has its own `tsconfig.json` and is excluded from the root tsconfig** — required because it uses `@cloudflare/workers-types` which conflicts with the Next.js DOM types.
+Key files: `src/lib/analytics.ts` (client tracking functions), `src/app/layout.tsx` (script tag).
 
 ## Commands
 
@@ -83,7 +78,6 @@ Key files: `src/lib/analytics.ts` (client), `functions/api/analytics.ts` (server
 - `pnpm format` — Auto-format with Biome (`biome format --write`)
 - `pnpm test:e2e` — Run Playwright e2e tests
 - `pnpm test:e2e:ui` — Run Playwright tests in UI mode
-- `pnpm query:analytics <name>` — Query Analytics Engine (see `docs/analytics.md`)
 
 ## Tech Stack
 
