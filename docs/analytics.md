@@ -2,21 +2,16 @@
 
 ## Overview
 
-The site uses two complementary Cloudflare analytics layers:
-
-- **Cloudflare Web Analytics** (in `layout.tsx`) — passive pageview tracking, bounce rate, Core Web Vitals. No setup needed beyond the beacon script.
-- **Analytics Engine** (this doc) — server-side custom event tracking with full query access via SQL API. Captures where customers come from and what they click.
+The site uses **Umami Cloud** for analytics — pageviews, referrers, UTM campaigns, countries, devices, and custom event tracking (Shopify clicks, Instagram clicks, email clicks) via a shareable web dashboard.
 
 ## Architecture
 
 ```
-Client click → trackEvent() → navigator.sendBeacon('/api/analytics', JSON)
-                                      ↓
-              functions/api/analytics.ts (Cloudflare Pages Function)
-              Enriches with: referer, country, city, device type
-              Writes to Analytics Engine dataset
-                                      ↓
-              scripts/query-analytics.mjs → SQL queries via CF API
+Client click → trackXxxClick() → window.umami.track(eventName, eventData)
+                                         ↓
+                              Umami Cloud (cloud.umami.is)
+                                         ↓
+                              Umami Dashboard (shareable URL)
 ```
 
 ## Tracked Events
@@ -27,89 +22,46 @@ Client click → trackEvent() → navigator.sendBeacon('/api/analytics', JSON)
 | `trackInstagramClick(location)` | `instagram_click` | `hero`, `footer` |
 | `trackEmailClick()` | `email_click` | — |
 
-All events also capture the current page path, UTM params, and a timestamp.
+Umami automatically captures: page URL, referrer, UTM params (`utm_source`, `utm_medium`, `utm_campaign`), browser, OS, device type, and country.
 
-## Data Schema (Analytics Engine)
+## Umami Cloud Setup (one-time)
 
-| Field | Content | Example |
-|---|---|---|
-| `index1` | Event name (shard key) | `shopify_store_click` |
-| `blob1` | Event name | `shopify_store_click` |
-| `blob2` | Source / location | `hero`, `gallery_jackets` |
-| `blob3` | Page path | `/` |
-| `blob4` | Referer URL | `https://instagram.com/…` |
-| `blob5` | Country code | `US` |
-| `blob6` | City | `Madison` |
-| `blob7` | utm_source | `instagram` |
-| `blob8` | utm_medium | `bio` |
-| `blob9` | utm_campaign | `spring_drop` |
-| `blob10` | Device type | `mobile` |
-| `blob11` | Full user agent | `Mozilla/5.0 …` |
+### 1. Create an account and add the site
 
-## Cloudflare Dashboard Setup (one-time)
+1. Sign up at https://cloud.umami.is/signup
+2. Add website → copy the **Website ID** (a UUID)
 
-> **Note:** You do not need to manually create the dataset. It is created automatically the first time an event is written after the binding is configured.
+### 2. Add environment variables
 
-### 1. Add the binding to your Pages project
-
-In the Cloudflare dashboard:
-
-**Build > Compute > Workers & Pages > august-jones-shop > Settings > Bindings**
-
-Click **Add** → **Analytics engine**, then set:
-- Variable name: `ANALYTICS`
-- Dataset: `august_jones_analytics`
-
-Save, then redeploy the project for the binding to take effect.
-
-### 2. Create an API token (only needed for terminal queries)
-
-**My Profile (top-right avatar) > API Tokens > Create Token > Custom Token**
-
-- Permission: `Account Analytics: Read`
-- Copy the token — you'll only see it once
-
-### 3. Add to `.env.local` (only needed for terminal queries)
-
-Create `.env.local` in the project root (already gitignored):
+In `.env.local` (local development):
 
 ```
-CF_ACCOUNT_ID=your_account_id
-CF_API_TOKEN=your_token_from_step_2
-AE_DATASET_NAME=august_jones_analytics
+NEXT_PUBLIC_UMAMI_WEBSITE_ID=your-website-id-uuid
 ```
 
-Your account ID is shown in the right sidebar of the Cloudflare dashboard homepage.
+In Cloudflare Pages (production): **Workers & Pages → august-jones-shop → Settings → Environment Variables → Add variable**:
+- Variable: `NEXT_PUBLIC_UMAMI_WEBSITE_ID`
+- Value: your Website ID
 
-## Querying Data
+### 3. Redeploy
 
-```bash
-# Show available queries
-node scripts/query-analytics.mjs
+Redeploy the Cloudflare Pages project for the environment variable to take effect.
 
-# Events in last 7 days
-pnpm query:analytics event-counts
+## Viewing the Dashboard
 
-# Where Shopify clicks came from (hero/footer/gallery)
-pnpm query:analytics shopify-sources
+Log in at https://cloud.umami.is to see:
+- Pageviews, unique visitors, bounce rate
+- Top pages, referrers, UTM campaigns
+- Countries, browsers, devices
+- Custom events (Shopify clicks, Instagram clicks, email clicks) with their properties
 
-# UTM / referrer breakdown
-pnpm query:analytics traffic-sources
-
-# Clicks by country
-pnpm query:analytics top-countries
-
-# Full multi-dimension breakdown
-pnpm query:analytics all-events
-```
-
-Note: data appears in Analytics Engine within ~1–5 minutes of events being written.
+Umami supports sharing a read-only dashboard link — useful for giving August access without a login.
 
 ## Local Development
 
-The `/api/analytics` endpoint only exists when deployed to Cloudflare Pages. Locally, `sendBeacon` requests will 404 silently — this is expected and won't break anything.
+The Umami script is only injected when `NEXT_PUBLIC_UMAMI_WEBSITE_ID` is set. Without it, the script is not included and `window.umami` is undefined — the tracking functions guard against this and exit silently. The same silent-drop applies in production during the brief window between page load and Umami script execution (`afterInteractive` strategy); this is an intentional trade-off to avoid blocking page render.
 
-The Playwright tests mock the endpoint with `page.route('/api/analytics', ...)` so they work without a live deployment:
+The Playwright tests stub `window.umami` before page load and block the real Umami script, so no account is needed to run tests:
 
 ```bash
 pnpm test:e2e e2e/analytics.spec.ts
@@ -120,7 +72,5 @@ pnpm test:e2e e2e/analytics.spec.ts
 | File | Purpose |
 |---|---|
 | `src/lib/analytics.ts` | Client-side tracking functions |
-| `functions/api/analytics.ts` | Pages Function (server-side ingestion) |
-| `functions/tsconfig.json` | Separate TS config for Workers runtime |
-| `scripts/query-analytics.mjs` | SQL query runner |
-| `e2e/analytics.spec.ts` | Playwright tests (7 tests, no live endpoint needed) |
+| `src/app/layout.tsx` | Umami script tag |
+| `e2e/analytics.spec.ts` | Playwright tests |

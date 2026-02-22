@@ -1,52 +1,40 @@
 import { expect, type Page, test } from "@playwright/test";
 
-// WebKit does not expose navigator.sendBeacon bodies via Playwright's network
-// interception. We spy on sendBeacon at the JS level in the page context
-// instead, storing payloads in window.__analyticsPayloads so all browsers work.
+// We stub window.umami before page scripts run so that tracking calls
+// are captured synchronously in window.__umamiCalls. The real Umami script
+// is blocked via page.route() so our stub is never overwritten.
 declare global {
   interface Window {
-    __analyticsPayloads: Record<string, unknown>[];
+    __umamiCalls: Array<{
+      eventName: string;
+      eventData?: Record<string, string>;
+    }>;
   }
 }
 
-async function capturePayload(page: Page): Promise<Record<string, unknown>> {
-  await page.waitForFunction(
-    () => (window.__analyticsPayloads?.length ?? 0) > 0,
-    { timeout: 5000 },
-  );
-  const payload = await page.evaluate(() => window.__analyticsPayloads.shift());
-  if (!payload) throw new Error("No analytics payload captured");
-  return payload;
+async function getLastUmamiCall(
+  page: Page,
+): Promise<{ eventName: string; eventData?: Record<string, string> }> {
+  const calls = await page.evaluate(() => window.__umamiCalls);
+  if (!calls || calls.length === 0)
+    throw new Error("No umami.track calls captured");
+  return calls[calls.length - 1];
 }
 
 test.describe("Analytics event tracking", () => {
   test.beforeEach(async ({ page }) => {
-    // Stub the analytics endpoint at the network level
-    await page.route("/api/analytics", (route) =>
-      route.fulfill({ status: 204 }),
+    // Block the real Umami script so our stub is not overwritten
+    await page.route("https://cloud.umami.is/script.js", (route) =>
+      route.fulfill({ status: 200, contentType: "text/javascript", body: "" }),
     );
 
-    // Spy on sendBeacon to capture payloads cross-browser
+    // Stub window.umami before page scripts run
     await page.addInitScript(() => {
-      window.__analyticsPayloads = [];
-      const orig = navigator.sendBeacon.bind(navigator);
-      navigator.sendBeacon = (url, data) => {
-        if (
-          typeof url === "string" &&
-          url.includes("/api/analytics") &&
-          data instanceof Blob
-        ) {
-          data.text().then((text) => {
-            try {
-              window.__analyticsPayloads.push(
-                JSON.parse(text) as Record<string, unknown>,
-              );
-            } catch {
-              // ignore parse errors
-            }
-          });
-        }
-        return orig(url, data);
+      window.__umamiCalls = [];
+      window.umami = {
+        track: (eventName, eventData) => {
+          window.__umamiCalls.push({ eventName, eventData });
+        },
       };
     });
   });
@@ -61,10 +49,9 @@ test.describe("Analytics event tracking", () => {
       .getByRole("link", { name: /Shop Now/i })
       .click({ modifiers: ["Alt"] });
 
-    const payload = await capturePayload(page);
-    expect(payload.event).toBe("shopify_store_click");
-    expect(payload.source).toBe("hero");
-    expect(payload.page).toBe("/");
+    const call = await getLastUmamiCall(page);
+    expect(call.eventName).toBe("shopify_store_click");
+    expect(call.eventData?.source).toBe("hero");
   });
 
   test("footer Shop Now click sends shopify_store_click with source=footer", async ({
@@ -77,9 +64,9 @@ test.describe("Analytics event tracking", () => {
       .getByRole("link", { name: /Shop Now/i })
       .click({ modifiers: ["Alt"] });
 
-    const payload = await capturePayload(page);
-    expect(payload.event).toBe("shopify_store_click");
-    expect(payload.source).toBe("footer");
+    const call = await getLastUmamiCall(page);
+    expect(call.eventName).toBe("shopify_store_click");
+    expect(call.eventData?.source).toBe("footer");
   });
 
   test("gallery item click sends shopify_store_click with source starting with gallery_", async ({
@@ -94,9 +81,9 @@ test.describe("Analytics event tracking", () => {
 
     await galleryLink.click({ modifiers: ["Alt"] });
 
-    const payload = await capturePayload(page);
-    expect(payload.event).toBe("shopify_store_click");
-    expect(payload.source).toMatch(/^gallery_/);
+    const call = await getLastUmamiCall(page);
+    expect(call.eventName).toBe("shopify_store_click");
+    expect(call.eventData?.source).toMatch(/^gallery_/);
   });
 
   test("hero Instagram link click sends instagram_click with source=hero", async ({
@@ -109,9 +96,9 @@ test.describe("Analytics event tracking", () => {
       .first()
       .click({ modifiers: ["Alt"] });
 
-    const payload = await capturePayload(page);
-    expect(payload.event).toBe("instagram_click");
-    expect(payload.source).toBe("hero");
+    const call = await getLastUmamiCall(page);
+    expect(call.eventName).toBe("instagram_click");
+    expect(call.eventData?.source).toBe("hero");
   });
 
   test("footer Instagram link click sends instagram_click with source=footer", async ({
@@ -123,17 +110,16 @@ test.describe("Analytics event tracking", () => {
       .getByLabel("August Jones on Instagram")
       .click({ modifiers: ["Alt"] });
 
-    const payload = await capturePayload(page);
-    expect(payload.event).toBe("instagram_click");
-    expect(payload.source).toBe("footer");
+    const call = await getLastUmamiCall(page);
+    expect(call.eventName).toBe("instagram_click");
+    expect(call.eventData?.source).toBe("footer");
   });
 
-  test("email link click sends email_click with page=/", async ({ page }) => {
+  test("email link click sends email_click", async ({ page }) => {
     await page.goto("/");
 
     // Prevent the mailto: href from triggering a navigation/mail-client launch
-    // in WebKit on Linux CI. The async Blob.text() spy never resolves if the
-    // page context is disrupted before the Promise settles.
+    // in WebKit, which can disrupt page.evaluate() before it resolves.
     await page.evaluate(() => {
       document.addEventListener(
         "click",
@@ -147,26 +133,7 @@ test.describe("Analytics event tracking", () => {
 
     await page.getByRole("link", { name: /hello@augustjones\.shop/i }).click();
 
-    const payload = await capturePayload(page);
-    expect(payload.event).toBe("email_click");
-    expect(payload.page).toBe("/");
-  });
-
-  test("UTM params in URL are included in analytics payload", async ({
-    page,
-  }) => {
-    await page.goto(
-      "/?utm_source=instagram&utm_medium=bio&utm_campaign=spring_drop",
-    );
-
-    await page
-      .getByLabel("Primary navigation")
-      .getByRole("link", { name: /Shop Now/i })
-      .click({ modifiers: ["Alt"] });
-
-    const payload = await capturePayload(page);
-    expect(payload.utm_source).toBe("instagram");
-    expect(payload.utm_medium).toBe("bio");
-    expect(payload.utm_campaign).toBe("spring_drop");
+    const call = await getLastUmamiCall(page);
+    expect(call.eventName).toBe("email_click");
   });
 });
