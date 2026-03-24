@@ -10,11 +10,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is the main marketing website (not a storefront). Pages:
 
-- **Home (`/`)** — Landing page with brief brand description and CTA linking to the Shopify store
+- **Home (`/`)** — Landing page with brief brand description and CTA linking to the Etsy store
 - **About (`/about`)** — Background on the brand and maker
 - **Contact (`/contact`)** — Contact form
 
-Product purchases happen on a separate Shopify site; this site drives traffic there.
+Product purchases happen on a separate Etsy store (https://www.etsy.com/shop/TheAugustJonesShop); this site drives traffic there.
 
 ## Key Priorities
 
