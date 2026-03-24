@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { FooterShopLink } from "@/components/FooterShopLink";
 import InstagramIcon from "@/components/InstagramIcon";
 import { InstagramLink } from "@/components/InstagramLink";
@@ -19,6 +20,18 @@ export const Footer = () => {
               className="flex flex-col items-center gap-2 sm:items-start"
             >
               <FooterShopLink />
+              <Link
+                href="/about"
+                className="text-sm text-background/90 transition-colors hover:text-[#ffb612]"
+              >
+                About
+              </Link>
+              <Link
+                href="/contact"
+                className="text-sm text-background/90 transition-colors hover:text-[#ffb612]"
+              >
+                Contact
+              </Link>
             </nav>
           </div>
 
