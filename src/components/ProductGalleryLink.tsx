@@ -40,7 +40,7 @@ export function ProductGalleryLink({ product }: ProductGalleryLinkProps) {
         />
         {/* Hover scrim — solid overlay that fades in via opacity for reliable cross-browser animation */}
         <div
-          className="absolute inset-0 bg-black/50 opacity-100 transition-opacity duration-300 sm:opacity-0 sm:group-hover:opacity-100"
+          className="absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
           aria-hidden="true"
         />
         {/* CTA pill — positioned over scrim, slides up on hover */}
