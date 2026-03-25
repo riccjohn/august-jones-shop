@@ -23,8 +23,8 @@ export function SiteNav() {
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-background/96 shadow-[0_1px_0_0_rgba(34,34,34,0.08)] backdrop-blur-md"
-          : "bg-background/75 backdrop-blur-sm"
+          ? "bg-background/90 shadow-[0_1px_0_0_rgba(34,34,34,0.10)] backdrop-blur-xl"
+          : "bg-background/70 backdrop-blur-md"
       }`}
     >
       <nav
@@ -49,7 +49,7 @@ export function SiteNav() {
         </Link>
 
         {/* Nav links */}
-        <ul className="flex items-center gap-0.5 sm:gap-1">
+        <ul className="flex items-center gap-1 sm:gap-1">
           {NAV_LINKS.map(({ label, href, key }) => (
             <li key={key}>
               <Link
@@ -57,7 +57,7 @@ export function SiteNav() {
                 onClick={() => trackNavClick(key)}
                 className="group relative flex items-center px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 rounded-sm"
               >
-                <span className="font-bebas-neue text-[13px] tracking-[0.14em] text-foreground/55 transition-colors duration-200 group-hover:text-foreground sm:text-[14px]">
+                <span className="font-bebas-neue text-[16px] tracking-[0.14em] text-foreground/75 transition-colors duration-200 group-hover:text-foreground sm:text-[16px]">
                   {label}
                 </span>
                 {/* Sliding yellow underline */}
@@ -76,9 +76,9 @@ export function SiteNav() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackShopifyClick("nav")}
-              className="group flex items-center gap-1.5 border border-foreground/30 px-3.5 py-1.5 transition-all duration-200 hover:border-accent hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 rounded-sm"
+              className="group flex items-center gap-1.5 border border-foreground/40 px-3.5 py-1.5 transition-all duration-200 hover:border-accent hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 rounded-sm"
             >
-              <span className="font-bebas-neue text-[13px] tracking-[0.14em] text-foreground/70 transition-colors duration-200 group-hover:text-foreground sm:text-[14px]">
+              <span className="font-bebas-neue text-[16px] tracking-[0.14em] text-foreground/80 transition-colors duration-200 group-hover:text-foreground sm:text-[16px]">
                 Shop
               </span>
               <svg
