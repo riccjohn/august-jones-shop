@@ -22,3 +22,7 @@ export function trackInstagramClick(location: "hero" | "footer") {
 export function trackEmailClick() {
   track("email_click");
 }
+
+export function trackEmailSignup() {
+  track("email_signup");
+}
