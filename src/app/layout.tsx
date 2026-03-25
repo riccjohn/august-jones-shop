@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
+import { SiteNav } from "@/components/SiteNav";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -100,6 +101,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} antialiased`}
       >
+        <SiteNav />
         {children}
         {/* afterInteractive loads Umami after hydration to avoid blocking LCP.
             Clicks in the first ~100–200ms before the script executes are silently dropped — acceptable trade-off. */}
