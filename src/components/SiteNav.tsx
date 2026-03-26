@@ -90,7 +90,7 @@ export function SiteNav() {
                 viewBox="0 0 9 9"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="text-foreground/40 transition-[color,transform] duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground"
+                className="text-foreground/40 transition-[color,translate] duration-300 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-foreground"
                 aria-hidden="true"
               >
                 <path
