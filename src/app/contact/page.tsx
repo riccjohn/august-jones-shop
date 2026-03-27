@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ContactForm } from "@/components/ContactForm";
 import { Footer } from "@/components/Footer";
+import { GrainOverlay } from "@/components/GrainOverlay";
 
 export const metadata: Metadata = {
   title: "Contact | August Jones",
@@ -14,66 +15,67 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <main className="flex min-h-screen flex-col">
-      {/* Hero Section */}
-      <section className="flex min-h-[45vh] flex-col items-center justify-center bg-foreground px-6 py-20 sm:py-28">
-        <div className="flex w-full max-w-3xl flex-col items-center gap-4 text-center">
-          <h1 className="font-bebas-neue text-5xl tracking-wider text-background sm:text-6xl lg:text-7xl">
+      {/* ── HERO ──────────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-background px-6 pb-16 pt-16 sm:pb-20 sm:pt-24">
+        <GrainOverlay />
+        <div className="relative z-10 mx-auto max-w-6xl">
+          <p className="mb-6 font-geist-mono text-[10px] uppercase tracking-[0.28em] text-accent/70">
+            Say hello
+          </p>
+          <h1
+            className="font-bebas-neue leading-[0.88] tracking-[-0.01em] text-foreground"
+            style={{ fontSize: "clamp(4rem, 12vw, 11rem)" }}
+          >
             Get in Touch
           </h1>
-          <p className="mx-auto max-w-lg text-base leading-relaxed text-background/75 sm:text-lg">
+          <p
+            className="font-instrument-serif italic mt-6 max-w-lg leading-relaxed text-foreground/55"
+            style={{ fontSize: "clamp(1.05rem, 1.8vw, 1.25rem)" }}
+          >
             Questions about a piece, an order, or a custom commission — I read
             every message personally and respond within 2–3 days.
           </p>
         </div>
       </section>
 
-      {/* Custom Commissions Callout */}
-      <section
-        aria-labelledby="commissions-heading"
-        className="border-b border-accent/20 bg-accent/5 px-6 py-12 sm:py-16"
-      >
-        <div className="mx-auto max-w-3xl">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-6">
-            <span className="font-bebas-neue text-4xl text-accent sm:text-5xl">
-              ★
-            </span>
-            <div>
-              <h2
-                id="commissions-heading"
-                className="font-bebas-neue text-2xl tracking-wider text-foreground sm:text-3xl"
-              >
-                Custom Commissions Are Open
-              </h2>
-              <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-                Have a jersey collecting dust — a childhood favorite, a traded
-                player, a piece of your team&apos;s history? Send it to me and
-                I&apos;ll transform it into something you&apos;ll actually wear.
-                Select &quot;Custom Commission&quot; in the form below and tell
-                me about your piece.
-              </p>
-            </div>
+      {/* ── COMMISSION CALLOUT ────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-background px-6 pb-6">
+        <div className="mx-auto max-w-6xl">
+          <div className="border-l-2 border-accent bg-accent/5 py-6 pl-6 pr-6 sm:py-8 sm:pl-8">
+            <h2 className="font-bebas-neue text-2xl tracking-wider text-foreground sm:text-3xl">
+              Custom Commissions Are Open
+            </h2>
+            <p className="mt-2 max-w-xl text-sm leading-relaxed text-foreground/55 sm:text-base">
+              Have a jersey collecting dust — a childhood favorite, a traded
+              player, a piece of your team&apos;s history? Send it and I&apos;ll
+              transform it into something you&apos;ll actually wear. Select
+              &ldquo;Custom Commission&rdquo; below to get started.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Contact Form Section */}
+      {/* ── CONTACT FORM ──────────────────────────────────────────────────── */}
       <section
         aria-labelledby="form-heading"
-        className="bg-background px-6 py-20 sm:py-28"
+        className="relative overflow-hidden bg-background px-6 py-16 sm:py-24"
       >
-        <div className="mx-auto max-w-3xl">
+        <GrainOverlay />
+        <div className="relative z-10 mx-auto max-w-2xl">
+          <div className="h-px bg-border mb-12" aria-hidden="true" />
           <h2
             id="form-heading"
-            className="mb-8 font-bebas-neue text-3xl tracking-wider text-foreground sm:text-4xl"
+            className="font-bebas-neue mb-10 leading-none tracking-wider text-foreground"
+            style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}
           >
             Send a Message
           </h2>
           <ContactForm />
-          <p className="mt-8 text-sm text-muted-foreground">
+          <p className="mt-8 text-sm text-foreground/40">
             Prefer email?{" "}
             <a
               href="mailto:hello@augustjones.shop"
-              className="text-foreground underline hover:no-underline"
+              className="text-foreground/60 underline underline-offset-4 hover:text-accent hover:no-underline transition-colors duration-200"
             >
               hello@augustjones.shop
             </a>

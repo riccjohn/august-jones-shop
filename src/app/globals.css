@@ -85,7 +85,7 @@
   --foreground: oklch(0.964 0.006 84.566);
 
   /* Slightly elevated dark surfaces */
-  --card: oklch(0.20 0.006 264);
+  --card: oklch(0.2 0.006 264);
   --card-foreground: oklch(0.964 0.006 84.566);
   --popover: oklch(0.21 0.006 264);
   --popover-foreground: oklch(0.964 0.006 84.566);
@@ -140,7 +140,7 @@
   --sidebar-primary-foreground: oklch(0.252 0 89.876);
   --sidebar-accent: oklch(0.824 0.169 78.997);
   --sidebar-accent-foreground: oklch(0.252 0 89.876);
-  --sidebar-border: oklch(0.20 0.004 264);
+  --sidebar-border: oklch(0.2 0.004 264);
   --sidebar-ring: oklch(0.824 0.169 78.997);
 }
 
@@ -154,7 +154,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }

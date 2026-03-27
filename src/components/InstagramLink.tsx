@@ -7,6 +7,7 @@ interface InstagramLinkProps {
   location: "hero" | "footer";
   children: React.ReactNode;
   className?: string;
+  style?: React.CSSProperties;
   "aria-label"?: string;
 }
 
@@ -18,6 +19,7 @@ export function InstagramLink({
   location,
   children,
   className,
+  style,
   "aria-label": ariaLabel,
 }: InstagramLinkProps) {
   return (
@@ -27,6 +29,7 @@ export function InstagramLink({
       rel="noopener noreferrer"
       aria-label={ariaLabel}
       className={className}
+      style={style}
       onClick={() => trackInstagramClick(location)}
     >
       {children}
