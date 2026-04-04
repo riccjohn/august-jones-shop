@@ -7,10 +7,7 @@ import { trackNavClick, trackShopifyClick } from "@/lib/analytics";
 
 const ETSY_SHOP_URL = "https://www.etsy.com/shop/TheAugustJonesShop";
 
-const NAV_LINKS = [
-  { label: "About", href: "/about", key: "about" },
-  { label: "Contact", href: "/contact", key: "contact" },
-] as const;
+const NAV_LINKS = [{ label: "About", href: "/about", key: "about" }] as const;
 
 export function SiteNav() {
   const [scrolled, setScrolled] = useState(false);

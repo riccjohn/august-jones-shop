@@ -1,9 +1,6 @@
-import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { ShopifyCtaButton } from "@/components/ShopifyCtaButton";
-import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
   title: "About | August Jones",
@@ -128,19 +125,6 @@ export default function AboutPage() {
             history — and it&apos;ll come back as something you&apos;ll actually
             wear every day.
           </p>
-          <div className="mt-8">
-            <Button
-              asChild
-              size="lg"
-              variant="brand-outline"
-              className="h-14 gap-3 px-10 text-base font-medium uppercase tracking-widest"
-            >
-              <Link href="/contact">
-                <span>Get in Touch</span>
-                <ArrowRight className="h-5 w-5" aria-hidden="true" />
-              </Link>
-            </Button>
-          </div>
         </div>
       </section>
 

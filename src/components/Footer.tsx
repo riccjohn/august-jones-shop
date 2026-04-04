@@ -26,12 +26,6 @@ export const Footer = () => {
               >
                 About
               </Link>
-              <Link
-                href="/contact"
-                className="text-sm text-background/90 transition-colors hover:text-[#ffb612]"
-              >
-                Contact
-              </Link>
             </nav>
           </div>
 
