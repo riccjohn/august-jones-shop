@@ -48,8 +48,7 @@ export default function ContactPage() {
                 Have a jersey collecting dust — a childhood favorite, a traded
                 player, a piece of your team&apos;s history? Send it to me and
                 I&apos;ll transform it into something you&apos;ll actually wear.
-                Select &quot;Custom Commission&quot; in the form below and tell
-                me about your piece.
+                Fill out the form below and tell me about your piece.
               </p>
             </div>
           </div>
@@ -66,7 +65,7 @@ export default function ContactPage() {
             id="form-heading"
             className="mb-8 font-bebas-neue text-3xl tracking-wider text-foreground sm:text-4xl"
           >
-            Send a Message
+            Request a Custom
           </h2>
           <ContactForm />
           <p className="mt-8 text-sm text-muted-foreground">

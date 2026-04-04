@@ -1,5 +1,16 @@
 import { expect, test } from "@playwright/test";
 
+const fillForm = async (
+  page: import("@playwright/test").Page,
+  message = "I have a jersey I'd love transformed.",
+) => {
+  await page.getByLabel("Name").fill("Jane Smith");
+  await page.getByLabel("Email").fill("jane@example.com");
+  await page
+    .getByRole("textbox", { name: "Tell me about your jersey" })
+    .fill(message);
+};
+
 test.describe("Contact Form", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/contact");
@@ -9,48 +20,24 @@ test.describe("Contact Form", () => {
     await expect(page.getByLabel("Name")).toBeVisible();
     await expect(page.getByLabel("Email")).toBeVisible();
     await expect(
-      page.getByRole("combobox", { name: /what.s this about/i }),
+      page.getByRole("textbox", { name: "Tell me about your jersey" }),
     ).toBeVisible();
-    await expect(page.getByRole("textbox", { name: "Message" })).toBeVisible();
     await expect(
-      page.getByRole("button", { name: /send message/i }),
+      page.getByRole("button", { name: /request a custom/i }),
     ).toBeVisible();
   });
 
-  test("submit button is disabled when no subject is selected", async ({
+  test("submit button is enabled once name, email, and message are filled", async ({
     page,
   }) => {
-    const button = page.getByRole("button", { name: /send message/i });
-    await expect(button).toBeDisabled();
+    const button = page.getByRole("button", { name: /request a custom/i });
+    await expect(button).toBeEnabled();
 
-    await page.getByLabel("Name").fill("Jane Smith");
-    await page.getByLabel("Email").fill("jane@example.com");
-    await page
-      .getByRole("textbox", { name: "Message" })
-      .fill("I have a jersey I'd love transformed.");
-
-    // Still disabled — subject not selected
-    await expect(button).toBeDisabled();
-  });
-
-  test("submit button enables once all fields are filled", async ({ page }) => {
-    await page.getByLabel("Name").fill("Jane Smith");
-    await page.getByLabel("Email").fill("jane@example.com");
-    await page
-      .getByRole("textbox", { name: "Message" })
-      .fill("I have a jersey I'd love transformed.");
-
-    // Select subject via the combobox
-    await page.getByRole("combobox", { name: /what.s this about/i }).click();
-    await page.getByRole("option", { name: /custom commission/i }).click();
-
-    await expect(
-      page.getByRole("button", { name: /send message/i }),
-    ).toBeEnabled();
+    await fillForm(page);
+    await expect(button).toBeEnabled();
   });
 
   test("shows success state after successful submission", async ({ page }) => {
-    // Intercept /api/contact and return success
     await page.route("/api/contact", (route) =>
       route.fulfill({
         status: 200,
@@ -59,27 +46,17 @@ test.describe("Contact Form", () => {
       }),
     );
 
-    await page.getByLabel("Name").fill("Jane Smith");
-    await page.getByLabel("Email").fill("jane@example.com");
-    await page
-      .getByRole("textbox", { name: "Message" })
-      .fill("I have a jersey I'd love transformed.");
-    await page.getByRole("combobox", { name: /what.s this about/i }).click();
-    await page.getByRole("option", { name: /custom commission/i }).click();
+    await fillForm(page);
+    await page.getByRole("button", { name: /request a custom/i }).click();
 
-    await page.getByRole("button", { name: /send message/i }).click();
-
-    await expect(page.getByText("Message Sent")).toBeVisible();
+    await expect(page.getByText("Request Received")).toBeVisible();
   });
 
-  test("success submission sends correct payload to /api/contact", async ({
-    page,
-  }) => {
+  test("sends correct payload to /api/contact", async ({ page }) => {
     let capturedBody: Record<string, string> = {};
 
     await page.route("/api/contact", async (route) => {
-      const request = route.request();
-      capturedBody = JSON.parse(request.postData() ?? "{}");
+      capturedBody = JSON.parse(route.request().postData() ?? "{}");
       await route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -87,17 +64,10 @@ test.describe("Contact Form", () => {
       });
     });
 
-    await page.getByLabel("Name").fill("Jane Smith");
-    await page.getByLabel("Email").fill("jane@example.com");
-    await page
-      .getByRole("textbox", { name: "Message" })
-      .fill("I have a jersey I'd love transformed.");
-    await page.getByRole("combobox", { name: /what.s this about/i }).click();
-    await page.getByRole("option", { name: /custom commission/i }).click();
+    await fillForm(page);
+    await page.getByRole("button", { name: /request a custom/i }).click();
 
-    await page.getByRole("button", { name: /send message/i }).click();
-
-    await expect(page.getByText("Message Sent")).toBeVisible();
+    await expect(page.getByText("Request Received")).toBeVisible();
 
     expect(capturedBody.name).toBe("Jane Smith");
     expect(capturedBody.email).toBe("jane@example.com");
@@ -114,17 +84,9 @@ test.describe("Contact Form", () => {
       }),
     );
 
-    await page.getByLabel("Name").fill("Jane Smith");
-    await page.getByLabel("Email").fill("jane@example.com");
-    await page
-      .getByRole("textbox", { name: "Message" })
-      .fill("I have a jersey I'd love transformed.");
-    await page.getByRole("combobox", { name: /what.s this about/i }).click();
-    await page.getByRole("option", { name: /custom commission/i }).click();
+    await fillForm(page);
+    await page.getByRole("button", { name: /request a custom/i }).click();
 
-    await page.getByRole("button", { name: /send message/i }).click();
-
-    // Error message with fallback email link should appear inside the form
     await expect(page.getByText(/something went wrong/i)).toBeVisible();
     await expect(
       page
