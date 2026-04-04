@@ -23,12 +23,6 @@ export function ContactForm() {
     e.preventDefault();
     setState("submitting");
 
-    const formId = process.env.NEXT_PUBLIC_FORMSPREE_FORM_ID;
-    if (!formId) {
-      setState("error");
-      return;
-    }
-
     const form = e.currentTarget;
     const data = {
       name: (form.elements.namedItem("name") as HTMLInputElement).value,
@@ -39,7 +33,7 @@ export function ContactForm() {
     };
 
     try {
-      const res = await fetch(`https://formspree.io/f/${formId}`, {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
