@@ -13,8 +13,10 @@ test.describe("Landing Page", () => {
       "August Jones | Upcycled Sports Fashion from Wisconsin",
     );
 
-    // Check for logo (has empty alt since it's decorative with aria-hidden)
-    await expect(page.locator('img[src*="August_Jones_Logo"]')).toBeVisible();
+    // Check for logo — nav logo is the first instance
+    await expect(
+      page.locator('img[src*="August_Jones_Logo"]').first(),
+    ).toBeVisible();
 
     // Check for main heading
     await expect(
