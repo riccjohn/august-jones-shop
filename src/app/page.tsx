@@ -7,6 +7,8 @@ import { InstagramLink } from "@/components/InstagramLink";
 import { ProductGalleryLink } from "@/components/ProductGalleryLink";
 import { ProductGallerySchema } from "@/components/ProductGallerySchema";
 import { ShopifyCtaButton } from "@/components/ShopifyCtaButton";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -284,10 +286,10 @@ export default function Home() {
 
             <InstagramLink
               location="hero"
-              className="group flex shrink-0 items-center gap-3 border border-accent px-6 py-3.5 transition-all duration-300 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              style={{
-                transitionTimingFunction: "cubic-bezier(0.77, 0, 0.175, 1)",
-              }}
+              className={cn(
+                buttonVariants({ variant: "ghost-outline" }),
+                "group h-auto shrink-0 gap-3 px-6 py-3.5",
+              )}
             >
               <InstagramIcon className="h-4 w-4 text-accent transition-colors duration-300 group-hover:text-[#222]" />
               <span className="font-bebas-neue text-lg tracking-[0.15em] text-accent transition-colors duration-300 group-hover:text-[#222]">

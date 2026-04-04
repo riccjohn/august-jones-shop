@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { trackNavClick, trackShopifyClick } from "@/lib/analytics";
 
 const ETSY_SHOP_URL = "https://www.etsy.com/shop/TheAugustJonesShop";
@@ -51,16 +52,18 @@ export function SiteNav() {
         className="relative mx-auto flex max-w-7xl items-center justify-between px-6 py-3 sm:px-8"
       >
         {/* ── HAMBURGER — mobile left, hidden on desktop ── */}
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="icon"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           onClick={() => setMenuOpen((o) => !o)}
-          className="flex h-9 w-9 items-center justify-center rounded-sm text-foreground/85 transition-colors duration-200 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:hidden"
+          className="text-foreground/85 sm:hidden"
         >
           {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        </Button>
 
         {/* ── LOGO
               Mobile: absolute center (removed from flow, centered over the bar)
