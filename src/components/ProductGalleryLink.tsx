@@ -34,7 +34,7 @@ export function ProductGalleryLink({
       className="group flex flex-col gap-3 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffb612] focus-visible:ring-offset-4 focus-visible:ring-offset-[#f6f4f0]"
     >
       {/* Item number */}
-      <span className="font-geist-mono text-[10px] tracking-[0.2em] text-[#222]/50 uppercase">
+      <span className="text-eyebrow text-[#222]/65">
         {num} / {product.category}
       </span>
 
@@ -57,11 +57,11 @@ export function ProductGalleryLink({
 
       {/* Title + shop arrow */}
       <div className="flex items-baseline justify-between gap-4">
-        <h3 className="font-bebas-neue text-2xl tracking-wider text-[#222] sm:text-3xl">
+        <h3 className="text-display text-2xl text-[#222] sm:text-3xl">
           {product.title}
         </h3>
         <span
-          className="shrink-0 font-geist-mono text-[10px] tracking-[0.15em] text-[#222]/65 uppercase transition-colors duration-200 group-hover:text-[#222]"
+          className="text-eyebrow shrink-0 text-[#222]/70 transition-colors duration-200 group-hover:text-[#222]"
           aria-hidden="true"
         >
           Shop ↗

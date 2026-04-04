@@ -95,13 +95,13 @@ export default function Home() {
           {/* LEFT — text content */}
           <div className="flex flex-col gap-8 lg:py-24">
             {/* Provenance label */}
-            <p className="font-geist-mono text-[10px] uppercase tracking-[0.28em] text-accent/70">
+            <p className="text-eyebrow text-accent/80">
               Madison, WI — Handmade since 2024
             </p>
 
             {/* Hero heading — Bebas Neue at heroic scale */}
             <h1
-              className="font-bebas-neue leading-[0.88] tracking-[-0.01em] text-foreground"
+              className="text-hero text-foreground"
               style={{
                 fontSize: "clamp(5.5rem, 14vw, 13rem)",
                 textWrap: "balance",
@@ -116,7 +116,7 @@ export default function Home() {
 
             {/* Editorial subhead — Instrument Serif italic */}
             <p
-              className="font-instrument-serif italic max-w-md leading-relaxed text-foreground/60"
+              className="text-editorial max-w-md text-foreground/60"
               style={{ fontSize: "clamp(1.1rem, 2vw, 1.35rem)" }}
             >
               One-of-a-kind pieces built from the jerseys you love — and the
@@ -173,7 +173,7 @@ export default function Home() {
           <div className="mb-12 flex items-end justify-between gap-6 sm:mb-16">
             <h2
               id="collection-heading"
-              className="font-bebas-neue text-[#222] leading-none tracking-wider"
+              className="text-display text-[#222]"
               style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)" }}
             >
               The Collection
@@ -182,7 +182,7 @@ export default function Home() {
               href={`${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=collection_header`}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden shrink-0 font-geist-mono text-[10px] uppercase tracking-[0.2em] text-[#222]/60 underline underline-offset-4 hover:text-[#ffb612] hover:no-underline sm:block"
+              className="text-eyebrow hidden shrink-0 text-[#222]/75 underline underline-offset-4 hover:text-[#ffb612] hover:no-underline sm:block"
             >
               View all on Etsy ↗
             </a>
@@ -205,7 +205,7 @@ export default function Home() {
               href={`${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=collection_footer`}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-geist-mono text-[10px] uppercase tracking-[0.2em] text-[#222]/60 underline underline-offset-4 hover:text-[#ffb612] hover:no-underline"
+              className="text-eyebrow text-[#222]/75 underline underline-offset-4 hover:text-[#ffb612] hover:no-underline"
             >
               View all on Etsy ↗
             </a>
@@ -230,7 +230,7 @@ export default function Home() {
           </blockquote>
 
           {/* Attribution */}
-          <p className="mt-6 font-geist-mono text-[10px] uppercase tracking-[0.25em] text-foreground/55">
+          <p className="text-eyebrow mt-6 text-foreground/65">
             — August Jones, maker
           </p>
 
@@ -251,9 +251,7 @@ export default function Home() {
                 >
                   {value}
                 </span>
-                <span className="font-geist-mono text-[10px] uppercase tracking-[0.2em] text-foreground/60">
-                  {label}
-                </span>
+                <span className="text-eyebrow text-foreground/65">{label}</span>
               </div>
             ))}
           </div>
@@ -269,11 +267,11 @@ export default function Home() {
 
           <div className="flex flex-col items-start gap-8 sm:flex-row sm:items-end sm:justify-between">
             <div className="flex flex-col gap-4">
-              <p className="font-geist-mono text-[10px] uppercase tracking-[0.28em] text-foreground/55">
+              <p className="text-eyebrow text-foreground/65">
                 Follow the drops
               </p>
               <h2
-                className="font-bebas-neue leading-none tracking-wide text-foreground"
+                className="text-display text-foreground"
                 style={{ fontSize: "clamp(3rem, 8vw, 7rem)" }}
               >
                 @augustjonesshop

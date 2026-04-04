@@ -33,9 +33,7 @@ export const Footer = () => {
 
           {/* Navigate */}
           <div className="flex flex-col gap-3">
-            <p className="font-geist-mono text-[10px] uppercase tracking-[0.2em] text-foreground/55">
-              Navigate
-            </p>
+            <p className="text-eyebrow text-foreground/65">Navigate</p>
             <nav aria-label="Footer navigation" className="flex flex-col gap-2">
               <FooterShopLink />
               <Link
@@ -55,9 +53,7 @@ export const Footer = () => {
 
           {/* Connect */}
           <div className="flex flex-col gap-3">
-            <p className="font-geist-mono text-[10px] uppercase tracking-[0.2em] text-foreground/55">
-              Connect
-            </p>
+            <p className="text-eyebrow text-foreground/65">Connect</p>
             <div className="flex flex-col gap-2">
               <InstagramLink
                 location="footer"
@@ -76,7 +72,7 @@ export const Footer = () => {
 
         {/* Divider */}
         <div className="mt-12 border-t border-border pt-6 sm:mt-14">
-          <div className="flex flex-col items-center gap-1 text-center text-[10px] tracking-wider text-foreground/45 sm:flex-row sm:justify-between">
+          <div className="flex flex-col items-center gap-1 text-center text-xs tracking-wider text-foreground/55 sm:flex-row sm:justify-between">
             <p>&copy; 2026 August Jones. All rights reserved.</p>
             <p>Made with love in Madison, WI</p>
           </div>

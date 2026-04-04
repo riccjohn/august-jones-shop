@@ -61,7 +61,7 @@ export function ContactForm() {
   if (state === "success") {
     return (
       <div className="rounded-sm bg-accent/10 border border-accent/30 px-6 py-10 text-center">
-        <p className="font-bebas-neue text-2xl tracking-wider text-foreground sm:text-3xl">
+        <p className="text-display text-2xl text-foreground sm:text-3xl">
           Message Sent
         </p>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">

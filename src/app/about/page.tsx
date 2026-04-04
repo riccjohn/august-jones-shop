@@ -23,11 +23,9 @@ export default function AboutPage() {
       <section className="relative overflow-hidden bg-background px-6 pb-20 pt-16 sm:pb-28 sm:pt-24">
         <GrainOverlay />
         <div className="relative z-10 mx-auto max-w-6xl">
-          <p className="mb-6 font-geist-mono text-[10px] uppercase tracking-[0.28em] text-accent/70">
-            The brand
-          </p>
+          <p className="text-eyebrow mb-6 text-accent/80">The brand</p>
           <h1
-            className="font-bebas-neue leading-[0.88] tracking-[-0.01em] text-foreground"
+            className="text-hero text-foreground"
             style={{
               fontSize: "clamp(4.5rem, 13vw, 12rem)",
               textWrap: "balance",
@@ -40,7 +38,7 @@ export default function AboutPage() {
             <span className="text-accent">One.</span>
           </h1>
           <p
-            className="font-instrument-serif italic mt-8 max-w-xl leading-relaxed text-foreground/55"
+            className="text-editorial mt-8 max-w-xl text-foreground/60"
             style={{ fontSize: "clamp(1.1rem, 2vw, 1.35rem)" }}
           >
             A solo, female-owned brand turning pre-loved sports jerseys into
@@ -77,7 +75,7 @@ export default function AboutPage() {
             <div className="flex flex-col justify-center gap-8">
               <h2
                 id="story-heading"
-                className="font-bebas-neue leading-none tracking-wider text-foreground"
+                className="text-display text-foreground"
                 style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}
               >
                 The Story
@@ -121,7 +119,7 @@ export default function AboutPage() {
 
           <h2
             id="process-heading"
-            className="font-bebas-neue mb-16 leading-none tracking-wider text-foreground"
+            className="text-display mb-16 text-foreground"
             style={{ fontSize: "clamp(2.5rem, 5vw, 4rem)" }}
           >
             How It&apos;s Made
@@ -156,7 +154,7 @@ export default function AboutPage() {
                 >
                   {num}
                 </span>
-                <h3 className="font-bebas-neue text-2xl tracking-wider text-foreground">
+                <h3 className="text-display text-2xl text-foreground">
                   {title}
                 </h3>
                 <p className="text-sm leading-relaxed text-foreground/55 sm:text-base">
@@ -173,11 +171,9 @@ export default function AboutPage() {
         <div className="mx-auto max-w-6xl">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[3fr_2fr] lg:items-end">
             <div className="flex flex-col gap-6">
-              <p className="font-geist-mono text-[10px] uppercase tracking-[0.28em] text-[#222]/50">
-                Custom Work
-              </p>
+              <p className="text-eyebrow text-[#222]/65">Custom Work</p>
               <h2
-                className="font-bebas-neue leading-none tracking-wide text-[#222]"
+                className="text-display text-[#222]"
                 style={{
                   fontSize: "clamp(3rem, 7vw, 6rem)",
                   textWrap: "balance",
@@ -213,11 +209,9 @@ export default function AboutPage() {
       {/* ── SHOP CTA ──────────────────────────────────────────────────────── */}
       <section className="bg-[#f6f4f0] px-6 py-20 sm:py-28">
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center">
-          <p className="font-geist-mono text-[10px] uppercase tracking-[0.28em] text-[#222]/40">
-            Available now
-          </p>
+          <p className="text-eyebrow text-[#222]/60">Available now</p>
           <h2
-            className="font-bebas-neue leading-none tracking-wider text-[#222]"
+            className="text-display text-[#222]"
             style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)" }}
           >
             Shop the Collection

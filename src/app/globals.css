@@ -153,6 +153,45 @@
   }
 }
 
+/*
+ * August Jones — Typography utilities
+ *
+ * Four reusable classes that encode the brand's type system.
+ * Always set color and size in context; these handle only font, leading, and tracking.
+ *
+ * text-eyebrow  — small mono uppercase label above sections
+ * text-hero     — massive Bebas Neue h1 (set font-size inline via clamp)
+ * text-display  — section-level Bebas Neue h2/h3 (set font-size inline or via text-{size})
+ * text-editorial — Instrument Serif italic subhead prose
+ */
+@layer components {
+  .text-eyebrow {
+    font-family: var(--font-geist-mono);
+    font-size: 0.75rem; /* text-xs */
+    line-height: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+  }
+
+  .text-hero {
+    font-family: var(--font-bebas-neue);
+    line-height: 0.88;
+    letter-spacing: -0.01em;
+  }
+
+  .text-display {
+    font-family: var(--font-bebas-neue);
+    line-height: 1; /* leading-none */
+    letter-spacing: 0.05em; /* tracking-wider */
+  }
+
+  .text-editorial {
+    font-family: var(--font-instrument-serif);
+    font-style: italic;
+    line-height: 1.625; /* leading-relaxed */
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
