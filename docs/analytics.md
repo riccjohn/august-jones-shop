@@ -61,6 +61,8 @@ Umami supports sharing a read-only dashboard link — useful for giving August a
 
 The Umami script is only injected when `NEXT_PUBLIC_UMAMI_WEBSITE_ID` is set. Without it, the script is not included and `window.umami` is undefined — the tracking functions guard against this and exit silently. The same silent-drop applies in production during the brief window between page load and Umami script execution (`afterInteractive` strategy); this is an intentional trade-off to avoid blocking page render.
 
+Even if the script loads (e.g. `NEXT_PUBLIC_UMAMI_WEBSITE_ID` is set in `.env.local`), the `data-domains="augustjones.shop,www.augustjones.shop"` attribute on the script tag prevents hits from being recorded on any other hostname — including `localhost` and Cloudflare preview deployments.
+
 The Playwright tests stub `window.umami` before page load and block the real Umami script, so no account is needed to run tests:
 
 ```bash
