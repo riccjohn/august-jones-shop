@@ -107,6 +107,7 @@ export default function RootLayout({
           <Script
             src="https://cloud.umami.is/script.js"
             data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+            data-domains="augustjones.shop,www.augustjones.shop"
             strategy="afterInteractive"
           />
         )}
