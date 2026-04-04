@@ -13,20 +13,19 @@ test.describe("Landing Page", () => {
       "August Jones | Upcycled Sports Fashion from Wisconsin",
     );
 
-    // Check for logo (has empty alt since it's decorative with aria-hidden)
-    await expect(page.locator('img[src*="August_Jones_Logo"]')).toBeVisible();
+    // Check for logo — nav logo is the first instance
+    await expect(
+      page.locator('img[src*="August_Jones"]').first(),
+    ).toBeVisible();
 
     // Check for main heading
     await expect(
-      page.getByRole("heading", { name: /Upcycled Fashion for Every Fan/i }),
+      page.getByRole("heading", { name: /Upcycled For The/i }),
     ).toBeVisible();
 
     // Check for key sections
     await expect(
-      page.locator('section[aria-labelledby="about-heading"]'),
-    ).toBeVisible();
-    await expect(
-      page.locator('section[aria-labelledby="products-heading"]'),
+      page.locator('section[aria-labelledby="collection-heading"]'),
     ).toBeVisible();
   });
 
@@ -35,10 +34,8 @@ test.describe("Landing Page", () => {
   }) => {
     await page.goto("/");
 
-    // Test hero CTA button specifically (in primary navigation)
-    const heroCTA = page
-      .getByLabel("Primary navigation")
-      .getByRole("link", { name: /Shop Now/i });
+    // Test hero CTA button (Shop Now in hero)
+    const heroCTA = page.getByRole("link", { name: /Shop Now/i }).first();
     await expect(heroCTA).toBeVisible();
     await expect(heroCTA).toHaveAttribute(
       "href",
@@ -56,12 +53,10 @@ test.describe("Landing Page", () => {
       "https://www.etsy.com/shop/TheAugustJonesShop",
     );
 
-    // Test Instagram link (hero section)
-    const instagramLink = page
-      .getByRole("link", {
-        name: /@augustjonesshop/i,
-      })
-      .first();
+    // Test Instagram CTA link
+    const instagramLink = page.getByRole("link", {
+      name: /Follow on Instagram/i,
+    });
     await expect(instagramLink).toBeVisible();
     await expect(instagramLink).toHaveAttribute(
       "href",
@@ -85,10 +80,10 @@ test.describe("Landing Page", () => {
     await expect(page.getByRole("main")).toBeVisible();
     await expect(page.locator("h1")).toBeVisible();
     await expect(
-      page.getByRole("navigation", { name: "Primary navigation" }),
+      page.getByRole("navigation", { name: "Main navigation" }),
     ).toBeVisible();
     await expect(
-      page.locator('section[aria-labelledby="about-heading"]'),
+      page.locator('section[aria-labelledby="collection-heading"]'),
     ).toBeVisible();
     await expect(
       page.getByRole("navigation", { name: "Footer navigation" }),
@@ -101,7 +96,9 @@ test.describe("Landing Page", () => {
     await page.goto("/");
 
     // Check that product gallery section exists
-    const gallery = page.locator('section[aria-labelledby="products-heading"]');
+    const gallery = page.locator(
+      'section[aria-labelledby="collection-heading"]',
+    );
     await expect(gallery).toBeVisible();
 
     // Test individual product links have UTM parameters
@@ -172,7 +169,9 @@ test.describe("Landing Page", () => {
     await expect(
       footer.getByText(/© 2026 August Jones. All rights reserved./),
     ).toBeVisible();
-    await expect(footer.getByText(/Made with ❤️ in Madison, WI/)).toBeVisible();
+    await expect(
+      footer.getByText(/Made with love in Madison, WI/),
+    ).toBeVisible();
   });
 
   test("has structured data for SEO", async ({ page }) => {
@@ -211,10 +210,10 @@ test.describe("Landing Page", () => {
   }) => {
     await page.goto("/");
 
-    // Hero Instagram link
-    const heroInstagram = page
-      .getByRole("link", { name: /@augustjonesshop/i })
-      .first();
+    // Instagram CTA section link ("Follow on Instagram")
+    const heroInstagram = page.getByRole("link", {
+      name: /Follow on Instagram/i,
+    });
     await expect(heroInstagram).toHaveAttribute(
       "href",
       "https://instagram.com/augustjonesshop",

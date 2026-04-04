@@ -19,6 +19,10 @@ export function trackInstagramClick(location: "hero" | "footer") {
   track("instagram_click", { source: location });
 }
 
+export function trackNavClick(destination: string) {
+  track("nav_click", { destination });
+}
+
 export function trackEmailClick() {
   track("email_click");
 }

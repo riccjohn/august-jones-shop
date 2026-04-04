@@ -13,7 +13,7 @@ export function FooterShopLink() {
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => trackShopifyClick("footer")}
-      className="text-sm text-background/90 transition-colors hover:text-[#ffb612]"
+      className="text-sm text-foreground/60 transition-colors duration-200 hover:text-accent"
     >
       Shop Now
     </a>
