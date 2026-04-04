@@ -60,9 +60,9 @@ export function SiteNav() {
           aria-expanded={menuOpen}
           aria-controls="mobile-menu"
           onClick={() => setMenuOpen((o) => !o)}
-          className="text-foreground/85 sm:hidden"
+          className="h-11 w-11 text-foreground/85 sm:hidden"
         >
-          {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          {menuOpen ? <X className="size-6" /> : <Menu className="size-6" />}
         </Button>
 
         {/* ── LOGO
@@ -125,7 +125,7 @@ export function SiteNav() {
                 transitionTimingFunction: "cubic-bezier(0.77, 0, 0.175, 1)",
               }}
             >
-              <span className="font-bebas-neue text-[15px] tracking-[0.14em] text-accent transition-colors duration-200 group-hover:text-[#222]">
+              <span className="relative top-[1px] font-bebas-neue text-[15px] leading-none tracking-[0.14em] text-accent transition-colors duration-200 group-hover:text-[#222]">
                 Shop
               </span>
               <svg

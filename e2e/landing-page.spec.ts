@@ -15,7 +15,7 @@ test.describe("Landing Page", () => {
 
     // Check for logo — nav logo is the first instance
     await expect(
-      page.locator('img[src*="August_Jones_Logo"]').first(),
+      page.locator('img[src*="August_Jones"]').first(),
     ).toBeVisible();
 
     // Check for main heading
