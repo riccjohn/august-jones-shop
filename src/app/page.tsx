@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { EmailSignupSection } from "@/components/EmailSignupSection";
 import { Footer } from "@/components/Footer";
 import InstagramIcon from "@/components/InstagramIcon";
 import { InstagramLink } from "@/components/InstagramLink";
@@ -133,6 +134,9 @@ export default function Home() {
           </p>
         </div>
       </section>
+
+      {/* Email Drop List Section */}
+      <EmailSignupSection />
 
       {/* Instagram Callout Section - Charcoal background */}
       <section className="bg-foreground px-6 py-12 sm:py-16">
