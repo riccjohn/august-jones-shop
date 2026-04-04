@@ -79,11 +79,11 @@ export function SiteNav() {
           className="absolute left-1/2 -translate-x-1/2 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:static sm:translate-x-0"
         >
           <Image
-            src="/logos/August_Jones_Logo-transparent.svg"
+            src="/logos/August_Jones-Horitontal_Logo-transparent_white.svg"
             alt="August Jones"
-            width={120}
-            height={120}
-            className="h-auto w-[62px] sm:w-[78px]"
+            width={360}
+            height={180}
+            className="h-auto w-[130px] sm:w-[160px]"
             priority
           />
         </Link>

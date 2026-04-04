@@ -145,7 +145,7 @@ export default function RootLayout({
               latitude: "43.0731",
               longitude: "-89.4012",
             },
-            logo: "https://www.augustjones.shop/logos/August_Jones_Logo.svg",
+            logo: "https://www.augustjones.shop/logos/August_Jones-Horitontal_Logo-transparent_black.svg",
             image: "https://www.augustjones.shop/images/social_02-1200.webp",
             sameAs: [
               "https://www.instagram.com/augustjonesshop",

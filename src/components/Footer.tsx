@@ -18,11 +18,11 @@ export const Footer = () => {
               className="shrink-0 w-fit"
             >
               <Image
-                src="/logos/August_Jones_Logo-transparent.svg"
+                src="/logos/August_Jones-Horitontal_Logo-transparent_white.svg"
                 alt="August Jones"
-                width={100}
-                height={100}
-                className="h-auto w-[60px] opacity-70 hover:opacity-100 transition-opacity duration-200"
+                width={360}
+                height={180}
+                className="h-auto w-[130px] opacity-70 hover:opacity-100 transition-opacity duration-200"
               />
             </Link>
             <p className="max-w-xs text-xs leading-relaxed text-muted-foreground">
