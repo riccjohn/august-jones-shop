@@ -5,7 +5,7 @@ import type * as React from "react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
@@ -20,9 +20,11 @@ const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
         brand:
-          "rounded-sm border-2 border-foreground bg-accent text-accent-foreground shadow-[3px_3px_0px_0px_#222] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[5px_5px_0px_0px_#222] active:translate-x-0 active:translate-y-0 active:shadow-[0px_0px_0px_0px_#222]",
+          "rounded-sm border-2 border-[#222] bg-accent text-[#222] shadow-[3px_3px_0px_0px_#222] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:shadow-[5px_5px_0px_0px_#222] active:translate-x-0 active:translate-y-0 active:shadow-[0px_0px_0px_0px_#222]",
         "brand-outline":
-          "rounded-sm border-2 border-accent bg-transparent text-accent shadow-[3px_3px_0px_0px_#ffb612] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:bg-accent hover:text-foreground hover:shadow-[5px_5px_0px_0px_#ffb612] active:translate-x-0 active:translate-y-0 active:shadow-[0px_0px_0px_0px_#ffb612]",
+          "rounded-sm border-2 border-accent bg-transparent text-accent shadow-[3px_3px_0px_0px_#ffb612] hover:-translate-x-[2px] hover:-translate-y-[2px] hover:bg-accent hover:text-accent-foreground hover:shadow-[5px_5px_0px_0px_#ffb612] active:translate-x-0 active:translate-y-0 active:shadow-[0px_0px_0px_0px_#ffb612]",
+        "ghost-outline":
+          "border border-accent bg-transparent text-accent hover:bg-accent hover:text-[#222] [transition-timing-function:cubic-bezier(0.77,0,0.175,1)]",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

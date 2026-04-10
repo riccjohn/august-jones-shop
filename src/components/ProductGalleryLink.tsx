@@ -12,61 +12,60 @@ interface ProductGalleryLinkProps {
     href: string;
     category: string;
   };
+  index: number;
 }
 
 /**
- * Tracked product gallery link component
- * Client component to handle click tracking with product metadata
+ * Editorial-style product link — no card, just image + minimal type.
+ * Hover: subtle image scale + title color shift to yellow accent.
  */
-export function ProductGalleryLink({ product }: ProductGalleryLinkProps) {
+export function ProductGalleryLink({
+  product,
+  index,
+}: ProductGalleryLinkProps) {
+  const num = String(index + 1).padStart(2, "0");
+
   return (
     <a
       href={product.href}
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => trackShopifyClick(`gallery_${product.category}`)}
-      className="group flex flex-col gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 rounded-sm sm:gap-3"
+      className="group flex flex-col gap-3 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffb612] focus-visible:ring-offset-4 focus-visible:ring-offset-[#f6f4f0]"
     >
-      <h3 className="font-bebas-neue text-lg tracking-wider text-foreground transition-colors group-hover:text-accent sm:text-xl">
-        {product.title}
-      </h3>
-      <div className="relative aspect-3/4 overflow-hidden rounded-sm">
+      {/* Item number */}
+      <span className="text-eyebrow text-[#222]/65">
+        {num} / {product.category}
+      </span>
+
+      {/* Image */}
+      <div className="relative aspect-3/4 overflow-hidden bg-[#e8e6e0]">
         <Image
           src={product.src}
           alt={product.alt}
           fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
+          className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+          style={{ transitionTimingFunction: "cubic-bezier(0.19, 1, 0.22, 1)" }}
         />
-        {/* Hover scrim — solid overlay that fades in via opacity for reliable cross-browser animation */}
+        {/* Subtle dark vignette on hover */}
         <div
-          className="absolute inset-0 bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          className="absolute inset-0 bg-[#0c0c10]/0 transition-colors duration-500 group-hover:bg-[#0c0c10]/20"
           aria-hidden="true"
         />
-        {/* CTA pill — positioned over scrim, slides up on hover */}
-        <div className="absolute inset-0 flex items-end justify-center pb-8 sm:pb-10">
-          {/* Charcoal bg + yellow text = 9.1:1 contrast ratio (exceeds WCAG AAA) */}
-          <span className="font-bebas-neue bg-foreground/90 text-accent rounded-sm px-5 py-2 text-base tracking-wider opacity-100 translate-y-0 transition-all duration-300 sm:opacity-0 sm:translate-y-2 sm:group-hover:opacity-100 sm:group-hover:translate-y-0 flex items-center gap-2 sm:text-lg sm:px-6 sm:py-2.5">
-            Shop Now
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="lucide lucide-external-link"
-              aria-hidden="true"
-            >
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-              <polyline points="15 3 21 3 21 9" />
-              <line x1="10" x2="21" y1="14" y2="3" />
-            </svg>
-          </span>
-        </div>
+      </div>
+
+      {/* Title + shop arrow */}
+      <div className="flex items-baseline justify-between gap-4">
+        <h3 className="text-display text-2xl text-[#222] sm:text-3xl">
+          {product.title}
+        </h3>
+        <span
+          className="text-eyebrow shrink-0 text-[#222]/70 transition-colors duration-200 group-hover:text-[#222]"
+          aria-hidden="true"
+        >
+          Shop ↗
+        </span>
       </div>
     </a>
   );

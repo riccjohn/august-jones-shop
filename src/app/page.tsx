@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Footer } from "@/components/Footer";
+import { GrainOverlay } from "@/components/GrainOverlay";
 import InstagramIcon from "@/components/InstagramIcon";
 import { InstagramLink } from "@/components/InstagramLink";
 import { ProductGalleryLink } from "@/components/ProductGalleryLink";
 import { ProductGallerySchema } from "@/components/ProductGallerySchema";
 import { ShopifyCtaButton } from "@/components/ShopifyCtaButton";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "August Jones | Upcycled Sports Fashion from Wisconsin",
+    title: "August Jones | Upcycled Fashion for Every Fan",
     description:
-      "Hand-made, one-of-a-kind upcycled sports fashion. Streetwear vests, hoodies, sweatpants, and jackets created from upcycled sports wear by a solo female-owned brand in Madison, WI.",
+      "Hand-made, one-of-a-kind upcycled sports fashion. Streetwear vests, hoodies, sweatpants, and jackets created from upcycled sports wear by a solo female-owned brand in Madison, WI, USA.",
     alternates: {
       canonical: "/",
     },
@@ -24,14 +26,6 @@ const ETSY_SHOP_URL = "https://www.etsy.com/shop/TheAugustJonesShop";
 const productImages = [
   {
     id: 1,
-    title: "Vests",
-    src: "/images/product/vests.webp",
-    alt: "Hand-made upcycled sports jersey puffer vest by August Jones",
-    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_hoodie`,
-    category: "vests",
-  },
-  {
-    id: 2,
     title: "Jackets",
     src: "/images/product/jackets.webp",
     alt: "Unique game day outfit made from upcycled sports jerseys and thrifted military jacket",
@@ -39,23 +33,23 @@ const productImages = [
     category: "jackets",
   },
   {
-    id: 3,
-    title: "T-Shirts",
-    src: "/images/product/tshirts.webp",
-    alt: "Custom cropped Milwaukee Brewers t-shirt made from upcycled fan gear",
-    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_streetwear`,
-    category: "tshirts",
-  },
-  {
-    id: 4,
+    id: 2,
     title: "Hoodies",
     src: "/images/product/hoodies.webp",
     alt: "One-of-a-kind Green Bay Packers hoodie made from upcycled fan gear",
     href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_reworked`,
-    category: "sweatshirts",
+    category: "hoodies",
   },
   {
-    id: 5,
+    id: 3,
+    title: "Vests",
+    src: "/images/product/vests.webp",
+    alt: "Hand-made upcycled sports jersey puffer vest by August Jones",
+    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_hoodie`,
+    category: "vests",
+  },
+  {
+    id: 4,
     title: "Sweatpants",
     src: "/images/product/sweatpants.webp",
     alt: "One-of-a-kind Milwaukee Bucks sweatpants made from upcycled fan gear",
@@ -63,118 +57,245 @@ const productImages = [
     category: "sweatpants",
   },
   {
+    id: 5,
+    title: "T-Shirts",
+    src: "/images/product/tshirts.webp",
+    alt: "Custom cropped Milwaukee Brewers t-shirt made from upcycled fan gear",
+    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_streetwear`,
+    category: "tshirts",
+  },
+  {
     id: 6,
     title: "Accessories",
     src: "/images/product/accessories_04.webp",
-    alt: "Hand-made Green Bay Packers and Denver Broncosfanny packs made from upcycled NFL jerseys and fan gear",
+    alt: "Hand-made Green Bay Packers and Denver Broncos fanny packs made from upcycled NFL jerseys",
     href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_gameday`,
     category: "accessories",
   },
 ] as const;
 
-const TITLE = "Upcycled Fashion for Every Fan";
-const DESCRIPTION =
-  "Reimagined from pre-loved sports apparel into elevated, one-of-a-kind statements. Each piece embodies creative reinvention and a more sustainable approach to fan fashion.";
-const ABOUT =
-  "August Jones transforms vintage sportswear into one-of-a-kind pieces designed for game day and beyond. Handmade in Wisconsin from upcycled materials, each design is as original as the fans who wear it.";
+const subTitleCopy =
+  "Reimagined by hand. One-of-one pieces built from vintage and reworked team apparel." as const;
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col">
-      {/* Hero Section - Full viewport impact with eggshell background */}
-      <section className="flex min-h-[85vh] flex-col items-center justify-center bg-background px-6 py-20 sm:py-28">
-        <div className="flex w-full max-w-2xl flex-col items-center gap-8 text-center lg:max-w-3xl lg:gap-10">
-          {/* Brand Logo and Primary Heading */}
-          <header className="flex flex-col items-center gap-6">
-            <div className="border-6 border-foreground" aria-hidden="true">
-              <Image
-                src="/logos/August_Jones_Logo.svg"
-                alt=""
-                width={500}
-                height={500}
-                priority
-                fetchPriority="high"
-                className="h-auto w-48 bg-background sm:w-64 lg:w-72"
-              />
-            </div>
-            <h1 className="font-bebas-neue text-4xl tracking-wider text-foreground sm:text-5xl lg:text-6xl">
-              {TITLE}
-            </h1>
-          </header>
+      {/* ── HERO ──────────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-background">
+        <GrainOverlay />
 
-          {/* Hero Description */}
-          <div className="space-y-4">
-            <p className="mx-auto max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              {DESCRIPTION}
+        {/* Subtle radial depth — not a flat void */}
+        <div
+          className="pointer-events-none absolute inset-0 z-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 80% 60% at 70% 50%, oklch(0.14 0.008 264 / 0.6), transparent)",
+          }}
+          aria-hidden="true"
+        />
+
+        <div className="relative z-10 mx-auto grid min-h-[calc(100svh-56px)] max-w-7xl grid-cols-1 items-center gap-0 px-6 pb-16 pt-12 sm:px-8 lg:grid-cols-[3fr_2fr] lg:gap-16 lg:pb-0 lg:pt-0">
+          {/* LEFT — text content */}
+          <div className="flex flex-col gap-8 lg:py-24">
+            {/* Provenance label */}
+            <p className="text-eyebrow text-accent/80">
+              Madison, WI — Handmade since 2025
             </p>
+
+            {/* Hero heading — Bebas Neue at heroic scale */}
+            <h1
+              className="text-hero text-foreground"
+              style={{
+                fontSize: "clamp(4.5rem, 11vw, 10rem)",
+                textWrap: "balance",
+              }}
+            >
+              Upcycled
+              <br />
+              Fashion
+              <br />
+              For Every
+              <br />
+              <span className="text-accent">Fan.</span>
+            </h1>
+
+            {/* Editorial subhead — Instrument Serif italic */}
+            <p
+              className="text-editorial max-w-md text-foreground/60"
+              style={{ fontSize: "clamp(1.1rem, 2vw, 1.35rem)" }}
+            >
+              {subTitleCopy}
+            </p>
+
+            {/* CTAs */}
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <ShopifyCtaButton />
+            </div>
           </div>
 
-          {/* Primary CTA - Enhanced presence */}
-          <nav aria-label="Primary navigation" className="w-full max-w-sm">
-            <ShopifyCtaButton />
-          </nav>
+          {/* RIGHT — hero product image */}
+          <div className="relative hidden lg:block">
+            {/* Yellow accent line */}
+            <div
+              className="absolute -left-4 top-[15%] h-[60%] w-px bg-accent/30"
+              aria-hidden="true"
+            />
+
+            <div className="relative aspect-3/4 overflow-hidden">
+              <Image
+                src="/images/product/jackets.webp"
+                alt="Hand-made upcycled game day outfit by August Jones"
+                fill
+                priority
+                fetchPriority="high"
+                sizes="(max-width: 1280px) 40vw, 500px"
+                className="object-cover"
+              />
+              {/* ONE OF ONE badge */}
+              <div
+                className="absolute right-4 top-8 bg-accent px-3 py-1.5"
+                style={{ transform: "rotate(2deg)" }}
+                aria-hidden="true"
+              >
+                <span className="font-bebas-neue text-sm tracking-[0.2em] text-[#222]">
+                  One of One
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Brand Story Section - White background for elevation */}
+      {/* ── COLLECTION ────────────────────────────────────────────────────── */}
       <section
-        aria-labelledby="about-heading"
-        className="bg-white px-6 py-20 sm:py-28"
-      >
-        <div className="mx-auto max-w-3xl text-center">
-          <h2
-            id="about-heading"
-            className="font-bebas-neue text-3xl tracking-wider text-foreground sm:text-4xl"
-          >
-            Renewed Fashion
-          </h2>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {ABOUT}
-          </p>
-        </div>
-      </section>
-
-      {/* Instagram Callout Section - Charcoal background */}
-      <section className="bg-foreground px-6 py-12 sm:py-16">
-        <div className="mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
-          <p className="font-bebas-neue text-xl tracking-wider text-background sm:text-2xl">
-            Follow the Journey
-          </p>
-          <Button
-            asChild
-            size="lg"
-            variant="brand-outline"
-            className="h-12 w-full max-w-sm gap-3 px-8 text-base font-medium uppercase tracking-widest sm:h-14"
-          >
-            <InstagramLink location="hero">
-              <InstagramIcon className="h-5 w-5" />
-              <span>@augustjonesshop</span>
-            </InstagramLink>
-          </Button>
-        </div>
-      </section>
-
-      {/* Product Gallery Section - Eggshell background with enhanced grid */}
-      <section
-        aria-labelledby="products-heading"
-        className="bg-background px-6 py-20 sm:py-28"
+        aria-labelledby="collection-heading"
+        className="bg-[#f6f4f0] px-6 py-20 sm:py-28"
       >
         <ProductGallerySchema products={productImages} />
         <div className="mx-auto w-full max-w-6xl">
-          <h2
-            id="products-heading"
-            className="mb-12 text-center font-bebas-neue text-3xl tracking-wider text-foreground sm:mb-16 sm:text-4xl"
+          {/* Section header */}
+          <div className="mb-12 flex items-end justify-between gap-6 sm:mb-16">
+            <h2
+              id="collection-heading"
+              className="text-display text-[#222]"
+              style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)" }}
+            >
+              The Collection
+            </h2>
+            <a
+              href={`${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=collection_header`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-eyebrow hidden shrink-0 text-[#222]/75 underline underline-offset-4 hover:text-[#ffb612] hover:no-underline sm:block"
+            >
+              View all on Etsy ↗
+            </a>
+          </div>
+
+          {/* Editorial 2-col grid */}
+          <div className="grid grid-cols-1 gap-x-8 gap-y-12 sm:grid-cols-2 lg:gap-x-12 lg:gap-y-16">
+            {productImages.map((product, i) => (
+              <ProductGalleryLink
+                key={product.id}
+                product={product}
+                index={i}
+              />
+            ))}
+          </div>
+
+          {/* Mobile "view all" link */}
+          <div className="mt-10 flex justify-center sm:hidden">
+            <a
+              href={`${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=collection_footer`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-eyebrow text-[#222]/75 underline underline-offset-4 hover:text-[#ffb612] hover:no-underline"
+            >
+              View all on Etsy ↗
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── BRAND STATEMENT ───────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-background px-6 py-24 sm:py-32">
+        <GrainOverlay />
+        <div className="relative z-10 mx-auto max-w-5xl">
+          <p
+            className="text-foreground/70 leading-relaxed"
+            style={{ fontSize: "clamp(1rem, 1.5vw, 1.2rem)" }}
           >
-            Past Work
-          </h2>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-2 lg:gap-8">
-            {productImages.map((product) => (
-              <ProductGalleryLink key={product.id} product={product} />
+            August Jones transforms vintage and thrifted sports apparel into
+            one-of-a-kind, elevated pieces. Each design is reworked by hand,
+            blending professional craftsmanship with a distinct point of view
+            shaped by over two decades in the apparel industry. The result:
+            unique, wearable statements that go beyond traditional fan gear.
+          </p>
+
+          {/* Stat strip */}
+          <div className="mt-16 grid grid-cols-3 gap-0 border-t border-border pt-10 sm:mt-20">
+            {[
+              { value: "200+", label: "Pieces Reimagined" },
+              { value: "1", label: "Designer" },
+              { value: "0", label: "Duplicates" },
+            ].map(({ value, label }) => (
+              <div
+                key={label}
+                className="flex flex-col gap-2 border-r border-border px-6 last:border-r-0 first:pl-0 last:pr-0 sm:px-10"
+              >
+                <span
+                  className="font-bebas-neue leading-none text-accent"
+                  style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)" }}
+                >
+                  {value}
+                </span>
+                <span className="text-eyebrow text-foreground/65">{label}</span>
+              </div>
             ))}
           </div>
         </div>
       </section>
-      {/* Footer Section - Charcoal background with utility contact */}
+
+      {/* ── INSTAGRAM CTA ─────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden bg-background px-6 pb-24 pt-0 sm:pb-32">
+        <GrainOverlay />
+        <div className="relative z-10 mx-auto max-w-6xl">
+          {/* Full-width divider line */}
+          <div className="mb-16 h-px bg-border" aria-hidden="true" />
+
+          <div className="flex flex-col items-start gap-8 sm:flex-row sm:items-end sm:justify-between">
+            <div className="flex flex-col gap-4">
+              <p className="text-eyebrow text-foreground/65">
+                Follow the drops
+              </p>
+              <h2
+                className="text-display text-foreground"
+                style={{ fontSize: "clamp(3rem, 8vw, 7rem)" }}
+              >
+                @augustjonesshop
+              </h2>
+              <p className="max-w-sm text-sm/relaxed text-foreground/70">
+                New drops posted on Instagram first. Follow along to see what's
+                being made — and grab a piece before it's gone.
+              </p>
+            </div>
+
+            <InstagramLink
+              location="hero"
+              className={cn(
+                buttonVariants({ variant: "ghost-outline" }),
+                "group h-auto shrink-0 gap-3 px-6 py-3.5",
+              )}
+            >
+              <InstagramIcon className="h-4 w-4 text-accent transition-colors duration-300 group-hover:text-[#222]" />
+              <span className="font-bebas-neue text-lg tracking-[0.15em] text-accent transition-colors duration-300 group-hover:text-[#222]">
+                Follow on Instagram
+              </span>
+            </InstagramLink>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </main>
   );

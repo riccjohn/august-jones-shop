@@ -45,8 +45,8 @@ test.describe("Analytics event tracking", () => {
     await page.goto("/");
 
     await page
-      .getByLabel("Primary navigation")
       .getByRole("link", { name: /Shop Now/i })
+      .first()
       .click({ modifiers: ["Alt"] });
 
     const call = await getLastUmamiCall(page);
@@ -75,9 +75,8 @@ test.describe("Analytics event tracking", () => {
     await page.goto("/");
 
     const galleryLink = page
-      .locator('section[aria-labelledby="products-heading"]')
-      .getByRole("link")
-      .first();
+      .locator('section[aria-labelledby="collection-heading"]')
+      .getByRole("link", { name: /Hoodies/i });
 
     await galleryLink.click({ modifiers: ["Alt"] });
 
@@ -92,8 +91,7 @@ test.describe("Analytics event tracking", () => {
     await page.goto("/");
 
     await page
-      .getByRole("link", { name: /@augustjonesshop/i })
-      .first()
+      .getByRole("link", { name: /Follow on Instagram/i })
       .click({ modifiers: ["Alt"] });
 
     const call = await getLastUmamiCall(page);
