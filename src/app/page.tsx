@@ -74,6 +74,9 @@ const productImages = [
   },
 ] as const;
 
+const subTitleCopy =
+  "Reimagined by hand. One-of-one pieces built from vintage and reworked team apparel." as const;
+
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col">
@@ -121,8 +124,7 @@ export default function Home() {
               className="text-editorial max-w-md text-foreground/60"
               style={{ fontSize: "clamp(1.1rem, 2vw, 1.35rem)" }}
             >
-              One-of-a-kind pieces built from the jerseys you love — and the
-              teams you&apos;ll never give up on.
+              {subTitleCopy}
             </p>
 
             {/* CTAs */}
@@ -219,28 +221,22 @@ export default function Home() {
       <section className="relative overflow-hidden bg-background px-6 py-24 sm:py-32">
         <GrainOverlay />
         <div className="relative z-10 mx-auto max-w-5xl">
-          {/* Pull quote */}
-          <blockquote
-            className="font-instrument-serif italic leading-[1.2] text-foreground/80"
-            style={{
-              fontSize: "clamp(1.75rem, 4.5vw, 3.5rem)",
-              textWrap: "balance",
-            }}
+          <p
+            className="text-foreground/70 leading-relaxed"
+            style={{ fontSize: "clamp(1rem, 1.5vw, 1.2rem)" }}
           >
-            &ldquo;Every piece starts with a jersey that has a history — and a
-            team you still believe in.&rdquo;
-          </blockquote>
-
-          {/* Attribution */}
-          <p className="text-eyebrow mt-6 text-foreground/65">
-            — August Jones, maker
+            August Jones transforms vintage and thrifted sports apparel into
+            one-of-a-kind, elevated pieces. Each design is reworked by hand,
+            blending professional craftsmanship with a distinct point of view
+            shaped by over two decades in the apparel industry. The result:
+            unique, wearable statements that go beyond traditional fan gear.
           </p>
 
           {/* Stat strip */}
           <div className="mt-16 grid grid-cols-3 gap-0 border-t border-border pt-10 sm:mt-20">
             {[
-              { value: "100+", label: "Pieces Made" },
-              { value: "1", label: "Maker" },
+              { value: "200+", label: "Pieces Reimagined" },
+              { value: "1", label: "Designer" },
               { value: "0", label: "Duplicates" },
             ].map(({ value, label }) => (
               <div

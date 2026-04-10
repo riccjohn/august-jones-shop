@@ -30,8 +30,8 @@ export default function ContactPage() {
             className="text-editorial mt-6 max-w-lg text-foreground/60"
             style={{ fontSize: "clamp(1.05rem, 1.8vw, 1.25rem)" }}
           >
-            Questions about a piece, an order, or a custom commission — I read
-            every message personally and respond within 2–3 days.
+            Questions about a custom commission? I read every message personally
+            and respond within 2 - 3 days.
           </p>
         </div>
       </section>

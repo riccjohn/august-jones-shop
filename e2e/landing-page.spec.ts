@@ -10,7 +10,7 @@ test.describe("Landing Page", () => {
     await page.goto("/");
 
     await expect(page).toHaveTitle(
-      "August Jones | Upcycled Sports Fashion from Wisconsin",
+      "August Jones | Upcycled Fashion for Every Fan",
     );
 
     // Check for logo — nav logo is the first instance
@@ -18,9 +18,9 @@ test.describe("Landing Page", () => {
       page.locator('img[src*="August_Jones"]').first(),
     ).toBeVisible();
 
-    // Check for main heading
+    // Check for main heading (line breaks in markup collapse in the a11y name)
     await expect(
-      page.getByRole("heading", { name: /Upcycled For The/i }),
+      page.getByRole("heading", { name: /Upcycled Fashion For Every Fan/i }),
     ).toBeVisible();
 
     // Check for key sections

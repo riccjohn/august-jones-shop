@@ -41,8 +41,8 @@ export default function AboutPage() {
             className="text-editorial mt-8 max-w-xl text-foreground/60"
             style={{ fontSize: "clamp(1.1rem, 2vw, 1.35rem)" }}
           >
-            A solo, female-owned brand turning pre-loved sports jerseys into
-            one-of-a-kind streetwear — handmade in Madison, WI.
+            A solo, female-owned brand reworking sports apparel into one-of-one
+            pieces, handmade in Madison, Wisconsin.
           </p>
         </div>
       </section>
@@ -82,26 +82,36 @@ export default function AboutPage() {
               </h2>
 
               <div className="space-y-5 text-base/relaxed text-foreground/60 sm:text-[17px]">
+                <strong className="mb-6 block font-semibold text-accent">
+                  August Jones was founded to rethink fan gear.
+                </strong>
                 <p>
-                  August Jones started with a simple question: why do perfectly
-                  good jerseys end up in a drawer, forgotten after a trade or a
-                  tough season? A fan&apos;s relationship with their team
-                  doesn&apos;t end just because a player moves on — and neither
-                  should the gear.
+                  With more than 20 years in the apparel industry, designing for
+                  global brands across men’s, women’s, and kids, I set out to
+                  create something more personal and more considered.
                 </p>
                 <p>
-                  Every piece starts with a jersey that has a history. It gets
-                  taken apart, reimagined, and rebuilt into something
-                  you&apos;ll actually reach for — a hoodie, a vest, a jacket, a
-                  pair of sweatpants — with the spirit of the original still in
-                  every seam.
+                  Moving from New York City to Wisconsin, I was reminded what it
+                  means to be a fan. The energy around professional and college
+                  sports felt familiar, bringing me back to growing up in
+                  Western New York, where the connection to the Buffalo Bills
+                  runs deep.
                 </p>
                 <p>
-                  No two pieces are the same. Each one is cut and constructed by
-                  hand, from sourcing through finishing, right here in
-                  Wisconsin. If it has an August Jones label, it&apos;s one of a
-                  kind — and so is the person who wears it.
+                  Years in the industry also revealed how much is overproduced
+                  and discarded. August Jones is rooted in the desire to take
+                  what already exists and elevate it through design.
                 </p>
+                <p>
+                  Each piece begins as an existing garment, sourced for its
+                  potential, history, or meaning. Through reconstruction and
+                  refinement, it is reworked by hand into something entirely
+                  new, elevating the original through a focus on fit,
+                  proportion, and detail.
+                </p>
+                <strong className="block font-semibold text-accent">
+                  Every piece is one of one.
+                </strong>
               </div>
             </div>
           </div>
@@ -130,17 +140,17 @@ export default function AboutPage() {
               {
                 num: "01",
                 title: "Source",
-                body: "Every piece starts with a real jersey — thrifted, donated, or found — from pro teams, college programs, and fan gear across every league.",
+                body: "Every piece begins with existing sports apparel, thrifted, donated, or sourced from professional and collegiate teams.",
               },
               {
                 num: "02",
                 title: "Reimagine",
-                body: "The jersey gets deconstructed and rebuilt into a new silhouette — cut, pieced, and constructed to wear like streetwear, not a game-day uniform.",
+                body: "Each garment is deconstructed and redesigned into a new silhouette, cut and reconstructed with a focus on fit, proportion, and wearability.",
               },
               {
                 num: "03",
                 title: "Finish",
-                body: "Every detail is finished by hand. One piece, one label, no duplicates. When it's gone, it's gone.",
+                body: "Every detail is completed by hand. One piece, one label, no duplicates. Once it’s gone, it’s gone.",
               },
             ].map(({ num, title, body }, _i) => (
               <div
@@ -171,7 +181,9 @@ export default function AboutPage() {
         <div className="mx-auto max-w-6xl">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[3fr_2fr] lg:items-end">
             <div className="flex flex-col gap-6">
-              <p className="text-eyebrow text-[#222]/65">Custom Work</p>
+              <p className="text-eyebrow text-[#222]/65">
+                Request a custom piece
+              </p>
               <h2
                 className="text-display text-[#222]"
                 style={{
@@ -179,13 +191,12 @@ export default function AboutPage() {
                   textWrap: "balance",
                 }}
               >
-                Have a Jersey with a Story?
+                Looking for a custom piece?
               </h2>
               <p className="max-w-xl text-base/relaxed text-[#222]/70 sm:text-lg">
-                Custom commissions are open. Send your jersey — a childhood
-                favorite, a player you still believe in, a piece of your
-                team&apos;s history — and it&apos;ll come back as something
-                you&apos;ll actually wear every day.
+                Custom commissions are open. Send a garment that holds meaning,
+                or work with me to source one for you. Each piece is reworked
+                into something you will actually wear.
               </p>
             </div>
 
@@ -217,8 +228,8 @@ export default function AboutPage() {
             Shop the Collection
           </h2>
           <p className="max-w-md text-base/relaxed text-[#222]/60 sm:text-lg">
-            Browse what&apos;s available now on Etsy. Inventory moves fast —
-            when a piece is gone, it&apos;s gone for good.
+            Browse what&apos;s available now on my shop. Inventory moves fast.
+            When a piece is gone, it&apos;s gone for good.
           </p>
           <nav aria-label="Shop navigation" className="w-full max-w-sm">
             <ShopifyCtaButton />
