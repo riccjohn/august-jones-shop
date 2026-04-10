@@ -60,9 +60,8 @@ export default function AboutPage() {
             {/* Image */}
             <div className="relative">
               <div className="relative aspect-4/5 overflow-hidden">
-                {/* Replace with actual maker/process photo */}
                 <Image
-                  src="/images/product/pablo-lara-i1JJP5S6skw-unsplash.webp"
+                  src="/images/Polly.webp"
                   alt="August Jones — handmade upcycled sports fashion crafted in Madison, WI"
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
