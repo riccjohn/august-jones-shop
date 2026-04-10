@@ -1,3 +1,4 @@
+import type { PagesFunction } from "@cloudflare/workers-types";
 import { Resend } from "resend";
 
 interface Env {
@@ -11,16 +12,32 @@ interface ContactPayload {
   message: string;
 }
 
-export const onRequestPost: PagesFunction<Env> = async (context) => {
-  const body = await context.request.json<ContactPayload>();
-  const { name, email, subject, message } = body;
+function isContactPayload(value: unknown): value is ContactPayload {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+  const name = Reflect.get(value, "name");
+  const email = Reflect.get(value, "email");
+  const subject = Reflect.get(value, "subject");
+  const message = Reflect.get(value, "message");
+  return (
+    typeof name === "string" &&
+    typeof email === "string" &&
+    typeof subject === "string" &&
+    typeof message === "string" &&
+    Boolean(name && email && subject && message)
+  );
+}
 
-  if (!name || !email || !subject || !message) {
+export const onRequestPost: PagesFunction<Env> = async (context) => {
+  const raw = await context.request.json<unknown>();
+  if (!isContactPayload(raw)) {
     return new Response(JSON.stringify({ error: "All fields are required" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });
   }
+  const { name, email, subject, message } = raw;
 
   const resend = new Resend(context.env.RESEND_API_KEY);
 
