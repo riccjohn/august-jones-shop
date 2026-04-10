@@ -43,7 +43,7 @@ export default function ContactPage() {
             <h2 className="text-display text-2xl text-foreground sm:text-3xl">
               Custom Commissions Are Open
             </h2>
-            <p className="mt-2 max-w-xl text-sm leading-relaxed text-foreground/55 sm:text-base">
+            <p className="mt-2 max-w-xl text-sm/relaxed text-foreground/55 sm:text-base">
               Have a jersey collecting dust — a childhood favorite, a traded
               player, a piece of your team&apos;s history? Send it and I&apos;ll
               transform it into something you&apos;ll actually wear. Select

@@ -39,7 +39,7 @@ export function ProductGalleryLink({
       </span>
 
       {/* Image */}
-      <div className="relative aspect-[3/4] overflow-hidden bg-[#e8e6e0]">
+      <div className="relative aspect-3/4 overflow-hidden bg-[#e8e6e0]">
         <Image
           src={product.src}
           alt={product.alt}

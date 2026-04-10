@@ -22,10 +22,10 @@ export const Footer = () => {
                 alt="August Jones"
                 width={360}
                 height={180}
-                className="h-auto w-[130px] opacity-70 hover:opacity-100 transition-opacity duration-200"
+                className="h-auto w-32.5 opacity-70 hover:opacity-100 transition-opacity duration-200"
               />
             </Link>
-            <p className="max-w-xs text-xs leading-relaxed text-muted-foreground">
+            <p className="max-w-xs text-xs/relaxed text-muted-foreground">
               Hand-made, one-of-a-kind upcycled sports fashion. Made in Madison,
               WI.
             </p>

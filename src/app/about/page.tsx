@@ -59,7 +59,7 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1fr] lg:gap-20">
             {/* Image */}
             <div className="relative">
-              <div className="relative aspect-[4/5] overflow-hidden">
+              <div className="relative aspect-4/5 overflow-hidden">
                 {/* Replace with actual maker/process photo */}
                 <Image
                   src="/images/product/pablo-lara-i1JJP5S6skw-unsplash.webp"
@@ -81,7 +81,7 @@ export default function AboutPage() {
                 The Story
               </h2>
 
-              <div className="space-y-5 text-base leading-relaxed text-foreground/60 sm:text-[17px]">
+              <div className="space-y-5 text-base/relaxed text-foreground/60 sm:text-[17px]">
                 <p>
                   August Jones started with a simple question: why do perfectly
                   good jerseys end up in a drawer, forgotten after a trade or a
@@ -157,7 +157,7 @@ export default function AboutPage() {
                 <h3 className="text-display text-2xl text-foreground">
                   {title}
                 </h3>
-                <p className="text-sm leading-relaxed text-foreground/55 sm:text-base">
+                <p className="text-sm/relaxed text-foreground/55 sm:text-base">
                   {body}
                 </p>
               </div>
@@ -181,7 +181,7 @@ export default function AboutPage() {
               >
                 Have a Jersey with a Story?
               </h2>
-              <p className="max-w-xl text-base leading-relaxed text-[#222]/70 sm:text-lg">
+              <p className="max-w-xl text-base/relaxed text-[#222]/70 sm:text-lg">
                 Custom commissions are open. Send your jersey — a childhood
                 favorite, a player you still believe in, a piece of your
                 team&apos;s history — and it&apos;ll come back as something
@@ -216,7 +216,7 @@ export default function AboutPage() {
           >
             Shop the Collection
           </h2>
-          <p className="max-w-md text-base leading-relaxed text-[#222]/60 sm:text-lg">
+          <p className="max-w-md text-base/relaxed text-[#222]/60 sm:text-lg">
             Browse what&apos;s available now on Etsy. Inventory moves fast —
             when a piece is gone, it&apos;s gone for good.
           </p>

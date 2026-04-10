@@ -7,7 +7,7 @@ export function GrainOverlay() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-0 z-[1] mix-blend-overlay opacity-[0.045]"
+      className="pointer-events-none absolute inset-0 z-1 mix-blend-overlay opacity-[0.045]"
       style={{ backgroundImage: `url("${GRAIN_SVG}")` }}
     />
   );

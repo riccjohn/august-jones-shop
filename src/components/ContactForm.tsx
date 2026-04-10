@@ -50,7 +50,7 @@ export function ContactForm() {
         <p className="font-bebas-neue text-2xl tracking-wider text-foreground sm:text-3xl">
           Request Received
         </p>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+        <p className="mt-3 text-sm/relaxed text-muted-foreground sm:text-base">
           Thanks for reaching out. I typically respond within 2–3 days.
         </p>
       </div>

@@ -137,7 +137,7 @@ export default function Home() {
               aria-hidden="true"
             />
 
-            <div className="relative aspect-[3/4] overflow-hidden">
+            <div className="relative aspect-3/4 overflow-hidden">
               <Image
                 src="/images/product/jackets.webp"
                 alt="Hand-made upcycled game day outfit by August Jones"
@@ -276,7 +276,7 @@ export default function Home() {
               >
                 @augustjonesshop
               </h2>
-              <p className="max-w-sm text-sm leading-relaxed text-foreground/70">
+              <p className="max-w-sm text-sm/relaxed text-foreground/70">
                 New drops posted on Instagram first. Follow along to see what's
                 being made — and grab a piece before it's gone.
               </p>

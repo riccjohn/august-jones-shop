@@ -83,7 +83,7 @@ export function SiteNav() {
             alt="August Jones"
             width={360}
             height={180}
-            className="h-auto w-[130px] sm:w-[160px]"
+            className="h-auto w-32.5 sm:w-40"
             priority
           />
         </Link>
@@ -125,7 +125,7 @@ export function SiteNav() {
                 transitionTimingFunction: "cubic-bezier(0.77, 0, 0.175, 1)",
               }}
             >
-              <span className="relative top-[1px] font-bebas-neue text-[15px] leading-none tracking-[0.14em] text-accent transition-colors duration-200 group-hover:text-[#222]">
+              <span className="relative top-px font-bebas-neue text-[15px] leading-none tracking-[0.14em] text-accent transition-colors duration-200 group-hover:text-[#222]">
                 Shop
               </span>
               <svg
