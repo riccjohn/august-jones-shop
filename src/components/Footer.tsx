@@ -7,7 +7,7 @@ import { TrackedEmailLink } from "@/components/TrackedEmailLink";
 
 export const Footer = () => {
   return (
-    <footer className="border-t border-border bg-background px-6 py-14 sm:py-16">
+    <footer className="border-t border-border bg-background px-6 pt-14 pb-[calc(3.5rem+env(safe-area-inset-bottom))] sm:pt-16 sm:pb-[calc(4rem+env(safe-area-inset-bottom))]">
       <div className="mx-auto max-w-6xl">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-[1fr_auto_auto] sm:gap-16 lg:gap-24">
           {/* Brand column */}
