@@ -116,6 +116,12 @@ test.describe("Analytics event tracking", () => {
   test("email link click sends email_click", async ({ page }) => {
     await page.goto("/");
 
+    const emailLink = page.getByRole("link", {
+      name: /hello@augustjones\.shop/i,
+    });
+    await emailLink.scrollIntoViewIfNeeded();
+    await expect(emailLink).toBeVisible();
+
     // Prevent the mailto: href from triggering a navigation/mail-client launch
     // in WebKit, which can disrupt page.evaluate() before it resolves.
     await page.evaluate(() => {
@@ -129,9 +135,12 @@ test.describe("Analytics event tracking", () => {
       );
     });
 
-    await page.getByRole("link", { name: /hello@augustjones\.shop/i }).click();
-
-    const call = await getLastUmamiCall(page);
-    expect(call.eventName).toBe("email_click");
+    // Footer email is a client component; under parallel load (e.g. Firefox) the
+    // first click can land before hydration attaches onClick — retry until tracked.
+    await expect(async () => {
+      await emailLink.click();
+      const call = await getLastUmamiCall(page);
+      expect(call.eventName).toBe("email_click");
+    }).toPass({ timeout: 15_000 });
   });
 });

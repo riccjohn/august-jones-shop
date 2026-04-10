@@ -91,7 +91,7 @@ test.describe("Contact Form", () => {
     await expect(
       page
         .locator("form")
-        .getByRole("link", { name: /hello@augustjones\.shop/i }),
+        .getByRole("link", { name: /customs@augustjones\.shop/i }),
     ).toBeVisible();
   });
 });
