@@ -44,10 +44,8 @@ export default function ContactPage() {
               Custom Commissions Are Open
             </h2>
             <p className="mt-2 max-w-xl text-sm/relaxed text-foreground/55 sm:text-base">
-              Have a jersey collecting dust — a childhood favorite, a traded
-              player, a piece of your team&apos;s history? Send it and I&apos;ll
-              transform it into something you&apos;ll actually wear. Select
-              &ldquo;Custom Commission&rdquo; below to get started.
+              Looking for a custom piece? Send a message and I'll get back to
+              you within 2 - 3 days.
             </p>
           </div>
         </div>
@@ -70,12 +68,12 @@ export default function ContactPage() {
           </h2>
           <ContactForm />
           <p className="mt-8 text-sm text-foreground/60">
-            Prefer email?{" "}
+            Prefer email or have other questions? Email{" "}
             <a
-              href="mailto:hello@augustjones.shop"
+              href="mailto:contact@augustjones.shop"
               className="text-foreground/60 underline underline-offset-4 hover:text-accent hover:no-underline transition-colors duration-200"
             >
-              hello@augustjones.shop
+              contact@augustjones.shop
             </a>
           </p>
         </div>
