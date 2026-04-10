@@ -141,6 +141,6 @@ test.describe("Analytics event tracking", () => {
       await emailLink.click();
       const call = await getLastUmamiCall(page);
       expect(call.eventName).toBe("email_click");
-    }).toPass({ timeout: 15_000 });
+    }).toPass({ timeout: 5_000 });
   });
 });
