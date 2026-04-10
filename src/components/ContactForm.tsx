@@ -4,42 +4,28 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 type FormState = "idle" | "submitting" | "success" | "error";
 
 export function ContactForm() {
   const [state, setState] = useState<FormState>("idle");
-  const [subject, setSubject] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setState("submitting");
 
-    const formId = process.env.NEXT_PUBLIC_FORMSPREE_FORM_ID;
-    if (!formId) {
-      setState("error");
-      return;
-    }
-
     const form = e.currentTarget;
     const data = {
       name: (form.elements.namedItem("name") as HTMLInputElement).value,
       email: (form.elements.namedItem("email") as HTMLInputElement).value,
-      subject,
+      subject: "custom-commission",
       message: (form.elements.namedItem("message") as HTMLTextAreaElement)
         .value,
     };
 
     try {
-      const res = await fetch(`https://formspree.io/f/${formId}`, {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -61,8 +47,8 @@ export function ContactForm() {
   if (state === "success") {
     return (
       <div className="rounded-sm bg-accent/10 border border-accent/30 px-6 py-10 text-center">
-        <p className="text-display text-2xl text-foreground sm:text-3xl">
-          Message Sent
+        <p className="font-bebas-neue text-2xl tracking-wider text-foreground sm:text-3xl">
+          Request Received
         </p>
         <p className="mt-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
           Thanks for reaching out. I typically respond within 2–3 days.
@@ -99,31 +85,11 @@ export function ContactForm() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="subject">What's this about?</Label>
-        <Select
-          value={subject}
-          onValueChange={setSubject}
-          required
-          disabled={state === "submitting"}
-          name="subject"
-        >
-          <SelectTrigger id="subject">
-            <SelectValue placeholder="Select a topic" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="custom-commission">Custom Commission</SelectItem>
-            <SelectItem value="general-question">General Question</SelectItem>
-            <SelectItem value="order-question">Order Question</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="message">Message</Label>
+        <Label htmlFor="message">Tell me about your jersey</Label>
         <Textarea
           id="message"
           name="message"
-          placeholder="Tell me about your jersey, your order, or anything else..."
+          placeholder="What team, what era, what do you have in mind? The more detail the better."
           rows={6}
           required
           disabled={state === "submitting"}
@@ -147,10 +113,10 @@ export function ContactForm() {
         type="submit"
         size="lg"
         variant="brand"
-        disabled={state === "submitting" || !subject}
+        disabled={state === "submitting"}
         className="h-14 w-full text-base font-medium uppercase tracking-widest sm:w-auto sm:px-12"
       >
-        {state === "submitting" ? "Sending..." : "Send Message"}
+        {state === "submitting" ? "Sending..." : "Request a Custom"}
       </Button>
     </form>
   );
