@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Bebas_Neue,
   Geist,
@@ -37,6 +37,10 @@ const instrumentSerif = Instrument_Serif({
 const TITLE = "August Jones | Upcycled Sports Fashion";
 const DESCRIPTION =
   "Hand-made, one-of-a-kind upcycled sports fashion. Streetwear vests, hoodies, sweatpants, and jackets created from upcycled sports wear by a solo female-owned brand.";
+
+export const viewport: Viewport = {
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.augustjones.shop"),

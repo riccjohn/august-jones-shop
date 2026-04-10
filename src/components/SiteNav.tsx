@@ -3,7 +3,7 @@
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { trackNavClick, trackShopifyClick } from "@/lib/analytics";
 
@@ -24,11 +24,6 @@ export function SiteNav() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Close mobile menu when user scrolls
-  useEffect(() => {
-    if (menuOpen && scrolled) setMenuOpen(false);
-  }, [scrolled, menuOpen]);
 
   const solidBg = scrolled || menuOpen;
 
