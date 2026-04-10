@@ -100,10 +100,10 @@ export function ContactForm() {
         <p className="text-sm text-red-600">
           Something went wrong. Try emailing{" "}
           <a
-            href="mailto:hello@augustjones.shop"
+            href="mailto:customs@augustjones.shop"
             className="underline hover:no-underline"
           >
-            hello@augustjones.shop
+            customs@augustjones.shop
           </a>{" "}
           directly.
         </p>
