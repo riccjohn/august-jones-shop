@@ -12,9 +12,9 @@ import { cn } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "August Jones | Upcycled Sports Fashion from Wisconsin",
+    title: "August Jones | Upcycled Fashion for Every Fan",
     description:
-      "Hand-made, one-of-a-kind upcycled sports fashion. Streetwear vests, hoodies, sweatpants, and jackets created from upcycled sports wear by a solo female-owned brand in Madison, WI.",
+      "Hand-made, one-of-a-kind upcycled sports fashion. Streetwear vests, hoodies, sweatpants, and jackets created from upcycled sports wear by a solo female-owned brand in Madison, WI, USA.",
     alternates: {
       canonical: "/",
     },
@@ -26,19 +26,19 @@ const ETSY_SHOP_URL = "https://www.etsy.com/shop/TheAugustJonesShop";
 const productImages = [
   {
     id: 1,
-    title: "Hoodies",
-    src: "/images/product/hoodies.webp",
-    alt: "One-of-a-kind Green Bay Packers hoodie made from upcycled fan gear",
-    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_reworked`,
-    category: "hoodies",
-  },
-  {
-    id: 2,
     title: "Jackets",
     src: "/images/product/jackets.webp",
     alt: "Unique game day outfit made from upcycled sports jerseys and thrifted military jacket",
     href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_gameday`,
     category: "jackets",
+  },
+  {
+    id: 2,
+    title: "Hoodies",
+    src: "/images/product/hoodies.webp",
+    alt: "One-of-a-kind Green Bay Packers hoodie made from upcycled fan gear",
+    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_reworked`,
+    category: "hoodies",
   },
   {
     id: 3,
@@ -96,22 +96,24 @@ export default function Home() {
           <div className="flex flex-col gap-8 lg:py-24">
             {/* Provenance label */}
             <p className="text-eyebrow text-accent/80">
-              Madison, WI — Handmade since 2024
+              Madison, WI — Handmade since 2025
             </p>
 
             {/* Hero heading — Bebas Neue at heroic scale */}
             <h1
               className="text-hero text-foreground"
               style={{
-                fontSize: "clamp(5.5rem, 14vw, 13rem)",
+                fontSize: "clamp(4.5rem, 11vw, 10rem)",
                 textWrap: "balance",
               }}
             >
               Upcycled
               <br />
-              For The
+              Fashion
               <br />
-              <span className="text-accent">Fans.</span>
+              For Every
+              <br />
+              <span className="text-accent">Fan.</span>
             </h1>
 
             {/* Editorial subhead — Instrument Serif italic */}
