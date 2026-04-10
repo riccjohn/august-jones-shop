@@ -15,8 +15,11 @@ export function TrackedEmailLink() {
       className="group flex items-center gap-2"
       onClick={trackEmailClick}
     >
-      <Mail className="h-4 w-4 shrink-0 opacity-80" aria-hidden="true" />
-      <span className="text-sm text-background/90 transition-colors duration-200 group-hover:text-[#ffb612]">
+      <Mail
+        className="h-3.5 w-3.5 shrink-0 text-foreground/40"
+        aria-hidden="true"
+      />
+      <span className="text-sm text-foreground/60 transition-colors duration-200 group-hover:text-accent">
         hello@augustjones.shop
       </span>
     </Link>

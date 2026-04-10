@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { Bebas_Neue, Geist, Geist_Mono } from "next/font/google";
+import {
+  Bebas_Neue,
+  Geist,
+  Geist_Mono,
+  Instrument_Serif,
+} from "next/font/google";
 import Script from "next/script";
 import { SiteNav } from "@/components/SiteNav";
 import "./globals.css";
@@ -21,7 +26,15 @@ const bebasNeue = Bebas_Neue({
   display: "swap",
 });
 
-const TITLE = "August Jones | Renewed Fashion";
+const instrumentSerif = Instrument_Serif({
+  weight: "400",
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  variable: "--font-instrument-serif",
+  display: "swap",
+});
+
+const TITLE = "August Jones | Upcycled Sports Fashion";
 const DESCRIPTION =
   "Hand-made, one-of-a-kind upcycled sports fashion. Streetwear vests, hoodies, sweatpants, and jackets created from upcycled sports wear by a solo female-owned brand.";
 
@@ -99,7 +112,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${instrumentSerif.variable} antialiased`}
       >
         <SiteNav />
         {children}
@@ -133,7 +146,7 @@ export default function RootLayout({
               latitude: "43.0731",
               longitude: "-89.4012",
             },
-            logo: "https://www.augustjones.shop/logos/August_Jones_Logo.svg",
+            logo: "https://www.augustjones.shop/logos/August_Jones-Horitontal_Logo-transparent_black.svg",
             image: "https://www.augustjones.shop/images/social_02-1200.webp",
             sameAs: [
               "https://www.instagram.com/augustjonesshop",
