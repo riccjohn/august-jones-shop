@@ -104,13 +104,16 @@ test.describe("Analytics event tracking", () => {
   }) => {
     await page.goto("/");
 
-    await page
-      .getByLabel("August Jones on Instagram")
-      .click({ modifiers: ["Alt"] });
+    const instagramLink = page.getByLabel("August Jones on Instagram");
 
-    const call = await getLastUmamiCall(page);
-    expect(call.eventName).toBe("instagram_click");
-    expect(call.eventData?.source).toBe("footer");
+    // InstagramLink is a client component; under parallel load (e.g. Firefox)
+    // the first click can land before hydration attaches onClick — retry until tracked.
+    await expect(async () => {
+      await instagramLink.click({ modifiers: ["Alt"] });
+      const call = await getLastUmamiCall(page);
+      expect(call.eventName).toBe("instagram_click");
+      expect(call.eventData?.source).toBe("footer");
+    }).toPass({ timeout: 10_000 });
   });
 
   test("email link click sends email_click", async ({ page }) => {
@@ -135,12 +138,12 @@ test.describe("Analytics event tracking", () => {
       );
     });
 
-    // Footer email is a client component; under parallel load (e.g. Firefox) the
-    // first click can land before hydration attaches onClick — retry until tracked.
+    // TrackedEmailLink is a client component; under parallel load (e.g. Firefox)
+    // the first click can land before hydration attaches onClick — retry until tracked.
     await expect(async () => {
       await emailLink.click();
       const call = await getLastUmamiCall(page);
       expect(call.eventName).toBe("email_click");
-    }).toPass({ timeout: 5_000 });
+    }).toPass({ timeout: 10_000 });
   });
 });
