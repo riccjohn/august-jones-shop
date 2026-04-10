@@ -3,7 +3,7 @@
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { trackNavClick, trackShopifyClick } from "@/lib/analytics";
 
@@ -18,7 +18,7 @@ export function SiteNav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 32);
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
