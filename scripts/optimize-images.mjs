@@ -95,13 +95,11 @@ async function optimizeImage(imagePath) {
     await copyFile(imagePath, backupPath);
   }
 
-  // Optimize and convert to WebP
-  const image = sharp(imagePath);
-  const metadata = await image.metadata();
-
-  await image
+  // Optimize and convert to WebP (rotate() applies EXIF orientation before resize)
+  await sharp(imagePath)
+    .rotate()
     .resize({
-      width: Math.min(metadata.width, MAX_WIDTH),
+      width: MAX_WIDTH,
       withoutEnlargement: true,
     })
     .webp({ quality: QUALITY })
