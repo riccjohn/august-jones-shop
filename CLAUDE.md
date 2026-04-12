@@ -79,6 +79,14 @@ Key files: `src/lib/analytics.ts` (client tracking functions), `src/app/layout.t
 - `pnpm test:e2e` — Run Playwright e2e tests
 - `pnpm test:e2e:ui` — Run Playwright tests in UI mode
 
+## Manual QA
+
+**Run `docs/qa-manual.md` before shipping any PR that touches UI, navigation, analytics, or the contact form.**
+
+The checklist is agent-runnable using Playwright MCP browser tools. It covers visual checks, hover states, mobile layout, external link destinations, form success/error states, and SEO structured data — things the automated e2e suite does not assert.
+
+The checklist includes a self-update step (Section 12): after every run, the agent checks for new pages or components not yet covered and updates the doc itself. Keep the checklist current.
+
 ## Tech Stack
 
 - **Next.js 16** with App Router, React 19, TypeScript (strict mode)
