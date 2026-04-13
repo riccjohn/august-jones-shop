@@ -85,11 +85,11 @@ export function ContactForm() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="message">Tell me about your jersey</Label>
+        <Label htmlFor="message">Tell me about your custom request</Label>
         <Textarea
           id="message"
           name="message"
-          placeholder="What team, what era, what do you have in mind? The more detail the better."
+          placeholder="Include team, style, size, any inspiration from my Instagram or shop, etc. Details help!"
           rows={6}
           required
           disabled={state === "submitting"}

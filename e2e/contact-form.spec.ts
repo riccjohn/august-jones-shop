@@ -7,7 +7,7 @@ const fillForm = async (
   await page.getByLabel("Name").fill("Jane Smith");
   await page.getByLabel("Email").fill("jane@example.com");
   await page
-    .getByRole("textbox", { name: "Tell me about your jersey" })
+    .getByRole("textbox", { name: "Tell me about your custom request" })
     .fill(message);
 };
 
@@ -20,7 +20,7 @@ test.describe("Contact Form", () => {
     await expect(page.getByLabel("Name")).toBeVisible();
     await expect(page.getByLabel("Email")).toBeVisible();
     await expect(
-      page.getByRole("textbox", { name: "Tell me about your jersey" }),
+      page.getByRole("textbox", { name: "Tell me about your custom request" }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: /request a custom/i }),
