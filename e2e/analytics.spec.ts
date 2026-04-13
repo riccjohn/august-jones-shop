@@ -59,14 +59,18 @@ test.describe("Analytics event tracking", () => {
   }) => {
     await page.goto("/");
 
-    await page
+    const footerShopLink = page
       .getByLabel("Footer navigation")
-      .getByRole("link", { name: /Shop Now/i })
-      .click({ modifiers: ["Alt"] });
+      .getByRole("link", { name: /Shop Now/i });
 
-    const call = await getLastUmamiCall(page);
-    expect(call.eventName).toBe("shopify_store_click");
-    expect(call.eventData?.source).toBe("footer");
+    // FooterShopLink is a client component; under parallel load (e.g. Firefox)
+    // the first click can land before hydration attaches onClick — retry until tracked.
+    await expect(async () => {
+      await footerShopLink.click({ modifiers: ["Alt"] });
+      const call = await getLastUmamiCall(page);
+      expect(call.eventName).toBe("shopify_store_click");
+      expect(call.eventData?.source).toBe("footer");
+    }).toPass({ timeout: 10_000 });
   });
 
   test("gallery item click sends shopify_store_click with source starting with gallery_", async ({
