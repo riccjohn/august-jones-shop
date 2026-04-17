@@ -8,13 +8,23 @@ import { useEffect, useRef } from "react";
 const SHADOW_STYLES = `
   #atcb-reference { display: none !important; }
   .atcb-button {
+    background-color: #ffb612 !important;
+    color: #222 !important;
+    border-color: #ffb612 !important;
     padding: 0.5rem 1.25rem !important;
     font-size: 0.875rem !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
     line-height: 1.5 !important;
     letter-spacing: 0.025em !important;
     min-width: 0 !important;
+    box-shadow: none !important;
   }
+  .atcb-button:hover {
+    background-color: #e6a410 !important;
+    border-color: #e6a410 !important;
+    color: #222 !important;
+  }
+  .atcb-button-icon { color: #222 !important; }
   .atcb-list-item {
     transition: background-color 0.25s ease, color 0.25s ease !important;
   }

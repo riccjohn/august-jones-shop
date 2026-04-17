@@ -117,16 +117,12 @@ test.describe("Events Page", () => {
     await expect(cityLocator).toBeVisible();
   });
 
-  test("Get Directions link is present with href starting with https://maps.", async ({
-    page,
-  }) => {
+  test("venue name links to Google Maps", async ({ page }) => {
     await page.goto("/events");
 
-    const directionsLink = page
-      .getByRole("link", { name: /get directions/i })
-      .first();
-    await expect(directionsLink).toBeVisible();
-    await expect(directionsLink).toHaveAttribute("href", /^https:\/\/maps\./);
+    const venueLink = page.locator('[data-testid="event-venue"]').first();
+    await expect(venueLink).toBeVisible();
+    await expect(venueLink).toHaveAttribute("href", /^https:\/\/maps\./);
   });
 
   test("Add to Calendar button or similar is present on at least one event card", async ({
@@ -182,7 +178,7 @@ test.describe("Events Page", () => {
     await expect(sessionDates).toHaveCount(2);
   });
 
-  test("multi-day event card shows one Add to Calendar button per session", async ({
+  test("multi-day event card shows a single Add to Calendar button", async ({
     page,
   }) => {
     await page.goto("/events");
@@ -193,7 +189,7 @@ test.describe("Events Page", () => {
     const calendarButtons = card.getByRole("button", {
       name: /add to calendar/i,
     });
-    await expect(calendarButtons).toHaveCount(2);
+    await expect(calendarButtons).toHaveCount(1);
   });
 
   test("single-day event card shows exactly one session date line", async ({

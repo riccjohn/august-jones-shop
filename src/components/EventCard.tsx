@@ -99,13 +99,16 @@ export function EventCard({ event }: EventCardProps) {
       )}
 
       <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-2">
-        <p
-          className="flex items-center gap-1.5 text-base font-medium text-[#222]/80"
+        <a
+          href={event.mapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-1.5 text-base font-medium text-[#222]/80 underline-offset-2 hover:underline"
           data-testid="event-venue"
         >
           <MapPin className="h-4 w-4 shrink-0 text-[#222]/40" strokeWidth={2} />
           {event.venueName}
-        </p>
+        </a>
         <span
           className="border border-[#ffb612]/60 px-2 py-0.5 font-bebas-neue text-sm tracking-widest text-[#222]/70"
           data-testid="event-city"
@@ -130,15 +133,6 @@ export function EventCard({ event }: EventCardProps) {
       )}
 
       <div className="flex flex-col items-start gap-4 sm:flex-row sm:flex-wrap">
-        <a
-          href={event.mapsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 border border-[#ffb612]/40 px-5 py-2.5 text-sm font-medium tracking-wide text-[#222] transition-colors hover:border-[#ffb612] hover:bg-[#ffb612]"
-        >
-          Get Directions
-        </a>
-
         {isMultiDay ? (
           <AddToCalendarButton
             name={getEventName(event)}
