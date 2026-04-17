@@ -1,8 +1,12 @@
+export interface EventSession {
+  startDate: string;
+  endDate: string;
+}
+
 export interface AugustJonesEvent {
   id: string;
   marketName: string;
-  startDate: string;
-  endDate: string;
+  sessions: EventSession[];
   venueName: string;
   city: string;
   address: { street: string; city: string; state: string; zip: string };
@@ -15,10 +19,40 @@ export interface AugustJonesEvent {
 
 const events: AugustJonesEvent[] = [
   {
+    id: "madison-spring-pop-up-2026-04-17",
+    marketName: "Madison Spring Pop-Up",
+    sessions: [
+      {
+        startDate: "2026-04-17T16:00:00-05:00",
+        endDate: "2026-04-17T20:00:00-05:00",
+      },
+      {
+        startDate: "2026-04-18T12:00:00-05:00",
+        endDate: "2026-04-18T20:00:00-05:00",
+      },
+    ],
+    venueName: "The Collective MKE",
+    city: "Madison, WI",
+    address: {
+      street: "214 W State St",
+      city: "Madison",
+      state: "WI",
+      zip: "53703",
+    },
+    mapsUrl: "https://maps.google.com/?q=214+W+State+St,+Madison,+WI+53703",
+    eventWebsiteUrl: "https://augustjones.shop",
+    description:
+      "Two-day spring pop-up on State Street! Stop by Friday evening after work or swing through Saturday for the full afternoon. Shop one-of-a-kind upcycled sports streetwear — every piece is handmade and won't last long.",
+  },
+  {
     id: "mad-city-makers-market-2026-05-10",
     marketName: "Mad City Makers Market",
-    startDate: "2026-05-10T10:00:00-05:00",
-    endDate: "2026-05-10T16:00:00-05:00",
+    sessions: [
+      {
+        startDate: "2026-05-10T10:00:00-05:00",
+        endDate: "2026-05-10T16:00:00-05:00",
+      },
+    ],
     venueName: "Olbrich Botanical Gardens",
     city: "Madison, WI",
     address: {
@@ -35,8 +69,12 @@ const events: AugustJonesEvent[] = [
   {
     id: "milwaukees-best-craft-fair-2026-05-30",
     marketName: "Milwaukee's Best Craft Fair",
-    startDate: "2026-05-30T09:00:00-05:00",
-    endDate: "2026-05-30T15:00:00-05:00",
+    sessions: [
+      {
+        startDate: "2026-05-30T09:00:00-05:00",
+        endDate: "2026-05-30T15:00:00-05:00",
+      },
+    ],
     venueName: "Walker's Point Center for the Arts",
     city: "Milwaukee, WI",
     address: {
@@ -51,10 +89,18 @@ const events: AugustJonesEvent[] = [
       "August Jones is heading to Milwaukee for the Best Craft Fair! Shop unique upcycled streetwear — each piece is handcrafted from reclaimed pro sports jerseys and fan gear. No two pieces are alike.",
   },
   {
-    id: "chicago-renegade-craft-fair-2026-06-14",
+    id: "chicago-renegade-craft-fair-2026-06-13",
     marketName: "Renegade Craft Fair Chicago",
-    startDate: "2026-06-14T11:00:00-05:00",
-    endDate: "2026-06-14T18:00:00-05:00",
+    sessions: [
+      {
+        startDate: "2026-06-13T11:00:00-05:00",
+        endDate: "2026-06-13T19:00:00-05:00",
+      },
+      {
+        startDate: "2026-06-14T11:00:00-05:00",
+        endDate: "2026-06-14T18:00:00-05:00",
+      },
+    ],
     venueName: "Wicker Park",
     city: "Chicago, IL",
     address: {
@@ -71,8 +117,12 @@ const events: AugustJonesEvent[] = [
   {
     id: "madison-night-market-2026-06-26",
     marketName: "Madison Night Market",
-    startDate: "2026-06-26T17:00:00-05:00",
-    endDate: "2026-06-26T22:00:00-05:00",
+    sessions: [
+      {
+        startDate: "2026-06-26T17:00:00-05:00",
+        endDate: "2026-06-26T22:00:00-05:00",
+      },
+    ],
     venueName: "State Street",
     city: "Madison, WI",
     address: {
@@ -89,8 +139,12 @@ const events: AugustJonesEvent[] = [
   {
     id: "brew-city-summer-market-2026-07-18",
     marketName: "Brew City Summer Market",
-    startDate: "2026-07-18T10:00:00-05:00",
-    endDate: "2026-07-18T16:00:00-05:00",
+    sessions: [
+      {
+        startDate: "2026-07-18T10:00:00-05:00",
+        endDate: "2026-07-18T16:00:00-05:00",
+      },
+    ],
     venueName: "Henry Maier Festival Park",
     city: "Milwaukee, WI",
     address: {
@@ -132,8 +186,44 @@ export function formatEventTime(date: Date): string {
   });
 }
 
+export function formatEventDateRange(event: AugustJonesEvent): string {
+  const first = new Date(event.sessions[0].startDate);
+  const last = new Date(event.sessions[event.sessions.length - 1].startDate);
+
+  if (event.sessions.length === 1) {
+    return formatEventDate(first);
+  }
+
+  const firstMonth = first.toLocaleDateString("en-US", {
+    month: "long",
+    timeZone: EVENT_TIMEZONE,
+  });
+  const lastMonth = last.toLocaleDateString("en-US", {
+    month: "long",
+    timeZone: EVENT_TIMEZONE,
+  });
+  const firstDay = first.toLocaleDateString("en-US", {
+    day: "numeric",
+    timeZone: EVENT_TIMEZONE,
+  });
+  const lastDay = last.toLocaleDateString("en-US", {
+    day: "numeric",
+    timeZone: EVENT_TIMEZONE,
+  });
+  const year = last.toLocaleDateString("en-US", {
+    year: "numeric",
+    timeZone: EVENT_TIMEZONE,
+  });
+
+  if (firstMonth === lastMonth) {
+    return `${firstMonth} ${firstDay}–${lastDay}, ${year}`;
+  }
+  return `${firstMonth} ${firstDay} – ${lastMonth} ${lastDay}, ${year}`;
+}
+
 export function getUpcomingEvents(): AugustJonesEvent[] {
-  return events.filter(
-    (e) => new Date(e.endDate).getTime() + ONE_WEEK_MS > Date.now(),
-  );
+  return events.filter((e) => {
+    const lastSession = e.sessions[e.sessions.length - 1];
+    return new Date(lastSession.endDate).getTime() + ONE_WEEK_MS > Date.now();
+  });
 }

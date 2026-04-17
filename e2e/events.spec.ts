@@ -169,6 +169,45 @@ test.describe("Events Page", () => {
     expect(hasEventSchema).toBe(true);
   });
 
+  test("multi-day event card shows one session date line per session", async ({
+    page,
+  }) => {
+    await page.goto("/events");
+
+    // The Renegade Craft Fair is a stable 2-day event (June 13–14)
+    const card = page.locator("#chicago-renegade-craft-fair-2026-06-13");
+    await expect(card).toBeVisible();
+
+    const sessionDates = card.locator('[data-testid="event-session-date"]');
+    await expect(sessionDates).toHaveCount(2);
+  });
+
+  test("multi-day event card shows one Add to Calendar button per session", async ({
+    page,
+  }) => {
+    await page.goto("/events");
+
+    const card = page.locator("#chicago-renegade-craft-fair-2026-06-13");
+    await expect(card).toBeVisible();
+
+    const calendarButtons = card.getByRole("button", {
+      name: /add to calendar/i,
+    });
+    await expect(calendarButtons).toHaveCount(2);
+  });
+
+  test("single-day event card shows exactly one session date line", async ({
+    page,
+  }) => {
+    await page.goto("/events");
+
+    const card = page.locator("#mad-city-makers-market-2026-05-10");
+    await expect(card).toBeVisible();
+
+    const sessionDates = card.locator('[data-testid="event-session-date"]');
+    await expect(sessionDates).toHaveCount(1);
+  });
+
   // Skipped: The live data always has upcoming events and there is no easy way
   // to force an empty-state render in Playwright without mocking server data.
   // The empty-state UI (check back text, Instagram link, Etsy link) should be

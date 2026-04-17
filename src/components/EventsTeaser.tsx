@@ -1,5 +1,5 @@
 import {
-  formatEventDate,
+  formatEventDateRange,
   formatEventTime,
   getUpcomingEvents,
 } from "@/data/events";
@@ -28,8 +28,11 @@ export function EventsTeaser() {
         </div>
         <div className="flex flex-col">
           {events.map((event, i) => {
-            const start = new Date(event.startDate);
-            const end = new Date(event.endDate);
+            const firstSession = event.sessions[0];
+            const start = new Date(firstSession.startDate);
+            const end = new Date(firstSession.endDate);
+            const isMultiDay = event.sessions.length > 1;
+
             return (
               <div
                 key={event.id}
@@ -40,8 +43,14 @@ export function EventsTeaser() {
               >
                 <div className="flex flex-col gap-1">
                   <p className="text-eyebrow text-[#222]/55">
-                    {formatEventDate(start)} — {formatEventTime(start)}–
-                    {formatEventTime(end)}
+                    {isMultiDay ? (
+                      formatEventDateRange(event)
+                    ) : (
+                      <>
+                        {formatEventDateRange(event)} — {formatEventTime(start)}
+                        –{formatEventTime(end)}
+                      </>
+                    )}
                   </p>
                   <p
                     className="text-display text-[#222]"

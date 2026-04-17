@@ -10,8 +10,8 @@ export function EventsSchema({ events }: EventsSchemaProps) {
     "@graph": events.map((event) => ({
       "@type": "Event",
       name: getEventName(event),
-      startDate: event.startDate,
-      endDate: event.endDate,
+      startDate: event.sessions[0].startDate,
+      endDate: event.sessions[event.sessions.length - 1].endDate,
       eventStatus: "https://schema.org/EventScheduled",
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       location: {
