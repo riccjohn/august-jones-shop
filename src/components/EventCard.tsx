@@ -1,3 +1,4 @@
+import { Link } from "lucide-react";
 import { AddToCalendarButton } from "@/components/AddToCalendarButton";
 import {
   type AugustJonesEvent,
@@ -41,7 +42,24 @@ export function EventCard({ event }: EventCardProps) {
       className="bg-[#f6f4f0] p-8 target:ring-2 target:ring-[#ffb612] sm:p-10"
     >
       <h2 className="mb-3 font-bebas-neue text-3xl tracking-wide text-[#222] sm:text-4xl">
-        {getEventName(event)}
+        {event.eventWebsiteUrl ? (
+          <a
+            href={event.eventWebsiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-2"
+          >
+            <span className="group-hover:underline decoration-[#ffb612] underline-offset-2">
+              {getEventName(event)}
+            </span>
+            <Link
+              className="mb-0.5 h-5 w-5 shrink-0 text-[#222]/35 transition-colors duration-300 group-hover:text-[#ffb612]"
+              strokeWidth={2.5}
+            />
+          </a>
+        ) : (
+          getEventName(event)
+        )}
       </h2>
 
       {isMultiDay ? (
