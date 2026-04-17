@@ -58,7 +58,9 @@ export function EventsTeaser() {
                   >
                     {event.marketName}
                   </p>
-                  <p className="text-eyebrow text-[#222]/55">{event.city}</p>
+                  <p className="text-eyebrow text-[#222]/55">
+                    {event.address.city}, {event.address.state}
+                  </p>
                 </div>
                 <a
                   href={`/events/#${event.id}`}

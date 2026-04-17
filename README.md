@@ -51,13 +51,12 @@ Add a new entry to the `events` array:
   marketName: "Market Name",            // used in the card title: "August Jones at <marketName>"
   sessions: [
     {
-      startDate: "2026-09-06T10:00:00-05:00",  // ISO 8601 with timezone offset
+      startDate: "2026-09-06T10:00:00-05:00",  // ISO 8601, see datetime format note below
       endDate:   "2026-09-06T16:00:00-05:00",
     },
     // add more sessions for multi-day events
   ],
   venueName: "Venue Name",
-  city: "City, ST",
   address: { street: "123 Main St", city: "Madison", state: "WI", zip: "53703" },
   mapsUrl: "https://maps.google.com/?q=...",
   eventWebsiteUrl: "https://example.com",  // optional — links the card title
@@ -65,6 +64,17 @@ Add a new entry to the `events` array:
   entryFeeDiscountCode: "CODE10",          // optional — displays a discount badge on the card
 }
 ```
+
+### Datetime format
+
+Dates use ISO 8601 with an explicit `America/Chicago` offset:
+
+```
+YYYY-MM-DDTHH:MM:SS-05:00   ← CDT (summer, March–November)
+YYYY-MM-DDTHH:MM:SS-06:00   ← CST (winter, November–March)
+```
+
+To generate these strings easily, use **[timestamp.online](https://timestamp.online)** — pick the date, time, and `America/Chicago` timezone, then copy the ISO 8601 output.
 
 ### How events are filtered
 

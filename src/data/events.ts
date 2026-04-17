@@ -8,7 +8,6 @@ export interface AugustJonesEvent {
   marketName: string;
   sessions: EventSession[];
   venueName: string;
-  city: string;
   address: { street: string; city: string; state: string; zip: string };
   mapsUrl: string;
   eventWebsiteUrl: string;
@@ -33,7 +32,6 @@ const events: AugustJonesEvent[] = [
       },
     ],
     venueName: "The Collective MKE",
-    city: "Madison, WI",
     address: {
       street: "214 W State St",
       city: "Madison",
@@ -56,7 +54,6 @@ const events: AugustJonesEvent[] = [
       },
     ],
     venueName: "Olbrich Botanical Gardens",
-    city: "Madison, WI",
     address: {
       street: "3330 Atwood Ave",
       city: "Madison",
@@ -78,7 +75,6 @@ const events: AugustJonesEvent[] = [
       },
     ],
     venueName: "Walker's Point Center for the Arts",
-    city: "Milwaukee, WI",
     address: {
       street: "839 S 5th St",
       city: "Milwaukee",
@@ -104,7 +100,6 @@ const events: AugustJonesEvent[] = [
       },
     ],
     venueName: "Wicker Park",
-    city: "Chicago, IL",
     address: {
       street: "1425 N Damen Ave",
       city: "Chicago",
@@ -126,7 +121,6 @@ const events: AugustJonesEvent[] = [
       },
     ],
     venueName: "State Street",
-    city: "Madison, WI",
     address: {
       street: "State St",
       city: "Madison",
@@ -148,7 +142,6 @@ const events: AugustJonesEvent[] = [
       },
     ],
     venueName: "Henry Maier Festival Park",
-    city: "Milwaukee, WI",
     address: {
       street: "200 N Harbor Dr",
       city: "Milwaukee",

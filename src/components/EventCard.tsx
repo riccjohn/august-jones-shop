@@ -113,7 +113,7 @@ export function EventCard({ event }: EventCardProps) {
           className="border border-[#ffb612]/60 px-2 py-0.5 font-bebas-neue text-sm tracking-widest text-[#222]/70"
           data-testid="event-city"
         >
-          {event.city}
+          {event.address.city}, {event.address.state}
         </span>
       </div>
 
