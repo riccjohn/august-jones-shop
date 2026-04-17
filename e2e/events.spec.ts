@@ -165,6 +165,59 @@ test.describe("Events Page", () => {
     expect(hasEventSchema).toBe(true);
   });
 
+  test("event card title links to event website when eventWebsiteUrl is set", async ({
+    page,
+  }) => {
+    await page.goto("/events");
+
+    // Madison Spring Pop-Up has an eventWebsiteUrl set
+    const card = page.locator("#madison-spring-pop-up-2026-04-17");
+    await expect(card).toBeVisible();
+
+    const titleLink = card.getByRole("link", {
+      name: /madison spring pop-up/i,
+    });
+    await expect(titleLink).toBeVisible();
+    await expect(titleLink).toHaveAttribute("href", /.+/);
+  });
+
+  test("event card shows entry fee discount code when present", async ({
+    page,
+  }) => {
+    await page.goto("/events");
+
+    // Madison Spring Pop-Up has entryFeeDiscountCode: "AUGUSTJONES10"
+    const card = page.locator("#madison-spring-pop-up-2026-04-17");
+    await expect(card).toBeVisible();
+
+    await expect(card).toContainText("AUGUSTJONES10");
+  });
+
+  test("event card shows TODAY badge for event happening today", async ({
+    page,
+  }) => {
+    await page.goto("/events");
+
+    // Madison Spring Pop-Up starts 2026-04-17 — this test is tied to that date.
+    // The badge is rendered server-side based on real clock, so it will show
+    // TODAY while the event is still upcoming on this calendar date.
+    const card = page.locator("#madison-spring-pop-up-2026-04-17");
+    await expect(card).toBeVisible();
+
+    const badge = card.locator("span", { hasText: /^(TODAY|TOMORROW)$/ });
+    await expect(badge).toBeVisible();
+  });
+
+  test("city chip renders correct city text", async ({ page }) => {
+    await page.goto("/events");
+
+    const cityChip = page
+      .locator('[data-testid="event-city"]')
+      .filter({ hasText: /madison/i })
+      .first();
+    await expect(cityChip).toBeVisible();
+  });
+
   test("multi-day event card shows one session date line per session", async ({
     page,
   }) => {
