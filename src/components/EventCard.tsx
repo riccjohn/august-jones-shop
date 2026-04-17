@@ -1,4 +1,4 @@
-import { Link } from "lucide-react";
+import { Link, MapPin } from "lucide-react";
 import { AddToCalendarButton } from "@/components/AddToCalendarButton";
 import {
   type AugustJonesEvent,
@@ -98,15 +98,21 @@ export function EventCard({ event }: EventCardProps) {
         </p>
       )}
 
-      <p
-        className="mb-1 text-base font-medium text-[#222]/80"
-        data-testid="event-venue"
-      >
-        {event.venueName}
-      </p>
-      <p className="mb-6 text-sm text-[#222]/60" data-testid="event-city">
-        {event.city}
-      </p>
+      <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <p
+          className="flex items-center gap-1.5 text-base font-medium text-[#222]/80"
+          data-testid="event-venue"
+        >
+          <MapPin className="h-4 w-4 shrink-0 text-[#222]/40" strokeWidth={2} />
+          {event.venueName}
+        </p>
+        <span
+          className="border border-[#ffb612]/60 px-2 py-0.5 font-bebas-neue text-sm tracking-widest text-[#222]/70"
+          data-testid="event-city"
+        >
+          {event.city}
+        </span>
+      </div>
 
       <p className="mb-8 text-base/relaxed text-[#222]/70">
         {getEventDescription(event)}
