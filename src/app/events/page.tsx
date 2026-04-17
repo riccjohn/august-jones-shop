@@ -28,7 +28,13 @@ export default function EventsPage() {
     <main className="flex min-h-screen flex-col">
       {events.length > 0 && <EventsSchema events={events} />}
 
-      <section className="bg-[#222] px-6 pb-16 pt-16 sm:pb-20 sm:pt-24">
+      <section
+        className="bg-[#222] px-6 pb-16 pt-16 sm:pb-20 sm:pt-24"
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(-45deg, transparent, transparent 14px, rgba(255,182,18,0.04) 14px, rgba(255,182,18,0.04) 15px)",
+        }}
+      >
         <div className="mx-auto max-w-6xl">
           <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-[#ffb612]/70">
             Pop-ups &amp; Markets
