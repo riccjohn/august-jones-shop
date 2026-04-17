@@ -34,12 +34,14 @@ export default function EventsPage() {
             Pop-ups &amp; Markets
           </p>
           <h1
-            className="font-bebas-neue text-[#f6f4f0]"
-            style={{ fontSize: "clamp(3.5rem, 10vw, 8rem)" }}
+            className="font-bebas-neue leading-none text-[#f6f4f0]"
+            style={{ fontSize: "clamp(3rem, 10vw, 8rem)" }}
           >
-            Upcoming Events &amp; Pop-Ups
+            Upcoming Pop-Ups
+            <br />
+            &amp; Markets
           </h1>
-          <p className="mt-4 max-w-xl text-base/relaxed text-[#f6f4f0]/60">
+          <p className="mt-4 max-w-xl text-base/relaxed text-[#f6f4f0]/80">
             Find August Jones at pop-up markets and craft fairs in Madison WI,
             Milwaukee WI, and Chicago IL.
           </p>
