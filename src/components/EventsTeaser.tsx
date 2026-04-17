@@ -52,7 +52,7 @@ export function EventsTeaser() {
                   <p className="text-eyebrow text-[#222]/55">{event.city}</p>
                 </div>
                 <a
-                  href="/events/"
+                  href={`/events/#${event.id}`}
                   className="text-eyebrow shrink-0 text-[#222]/70 underline underline-offset-4 hover:text-[#ffb612] hover:no-underline"
                 >
                   Details ↗

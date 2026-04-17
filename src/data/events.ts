@@ -1,6 +1,5 @@
 export interface AugustJonesEvent {
   id: string;
-  name: string;
   marketName: string;
   startDate: string;
   endDate: string;
@@ -17,7 +16,6 @@ export interface AugustJonesEvent {
 const events: AugustJonesEvent[] = [
   {
     id: "mad-city-makers-market-2026-05-10",
-    name: "August Jones at Mad City Makers Market",
     marketName: "Mad City Makers Market",
     startDate: "2026-05-10T10:00:00-05:00",
     endDate: "2026-05-10T16:00:00-05:00",
@@ -36,7 +34,6 @@ const events: AugustJonesEvent[] = [
   },
   {
     id: "milwaukees-best-craft-fair-2026-05-30",
-    name: "August Jones at Milwaukee's Best Craft Fair",
     marketName: "Milwaukee's Best Craft Fair",
     startDate: "2026-05-30T09:00:00-05:00",
     endDate: "2026-05-30T15:00:00-05:00",
@@ -55,7 +52,6 @@ const events: AugustJonesEvent[] = [
   },
   {
     id: "chicago-renegade-craft-fair-2026-06-14",
-    name: "August Jones at Renegade Craft Fair Chicago",
     marketName: "Renegade Craft Fair Chicago",
     startDate: "2026-06-14T11:00:00-05:00",
     endDate: "2026-06-14T18:00:00-05:00",
@@ -74,7 +70,6 @@ const events: AugustJonesEvent[] = [
   },
   {
     id: "madison-night-market-2026-06-26",
-    name: "August Jones at Madison Night Market",
     marketName: "Madison Night Market",
     startDate: "2026-06-26T17:00:00-05:00",
     endDate: "2026-06-26T22:00:00-05:00",
@@ -93,7 +88,6 @@ const events: AugustJonesEvent[] = [
   },
   {
     id: "brew-city-summer-market-2026-07-18",
-    name: "August Jones at Brew City Summer Market",
     marketName: "Brew City Summer Market",
     startDate: "2026-07-18T10:00:00-05:00",
     endDate: "2026-07-18T16:00:00-05:00",
@@ -113,6 +107,10 @@ const events: AugustJonesEvent[] = [
 ];
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+export function getEventName(event: AugustJonesEvent): string {
+  return `August Jones at ${event.marketName}`;
+}
 
 export const EVENT_TIMEZONE = "America/Chicago";
 

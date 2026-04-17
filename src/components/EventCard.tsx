@@ -4,6 +4,7 @@ import {
   EVENT_TIMEZONE,
   formatEventDate,
   formatEventTime,
+  getEventName,
 } from "@/data/events";
 
 interface EventCardProps {
@@ -23,14 +24,17 @@ export function EventCard({ event }: EventCardProps) {
   const end = new Date(event.endDate);
 
   return (
-    <article className="bg-[#f6f4f0] p-8 sm:p-10">
+    <article
+      id={event.id}
+      className="bg-[#f6f4f0] p-8 target:ring-2 target:ring-[#ffb612] sm:p-10"
+    >
       <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-[#222]/60">
         {formatEventDate(start)} &middot; {formatEventTime(start)}&ndash;
         {formatEventTime(end)}
       </p>
 
       <h2 className="mb-4 font-bebas-neue text-3xl tracking-wide text-[#222] sm:text-4xl">
-        {event.name}
+        {getEventName(event)}
       </h2>
 
       <p
@@ -58,7 +62,7 @@ export function EventCard({ event }: EventCardProps) {
         </a>
 
         <AddToCalendarButton
-          name={event.name}
+          name={getEventName(event)}
           startDate={getCalendarDate(event.startDate)}
           startTime={getCalendarTime(event.startDate)}
           endDate={getCalendarDate(event.endDate)}
