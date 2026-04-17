@@ -230,6 +230,28 @@ export function formatEventDateRange(event: AugustJonesEvent): string {
   return `${firstMonth} ${firstDay} – ${lastMonth} ${lastDay}, ${year}`;
 }
 
+export function getEventUrgencyLabel(
+  event: AugustJonesEvent,
+): "TODAY" | "TOMORROW" | null {
+  const now = new Date();
+  const fmt = (d: Date) =>
+    d.toLocaleDateString("en-US", {
+      timeZone: EVENT_TIMEZONE,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  const todayStr = fmt(now);
+  const tomorrowStr = fmt(new Date(now.getTime() + 24 * 60 * 60 * 1000));
+
+  for (const session of event.sessions) {
+    const sessionStr = fmt(new Date(session.startDate));
+    if (sessionStr === todayStr) return "TODAY";
+    if (sessionStr === tomorrowStr) return "TOMORROW";
+  }
+  return null;
+}
+
 export function getUpcomingEvents(): AugustJonesEvent[] {
   return events.filter((e) => {
     const lastSession = e.sessions[e.sessions.length - 1];
