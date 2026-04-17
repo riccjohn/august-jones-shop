@@ -41,7 +41,7 @@ export function EventCard({ event }: EventCardProps) {
   return (
     <article
       id={event.id}
-      className="relative bg-[#f6f4f0] p-8 transition-shadow duration-200 hover:shadow-[4px_4px_0_#ffb612] target:ring-2 target:ring-[#ffb612] sm:p-10"
+      className="relative bg-[#f6f4f0] p-8 target:ring-2 target:ring-[#ffb612] sm:p-10"
     >
       {urgencyLabel && (
         <span className="absolute right-0 top-0 bg-[#ffb612] px-3 py-1.5 font-bebas-neue text-base tracking-widest text-[#222]">

@@ -57,9 +57,12 @@ export default function EventsPage() {
       <section className="bg-[#222] px-6 pb-24 sm:pb-32">
         <div className="mx-auto max-w-6xl">
           {events.length > 0 ? (
-            <div className="flex flex-col gap-6">
-              {events.map((event) => (
-                <EventCard key={event.id} event={event} />
+            <div className="flex flex-col">
+              {events.map((event, index) => (
+                <div key={event.id}>
+                  {index > 0 && <div className="h-px bg-[#ffb612]" />}
+                  <EventCard event={event} />
+                </div>
               ))}
             </div>
           ) : (
