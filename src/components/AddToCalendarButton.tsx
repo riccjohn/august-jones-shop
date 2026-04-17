@@ -7,6 +7,14 @@ import { useEffect, useRef } from "react";
 
 const SHADOW_STYLES = `
   #atcb-reference { display: none !important; }
+  .atcb-button {
+    padding: 0.5rem 1.25rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    line-height: 1.5 !important;
+    letter-spacing: 0.025em !important;
+    min-width: 0 !important;
+  }
   .atcb-list-item {
     transition: background-color 0.25s ease, color 0.25s ease !important;
   }
