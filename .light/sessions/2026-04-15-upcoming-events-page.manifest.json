@@ -1,0 +1,38 @@
+{
+  "session": "2026-04-15-upcoming-events-page",
+  "date": "2026-04-15",
+  "epic": "upcoming-events-page",
+  "workflow_steps": ["research", "plan", "implement"],
+  "files_created": [
+    "src/data/events.ts",
+    "src/components/EventsSchema.tsx",
+    "src/components/AddToCalendarButton.tsx",
+    "src/components/EventCard.tsx",
+    "src/components/EventsTeaser.tsx",
+    "src/app/events/page.tsx",
+    "e2e/events.spec.ts"
+  ],
+  "files_modified": [
+    "src/app/sitemap.ts",
+    "src/components/SiteNav.tsx",
+    "src/components/Footer.tsx",
+    "src/app/page.tsx",
+    "next.config.ts",
+    "package.json",
+    "pnpm-lock.yaml"
+  ],
+  "gates": {
+    "RED": 2,
+    "GREEN": 3,
+    "VALIDATE": 2
+  },
+  "phases_completed": 8,
+  "total_phases": 8,
+  "test_suite_passed": true,
+  "test_results": {
+    "passed": 84,
+    "skipped": 3,
+    "failed": 0,
+    "browsers": ["chromium", "firefox", "webkit"]
+  }
+}

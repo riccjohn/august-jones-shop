@@ -37,6 +37,12 @@ export const Footer = () => {
             <nav aria-label="Footer navigation" className="flex flex-col gap-2">
               <FooterShopLink />
               <Link
+                href="/events"
+                className="text-sm text-foreground/75 transition-colors duration-200 hover:text-accent"
+              >
+                Events
+              </Link>
+              <Link
                 href="/about"
                 className="text-sm text-foreground/75 transition-colors duration-200 hover:text-accent"
               >

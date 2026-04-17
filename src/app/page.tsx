@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { EventsTeaser } from "@/components/EventsTeaser";
 import { Footer } from "@/components/Footer";
 import { GrainOverlay } from "@/components/GrainOverlay";
 import InstagramIcon from "@/components/InstagramIcon";
@@ -216,6 +217,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── EVENTS TEASER ─────────────────────────────────────────────────── */}
+      <EventsTeaser />
 
       {/* ── BRAND STATEMENT ───────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-background px-6 py-24 sm:py-32">

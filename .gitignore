@@ -59,3 +59,7 @@ node_modules/
 
 # Image optimization - original source files (not for deployment)
 original_images/
+
+# Task tracking
+.yaks
+.yaks/
