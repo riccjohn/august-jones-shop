@@ -5,6 +5,7 @@ import {
   formatEventDate,
   formatEventDateRange,
   formatEventTime,
+  getEventDescription,
   getEventName,
 } from "@/data/events";
 
@@ -73,8 +74,19 @@ export function EventCard({ event }: EventCardProps) {
       </p>
 
       <p className="mb-8 max-w-2xl text-base/relaxed text-[#222]/70">
-        {event.description}
+        {getEventDescription(event)}
       </p>
+
+      {event.entryFeeDiscountCode && (
+        <div className="mb-8 inline-flex items-center gap-3 border border-[#ffb612]/40 bg-[#ffb612]/10 px-4 py-3">
+          <span className="text-sm font-medium text-[#222]/70">
+            Entry fee discount:
+          </span>
+          <code className="font-mono text-sm font-bold tracking-widest text-[#222]">
+            {event.entryFeeDiscountCode}
+          </code>
+        </div>
+      )}
 
       <div className="flex flex-col items-start gap-4 sm:flex-row sm:flex-wrap">
         <a
@@ -110,7 +122,7 @@ export function EventCard({ event }: EventCardProps) {
               endTime={getCalendarTime(session.endDate)}
               timeZone={EVENT_TIMEZONE}
               location={`${event.address.street}, ${event.address.city}, ${event.address.state} ${event.address.zip}`}
-              description={event.description}
+              description={getEventDescription(event)}
               options={["Apple", "Google", "iCal", "Outlook.com"]}
               buttonStyle="flat"
               lightMode="dark"

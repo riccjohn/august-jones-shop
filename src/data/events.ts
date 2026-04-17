@@ -12,7 +12,8 @@ export interface AugustJonesEvent {
   address: { street: string; city: string; state: string; zip: string };
   mapsUrl: string;
   eventWebsiteUrl: string;
-  description: string;
+  description?: string;
+  entryFeeDiscountCode?: string;
   image?: string;
   instagramUrl?: string;
 }
@@ -41,6 +42,7 @@ const events: AugustJonesEvent[] = [
     },
     mapsUrl: "https://maps.google.com/?q=214+W+State+St,+Madison,+WI+53703",
     eventWebsiteUrl: "https://augustjones.shop",
+    entryFeeDiscountCode: "AUGUSTJONES10",
     description:
       "Two-day spring pop-up on State Street! Stop by Friday evening after work or swing through Saturday for the full afternoon. Shop one-of-a-kind upcycled sports streetwear — every piece is handmade and won't last long.",
   },
@@ -164,6 +166,13 @@ const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 export function getEventName(event: AugustJonesEvent): string {
   return `August Jones at ${event.marketName}`;
+}
+
+export function getEventDescription(event: AugustJonesEvent): string {
+  return (
+    event.description ??
+    `Come find August Jones at ${event.marketName}! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear. Every piece is handmade and one-of-a-kind.`
+  );
 }
 
 export const EVENT_TIMEZONE = "America/Chicago";
