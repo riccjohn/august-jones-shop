@@ -77,7 +77,7 @@ export function EventCard({ event }: EventCardProps) {
             return (
               <p
                 key={session.startDate}
-                className="text-sm font-semibold uppercase tracking-widest text-[#222]/60"
+                className="text-base font-semibold uppercase tracking-widest text-[#222]/80"
                 data-testid="event-session-date"
               >
                 {formatEventDate(start)} &middot; {formatEventTime(start)}
