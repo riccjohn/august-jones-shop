@@ -10,13 +10,6 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   trailingSlash: true,
-  turbopack: isE2E
-    ? {
-        resolveAlias: {
-          "@/data/event-source": "./src/data/event-source.e2e.ts",
-        },
-      }
-    : {},
   webpack(config) {
     if (isE2E) {
       config.resolve.alias["@/data/event-source"] = path.resolve(
