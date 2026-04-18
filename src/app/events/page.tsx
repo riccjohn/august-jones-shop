@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { EventCard } from "@/components/EventCard";
 import { EventsSchema } from "@/components/EventsSchema";
 import { Footer } from "@/components/Footer";
-import { getUpcomingEvents } from "@/data/events";
+import { upcomingEvents as events, now } from "@/data/event-source";
 
 export const metadata: Metadata = {
   title: "Upcoming Events & Pop-Ups | August Jones",
@@ -22,8 +22,6 @@ export const metadata: Metadata = {
 };
 
 export default function EventsPage() {
-  const events = getUpcomingEvents();
-
   return (
     <main className="flex min-h-screen flex-col">
       {events.length > 0 && <EventsSchema events={events} />}
@@ -61,36 +59,26 @@ export default function EventsPage() {
               {events.map((event, index) => (
                 <div key={event.id}>
                   {index > 0 && <div className="h-px bg-[#ffb612]" />}
-                  <EventCard event={event} />
+                  <EventCard event={event} now={now} />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="py-16 text-center">
-              <p className="mb-4 text-lg text-[#f6f4f0]/70">
-                No upcoming events right now. Check back soon!
+            <div className="py-20">
+              <p className="mb-3 font-bebas-neue text-3xl tracking-wide text-[#f6f4f0] sm:text-4xl">
+                No upcoming events
               </p>
-              <p className="mb-8 text-sm text-[#f6f4f0]/50">
-                Follow us on Instagram for event announcements.
+              <p className="mb-8 text-base text-[#f6f4f0]/60">
+                Check Instagram for the latest announcements.
               </p>
-              <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                <a
-                  href="https://instagram.com/augustjonesshop"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#ffb612] underline"
-                >
-                  Instagram
-                </a>
-                <a
-                  href="https://www.etsy.com/shop/TheAugustJonesShop"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#ffb612] underline"
-                >
-                  Shop on Etsy
-                </a>
-              </div>
+              <a
+                href="https://instagram.com/augustjonesshop"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block bg-[#ffb612] px-6 py-3 font-bebas-neue text-lg tracking-widest text-[#222] transition-opacity hover:opacity-90"
+              >
+                Follow on Instagram
+              </a>
             </div>
           )}
         </div>

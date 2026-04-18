@@ -1,4 +1,4 @@
-import { Link, MapPin } from "lucide-react";
+import { ExternalLink, MapPin } from "lucide-react";
 import { AddToCalendarButton } from "@/components/AddToCalendarButton";
 import {
   type AugustJonesEvent,
@@ -23,6 +23,7 @@ function buildMultiDayCalendarDescription(event: AugustJonesEvent): string {
 
 interface EventCardProps {
   event: AugustJonesEvent;
+  now: Date;
 }
 
 function getCalendarDate(dateString: string): string {
@@ -33,10 +34,10 @@ function getCalendarTime(dateString: string): string {
   return dateString.split("T")[1].slice(0, 5);
 }
 
-export function EventCard({ event }: EventCardProps) {
+export function EventCard({ event, now }: EventCardProps) {
   const { sessions } = event;
   const isMultiDay = sessions.length > 1;
-  const urgencyLabel = getEventUrgencyLabel(event);
+  const urgencyLabel = getEventUrgencyLabel(event, now);
 
   return (
     <article
@@ -49,24 +50,20 @@ export function EventCard({ event }: EventCardProps) {
         </span>
       )}
       <h2 className="mb-3 font-bebas-neue text-3xl tracking-wide text-[#222] sm:text-4xl">
-        {event.eventWebsiteUrl ? (
-          <a
-            href={event.eventWebsiteUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group inline-flex items-center gap-2"
-          >
-            <span className="group-hover:underline decoration-[#ffb612] underline-offset-2">
-              {getEventName(event)}
-            </span>
-            <Link
-              className="mb-0.5 h-5 w-5 shrink-0 text-[#222]/35 transition-colors duration-300 group-hover:text-[#ffb612]"
-              strokeWidth={2.5}
-            />
-          </a>
-        ) : (
-          getEventName(event)
-        )}
+        <a
+          href={event.eventWebsiteUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group inline-flex items-center gap-2"
+        >
+          <span className="group-hover:underline decoration-[#ffb612] underline-offset-2">
+            {getEventName(event)}
+          </span>
+          <ExternalLink
+            className="mb-0.5 h-5 w-5 shrink-0 text-[#222]/35 transition-colors duration-300 group-hover:text-[#ffb612]"
+            strokeWidth={2.5}
+          />
+        </a>
       </h2>
 
       {isMultiDay ? (
@@ -121,13 +118,13 @@ export function EventCard({ event }: EventCardProps) {
         {getEventDescription(event)}
       </p>
 
-      {event.entryFeeDiscountCode && (
+      {event.discount && (
         <div className="mb-8 inline-flex items-center gap-3 border border-[#ffb612]/40 bg-[#ffb612]/10 px-4 py-3">
           <span className="text-sm font-medium text-[#222]/70">
-            Entry fee discount:
+            {event.discount.label}:
           </span>
           <code className="font-mono text-sm font-bold tracking-widest text-[#222]">
-            {event.entryFeeDiscountCode}
+            {event.discount.code}
           </code>
         </div>
       )}

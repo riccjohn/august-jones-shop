@@ -1,12 +1,9 @@
-import {
-  formatEventDateRange,
-  formatEventTime,
-  getUpcomingEvents,
-} from "@/data/events";
+import { upcomingEvents } from "@/data/event-source";
+import { formatEventDateRange, formatEventTime } from "@/data/events";
 import { cn } from "@/lib/utils";
 
 export function EventsTeaser() {
-  const events = getUpcomingEvents().slice(0, 2);
+  const events = upcomingEvents.slice(0, 2);
 
   if (events.length === 0) return null;
 

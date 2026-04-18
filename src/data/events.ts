@@ -12,153 +12,101 @@ export interface AugustJonesEvent {
   mapsUrl: string;
   eventWebsiteUrl: string;
   description?: string;
-  entryFeeDiscountCode?: string;
+  discount?: { code: string; label: string };
   image?: string;
   instagramUrl?: string;
 }
 
 const events: AugustJonesEvent[] = [
   {
-    id: "madison-spring-pop-up-2026-04-17",
-    marketName: "Madison Spring Pop-Up",
+    id: "madison-makers-market-2026-05-02",
+    marketName: "Madison Makers Market",
     sessions: [
       {
-        startDate: "2026-04-17T16:00:00-05:00",
-        endDate: "2026-04-17T20:00:00-05:00",
-      },
-      {
-        startDate: "2026-04-18T12:00:00-05:00",
-        endDate: "2026-04-18T20:00:00-05:00",
+        startDate: "2026-05-02T12:00:00-05:00",
+        endDate: "2026-05-02T17:00:00-05:00",
       },
     ],
-    venueName: "The Collective MKE",
+    venueName: "Vintage Brewing",
     address: {
-      street: "214 W State St",
+      street: "803 E Washington Ave",
       city: "Madison",
       state: "WI",
       zip: "53703",
     },
-    mapsUrl: "https://maps.google.com/?q=214+W+State+St,+Madison,+WI+53703",
-    eventWebsiteUrl: "https://augustjones.shop",
-    entryFeeDiscountCode: "AUGUSTJONES10",
-    description:
-      "Two-day spring pop-up on State Street! Stop by Friday evening after work or swing through Saturday for the full afternoon. Shop one-of-a-kind upcycled sports streetwear — every piece is handmade and won't last long.",
+    mapsUrl:
+      "https://maps.google.com/?q=803+E+Washington+Ave,+Madison,+WI+53703",
+    eventWebsiteUrl: "https://www.madisonmakersmarket.com/spring-market",
   },
   {
-    id: "mad-city-makers-market-2026-05-10",
-    marketName: "Mad City Makers Market",
+    id: "chicago-artisan-market-2026-05-03",
+    marketName: "Chicago Artisan Market – Fulton Market",
     sessions: [
       {
-        startDate: "2026-05-10T10:00:00-05:00",
-        endDate: "2026-05-10T16:00:00-05:00",
+        startDate: "2026-05-03T11:00:00-05:00",
+        endDate: "2026-05-03T17:00:00-05:00",
       },
     ],
-    venueName: "Olbrich Botanical Gardens",
+    venueName: "Morgan MFG",
     address: {
-      street: "3330 Atwood Ave",
-      city: "Madison",
-      state: "WI",
-      zip: "53704",
-    },
-    mapsUrl: "https://maps.google.com/?q=3330+Atwood+Ave,+Madison,+WI+53704",
-    eventWebsiteUrl: "https://madcitymakersmarket.com",
-    description:
-      "Come find August Jones at the Mad City Makers Market! Browse one-of-a-kind upcycled sports fashion pieces — hoodies, jackets, and streetwear made from pro sports jerseys and fan gear. Every piece is handmade and one-of-a-kind.",
-  },
-  {
-    id: "milwaukees-best-craft-fair-2026-05-30",
-    marketName: "Milwaukee's Best Craft Fair",
-    sessions: [
-      {
-        startDate: "2026-05-30T09:00:00-05:00",
-        endDate: "2026-05-30T15:00:00-05:00",
-      },
-    ],
-    venueName: "Walker's Point Center for the Arts",
-    address: {
-      street: "839 S 5th St",
-      city: "Milwaukee",
-      state: "WI",
-      zip: "53204",
-    },
-    mapsUrl: "https://maps.google.com/?q=839+S+5th+St,+Milwaukee,+WI+53204",
-    eventWebsiteUrl: "https://milwaukeebestcraftfair.com",
-    description:
-      "August Jones is heading to Milwaukee for the Best Craft Fair! Shop unique upcycled streetwear — each piece is handcrafted from reclaimed pro sports jerseys and fan gear. No two pieces are alike.",
-  },
-  {
-    id: "chicago-renegade-craft-fair-2026-06-13",
-    marketName: "Renegade Craft Fair Chicago",
-    sessions: [
-      {
-        startDate: "2026-06-13T11:00:00-05:00",
-        endDate: "2026-06-13T19:00:00-05:00",
-      },
-      {
-        startDate: "2026-06-14T11:00:00-05:00",
-        endDate: "2026-06-14T18:00:00-05:00",
-      },
-    ],
-    venueName: "Wicker Park",
-    address: {
-      street: "1425 N Damen Ave",
+      street: "401 N Morgan St",
       city: "Chicago",
       state: "IL",
-      zip: "60622",
+      zip: "60642",
     },
-    mapsUrl: "https://maps.google.com/?q=1425+N+Damen+Ave,+Chicago,+IL+60622",
-    eventWebsiteUrl: "https://renegadecraft.com/chicago",
-    description:
-      "August Jones will be at the Renegade Craft Fair in Chicago's Wicker Park neighborhood! Find handmade upcycled sports streetwear — hoodies, sweatpants, and jackets made from upcycled pro sports jerseys. Come say hi!",
+    mapsUrl: "https://maps.google.com/?q=401+N+Morgan+St,+Chicago,+IL+60642",
+    eventWebsiteUrl: "https://chicagoartisanmarket.com/tickets-fulton-market/",
+    discount: { code: "augustjones", label: "Free General Admission" },
   },
   {
-    id: "madison-night-market-2026-06-26",
-    marketName: "Madison Night Market",
+    id: "sauced-night-market-2026-05-08",
+    marketName: "Sauced Night Market Chicago",
     sessions: [
       {
-        startDate: "2026-06-26T17:00:00-05:00",
-        endDate: "2026-06-26T22:00:00-05:00",
+        startDate: "2026-05-08T17:00:00-05:00",
+        endDate: "2026-05-08T22:00:00-05:00",
+      },
+      {
+        startDate: "2026-05-09T17:00:00-05:00",
+        endDate: "2026-05-09T22:00:00-05:00",
       },
     ],
-    venueName: "State Street",
+    venueName: "Ignite Glass Studios",
     address: {
-      street: "State St",
-      city: "Madison",
-      state: "WI",
-      zip: "53703",
+      street: "401 N Armour St",
+      city: "Chicago",
+      state: "IL",
+      zip: "60642",
     },
-    mapsUrl: "https://maps.google.com/?q=State+St,+Madison,+WI+53703",
-    eventWebsiteUrl: "https://madisonnightmarket.com",
-    description:
-      "Evening market vibes on State Street! August Jones will be showcasing the latest upcycled sports fashion pieces under the lights. Each hoodie, jacket, and set is one-of-a-kind and handmade right here in Madison, WI.",
+    mapsUrl: "https://maps.google.com/?q=401+N+Armour+St,+Chicago,+IL+60642",
+    eventWebsiteUrl: "https://www.saucedmarket.com/next-market",
   },
   {
-    id: "brew-city-summer-market-2026-07-18",
-    marketName: "Brew City Summer Market",
+    id: "caplock-athletics-2026-05-16",
+    marketName: "Pop-Up at Caplock Athletics",
     sessions: [
       {
-        startDate: "2026-07-18T10:00:00-05:00",
-        endDate: "2026-07-18T16:00:00-05:00",
+        startDate: "2026-05-16T10:00:00-05:00",
+        endDate: "2026-05-16T15:00:00-05:00",
       },
     ],
-    venueName: "Henry Maier Festival Park",
+    venueName: "Caplock Athletics",
     address: {
-      street: "200 N Harbor Dr",
-      city: "Milwaukee",
-      state: "WI",
-      zip: "53202",
+      street: "2903 W Diversey Ave",
+      city: "Chicago",
+      state: "IL",
+      zip: "60647",
     },
-    mapsUrl: "https://maps.google.com/?q=200+N+Harbor+Dr,+Milwaukee,+WI+53202",
-    eventWebsiteUrl: "https://brewcitysummermarket.com",
-    description:
-      "Join August Jones at the Brew City Summer Market on the Milwaukee lakefront! Shop upcycled sports streetwear handmade from pro sports jerseys. Limited inventory — every piece is one-of-a-kind.",
+    mapsUrl:
+      "https://maps.google.com/?q=2903+W+Diversey+Ave,+Chicago,+IL+60647",
+    eventWebsiteUrl: "https://www.caplockathletics.com/",
   },
 ];
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 export function getEventName(event: AugustJonesEvent): string {
-  return `August Jones at ${event.marketName}`;
+  return event.marketName;
 }
 
 export function getEventDescription(event: AugustJonesEvent): string {
@@ -225,8 +173,8 @@ export function formatEventDateRange(event: AugustJonesEvent): string {
 
 export function getEventUrgencyLabel(
   event: AugustJonesEvent,
+  now = new Date(),
 ): "TODAY" | "TOMORROW" | null {
-  const now = new Date();
   const fmt = (d: Date) =>
     d.toLocaleDateString("en-US", {
       timeZone: EVENT_TIMEZONE,
@@ -245,9 +193,14 @@ export function getEventUrgencyLabel(
   return null;
 }
 
-export function getUpcomingEvents(): AugustJonesEvent[] {
-  return events.filter((e) => {
+export function getUpcomingEvents(
+  source: AugustJonesEvent[] = events,
+  now = new Date(),
+): AugustJonesEvent[] {
+  return source.filter((e) => {
     const lastSession = e.sessions[e.sessions.length - 1];
-    return new Date(lastSession.endDate).getTime() + ONE_WEEK_MS > Date.now();
+    return (
+      new Date(lastSession.endDate).getTime() + ONE_WEEK_MS > now.getTime()
+    );
   });
 }

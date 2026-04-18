@@ -95,24 +95,19 @@ test.describe("Events Page", () => {
   }) => {
     await page.goto("/events");
 
-    // Event cards should be present — we look for a container that holds
-    // event details. A date pattern like "Jan 1, 2026" or similar is expected.
-    // We look for any element containing a date-like string.
     const datePattern =
       /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2},?\s+\d{4}\b/i;
 
-    const main = page.getByRole("main");
+    const sessionDate = page
+      .locator('[data-testid="event-session-date"]')
+      .first();
+    await expect(sessionDate).toBeVisible();
+    const sessionDateText = await sessionDate.textContent();
+    expect(sessionDateText).toMatch(datePattern);
 
-    // Check that the main content area contains a date string
-    const mainText = await main.textContent();
-    expect(mainText).toMatch(datePattern);
-
-    // Check for at least one visible element that looks like a venue name
-    // (non-empty text that acts as a location/venue — look for an address-style element)
     const venueLocator = page.locator('[data-testid="event-venue"]').first();
     await expect(venueLocator).toBeVisible();
 
-    // Check for city text
     const cityLocator = page.locator('[data-testid="event-city"]').first();
     await expect(cityLocator).toBeVisible();
   });
@@ -170,41 +165,48 @@ test.describe("Events Page", () => {
   }) => {
     await page.goto("/events");
 
-    // Madison Spring Pop-Up has an eventWebsiteUrl set
-    const card = page.locator("#madison-spring-pop-up-2026-04-17");
+    const card = page.locator("#fixture-single-day-event-2099-06-15");
     await expect(card).toBeVisible();
 
     const titleLink = card.getByRole("link", {
-      name: /madison spring pop-up/i,
+      name: /fake market: single day/i,
     });
     await expect(titleLink).toBeVisible();
     await expect(titleLink).toHaveAttribute("href", /.+/);
   });
 
-  test("event card shows entry fee discount code when present", async ({
-    page,
-  }) => {
+  test("event card shows discount code when present", async ({ page }) => {
     await page.goto("/events");
 
-    // Madison Spring Pop-Up has entryFeeDiscountCode: "AUGUSTJONES10"
-    const card = page.locator("#madison-spring-pop-up-2026-04-17");
+    const card = page.locator("#fixture-discount-event-2099-06-16");
     await expect(card).toBeVisible();
 
-    await expect(card).toContainText("AUGUSTJONES10");
+    await expect(card).toContainText("FIXTURE-CODE");
   });
 
+  // `now` is frozen to 2099-06-15 in event-source.e2e.ts, so fixture-single-day-event
+  // (2099-06-15) renders TODAY and fixture-discount-event (2099-06-16) renders TOMORROW.
   test("event card shows TODAY badge for event happening today", async ({
     page,
   }) => {
     await page.goto("/events");
 
-    // Madison Spring Pop-Up starts 2026-04-17 — this test is tied to that date.
-    // The badge is rendered server-side based on real clock, so it will show
-    // TODAY while the event is still upcoming on this calendar date.
-    const card = page.locator("#madison-spring-pop-up-2026-04-17");
+    const card = page.locator("#fixture-single-day-event-2099-06-15");
     await expect(card).toBeVisible();
 
-    const badge = card.locator("span", { hasText: /^(TODAY|TOMORROW)$/ });
+    const badge = card.locator("span", { hasText: /^TODAY$/ });
+    await expect(badge).toBeVisible();
+  });
+
+  test("event card shows TOMORROW badge for event happening tomorrow", async ({
+    page,
+  }) => {
+    await page.goto("/events");
+
+    const card = page.locator("#fixture-discount-event-2099-06-16");
+    await expect(card).toBeVisible();
+
+    const badge = card.locator("span", { hasText: /^TOMORROW$/ });
     await expect(badge).toBeVisible();
   });
 
@@ -223,8 +225,7 @@ test.describe("Events Page", () => {
   }) => {
     await page.goto("/events");
 
-    // The Renegade Craft Fair is a stable 2-day event (June 13–14)
-    const card = page.locator("#chicago-renegade-craft-fair-2026-06-13");
+    const card = page.locator("#fixture-multi-day-event-2099-06-17");
     await expect(card).toBeVisible();
 
     const sessionDates = card.locator('[data-testid="event-session-date"]');
@@ -236,7 +237,7 @@ test.describe("Events Page", () => {
   }) => {
     await page.goto("/events");
 
-    const card = page.locator("#chicago-renegade-craft-fair-2026-06-13");
+    const card = page.locator("#fixture-multi-day-event-2099-06-17");
     await expect(card).toBeVisible();
 
     const calendarButtons = card.getByRole("button", {
@@ -250,18 +251,17 @@ test.describe("Events Page", () => {
   }) => {
     await page.goto("/events");
 
-    const card = page.locator("#mad-city-makers-market-2026-05-10");
+    const card = page.locator("#fixture-single-day-event-2099-06-15");
     await expect(card).toBeVisible();
 
     const sessionDates = card.locator('[data-testid="event-session-date"]');
     await expect(sessionDates).toHaveCount(1);
   });
 
-  // Skipped: The live data always has upcoming events and there is no easy way
-  // to force an empty-state render in Playwright without mocking server data.
-  // The empty-state UI (check back text, Instagram link, Etsy link) should be
-  // tested via a unit/component test against the EventsPage component with an
-  // empty events array prop.
+  // Skipped: fixture data always has events so the empty state never renders in E2E.
+  // Cover with a unit/component test that renders EventsPage with an empty array.
+  // NOTE: current empty state shows only an Instagram link — no Etsy link — update
+  // this test before unskipping.
   test.skip("empty state shows 'check back' text, Instagram link, and Etsy link", async ({
     page,
   }) => {

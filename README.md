@@ -61,7 +61,7 @@ Add a new entry to the `events` array:
   mapsUrl: "https://maps.google.com/?q=...",
   eventWebsiteUrl: "https://example.com",  // optional — links the card title
   description: "Custom description...",   // optional — falls back to a generic blurb
-  entryFeeDiscountCode: "CODE10",          // optional — displays a discount badge on the card
+  discount: { label: "Free entry", code: "CODE10" }, // optional — displays a discount badge on the card
 }
 ```
 
