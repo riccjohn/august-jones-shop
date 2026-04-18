@@ -20,7 +20,7 @@ export function EventsTeaser() {
             className="text-display text-[#222]"
             style={{ fontSize: "clamp(2.5rem, 6vw, 5rem)" }}
           >
-            Upcoming Pop-Ups
+            Upcoming Pop-Ups &amp; Markets
           </h2>
         </div>
         <div className="flex flex-col">
