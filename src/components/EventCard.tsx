@@ -10,17 +10,6 @@ import {
   getEventUrgencyLabel,
 } from "@/data/events";
 
-function buildMultiDayCalendarDescription(event: AugustJonesEvent): string {
-  const sessionLines = event.sessions
-    .map((s) => {
-      const start = new Date(s.startDate);
-      const end = new Date(s.endDate);
-      return `${formatEventDate(start)}: ${formatEventTime(start)}–${formatEventTime(end)}`;
-    })
-    .join("[br]");
-  return `${sessionLines}[br][br]${getEventDescription(event)}`;
-}
-
 interface EventCardProps {
   event: AugustJonesEvent;
   now: Date;
@@ -130,33 +119,28 @@ export function EventCard({ event, now }: EventCardProps) {
       )}
 
       <div className="flex flex-col items-start gap-4 sm:flex-row sm:flex-wrap">
-        {isMultiDay ? (
-          <AddToCalendarButton
-            name={getEventName(event)}
-            startDate={getCalendarDate(sessions[0].startDate)}
-            endDate={getCalendarDate(sessions[sessions.length - 1].endDate)}
-            timeZone={EVENT_TIMEZONE}
-            location={`${event.address.street}, ${event.address.city}, ${event.address.state} ${event.address.zip}`}
-            description={buildMultiDayCalendarDescription(event)}
-            options={["Apple", "Google", "iCal", "Outlook.com"]}
-            buttonStyle="flat"
-            lightMode="dark"
-          />
-        ) : (
-          <AddToCalendarButton
-            name={getEventName(event)}
-            startDate={getCalendarDate(sessions[0].startDate)}
-            startTime={getCalendarTime(sessions[0].startDate)}
-            endDate={getCalendarDate(sessions[0].endDate)}
-            endTime={getCalendarTime(sessions[0].endDate)}
-            timeZone={EVENT_TIMEZONE}
-            location={`${event.address.street}, ${event.address.city}, ${event.address.state} ${event.address.zip}`}
-            description={getEventDescription(event)}
-            options={["Apple", "Google", "iCal", "Outlook.com"]}
-            buttonStyle="flat"
-            lightMode="dark"
-          />
-        )}
+        {sessions.map((session) => {
+          const start = new Date(session.startDate);
+          const label = isMultiDay
+            ? `${getEventName(event)} – ${formatEventDate(start)}`
+            : getEventName(event);
+          return (
+            <AddToCalendarButton
+              key={session.startDate}
+              name={label}
+              startDate={getCalendarDate(session.startDate)}
+              startTime={getCalendarTime(session.startDate)}
+              endDate={getCalendarDate(session.endDate)}
+              endTime={getCalendarTime(session.endDate)}
+              timeZone={EVENT_TIMEZONE}
+              location={`${event.address.street}, ${event.address.city}, ${event.address.state} ${event.address.zip}`}
+              description={getEventDescription(event)}
+              options={["Apple", "Google", "iCal", "Outlook.com"]}
+              buttonStyle="flat"
+              lightMode="dark"
+            />
+          );
+        })}
       </div>
     </article>
   );
