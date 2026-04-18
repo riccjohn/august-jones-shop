@@ -26,18 +26,6 @@ export function EventsSchema({ events }: EventsSchemaProps) {
           addressCountry: "US",
         },
       },
-      organizer: {
-        "@type": "Organization",
-        "@id": "https://www.augustjones.shop/#localbusiness",
-        name: "August Jones",
-      },
-      offers: {
-        "@type": "Offer",
-        price: "0",
-        priceCurrency: "USD",
-        availability: "https://schema.org/InStock",
-        description: "Free and open to the public",
-      },
     })),
   };
 
