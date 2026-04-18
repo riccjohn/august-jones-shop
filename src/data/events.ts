@@ -15,8 +15,6 @@ export interface AugustJonesEvent {
   eventWebsiteUrl: string;
   description?: string;
   discount?: { code: string; label: string };
-  image?: string; // reserved: per-event OG image override
-  instagramUrl?: string; // reserved: link to event announcement post
 }
 
 const events: AugustJonesEvent[] = [
