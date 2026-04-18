@@ -6,7 +6,7 @@ export interface EventSession {
 export interface AugustJonesEvent {
   id: string;
   marketName: string;
-  sessions: EventSession[];
+  sessions: [EventSession, ...EventSession[]];
   venueName: string;
   address: { street: string; city: string; state: string; zip: string };
   mapsUrl: string;
