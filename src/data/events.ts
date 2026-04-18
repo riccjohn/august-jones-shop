@@ -183,7 +183,11 @@ export function getEventUrgencyLabel(
       day: "2-digit",
     });
   const todayStr = fmt(now);
-  const tomorrowStr = fmt(new Date(now.getTime() + 24 * 60 * 60 * 1000));
+  // Adding raw ms fails on DST transition days (23h or 25h). Instead, parse
+  // today's Chicago calendar date and construct 18:00 UTC on day+1, which is
+  // noon CST / 1 PM CDT — always tomorrow in Chicago regardless of DST.
+  const [mm, dd, yyyy] = todayStr.split("/").map(Number);
+  const tomorrowStr = fmt(new Date(Date.UTC(yyyy, mm - 1, dd + 1, 18, 0, 0)));
 
   for (const session of event.sessions) {
     const sessionStr = fmt(new Date(session.startDate));
