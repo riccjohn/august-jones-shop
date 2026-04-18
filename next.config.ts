@@ -4,6 +4,7 @@ const isE2E = process.env.E2E_TEST === "true";
 
 const nextConfig: NextConfig = {
   output: "export",
+  distDir: "out",
   reactCompiler: true,
   images: {
     unoptimized: true,

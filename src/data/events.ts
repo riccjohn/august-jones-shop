@@ -1,5 +1,7 @@
 export interface EventSession {
+  // Must use an explicit UTC offset (e.g. "-05:00"), never "Z". See EVENT_TIMEZONE.
   startDate: string;
+  // Must use an explicit UTC offset (e.g. "-05:00"), never "Z". See EVENT_TIMEZONE.
   endDate: string;
 }
 
@@ -13,8 +15,8 @@ export interface AugustJonesEvent {
   eventWebsiteUrl: string;
   description?: string;
   discount?: { code: string; label: string };
-  image?: string;
-  instagramUrl?: string;
+  image?: string; // reserved: per-event OG image override
+  instagramUrl?: string; // reserved: link to event announcement post
 }
 
 const events: AugustJonesEvent[] = [
@@ -108,7 +110,7 @@ const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 export function getEventDescription(event: AugustJonesEvent): string {
   return (
     event.description ??
-    `Come find August Jones at ${event.marketName}! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear. Every piece is handmade and one-of-a-kind.`
+    `Come find August Jones at ${event.marketName}! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear.`
   );
 }
 

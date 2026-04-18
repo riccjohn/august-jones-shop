@@ -7,7 +7,7 @@ import { upcomingEvents as events, now } from "@/data/event-source";
 export const metadata: Metadata = {
   title: "Upcoming Events & Pop-Ups | August Jones",
   description:
-    "Find August Jones at upcoming pop-up markets and craft fairs in Madison WI, Milwaukee WI, and Chicago IL. Shop one-of-a-kind upcycled sports streetwear in person.",
+    "Find August Jones at upcoming pop-up markets and craft fairs in Madison WI and Chicago IL. Shop one-of-a-kind upcycled sports streetwear in person.",
   alternates: {
     canonical: "/events",
   },
@@ -46,8 +46,7 @@ export default function EventsPage() {
             &amp; Markets
           </h1>
           <p className="mt-4 max-w-xl text-base/relaxed text-[#f6f4f0]/80">
-            Find August Jones at pop-up markets and craft fairs in Madison WI,
-            Milwaukee WI, and Chicago IL.
+            Find August Jones at pop-up markets and craft fairs near you.
           </p>
         </div>
       </section>
@@ -65,9 +64,9 @@ export default function EventsPage() {
             </div>
           ) : (
             <div className="py-20">
-              <p className="mb-3 font-bebas-neue text-3xl tracking-wide text-[#f6f4f0] sm:text-4xl">
+              <h2 className="mb-3 font-bebas-neue text-3xl tracking-wide text-[#f6f4f0] sm:text-4xl">
                 Check back soon
-              </p>
+              </h2>
               <p className="mb-8 text-base text-[#f6f4f0]/60">
                 No events scheduled right now. Follow us on Instagram for
                 announcements, or shop our current pieces on Etsy.

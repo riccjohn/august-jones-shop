@@ -27,7 +27,6 @@ export function EventsTeaser() {
           {events.map((event, i) => {
             const firstSession = event.sessions[0];
             const start = new Date(firstSession.startDate);
-            const end = new Date(firstSession.endDate);
             const isMultiDay = event.sessions.length > 1;
 
             return (
@@ -40,14 +39,17 @@ export function EventsTeaser() {
               >
                 <div className="flex flex-col gap-1">
                   <p className="text-eyebrow text-[#222]/55">
-                    {isMultiDay ? (
-                      formatEventDateRange(event)
-                    ) : (
-                      <>
-                        {formatEventDateRange(event)} — {formatEventTime(start)}
-                        –{formatEventTime(end)}
-                      </>
-                    )}
+                    {isMultiDay
+                      ? formatEventDateRange(event)
+                      : (() => {
+                          const end = new Date(firstSession.endDate);
+                          return (
+                            <>
+                              {formatEventDateRange(event)} —{" "}
+                              {formatEventTime(start)}–{formatEventTime(end)}
+                            </>
+                          );
+                        })()}
                   </p>
                   <p
                     className="text-display text-[#222]"

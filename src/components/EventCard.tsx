@@ -118,28 +118,37 @@ export function EventCard({ event, now }: EventCardProps) {
       )}
 
       <div className="flex flex-col items-start gap-4 sm:flex-row sm:flex-wrap">
-        {sessions.map((session) => {
-          const start = new Date(session.startDate);
-          const label = isMultiDay
-            ? `${event.marketName} – ${formatEventDate(start)}`
-            : event.marketName;
-          return (
-            <AddToCalendarButton
-              key={session.startDate}
-              name={label}
-              startDate={getCalendarDate(session.startDate)}
-              startTime={getCalendarTime(session.startDate)}
-              endDate={getCalendarDate(session.endDate)}
-              endTime={getCalendarTime(session.endDate)}
-              timeZone={EVENT_TIMEZONE}
-              location={`${event.address.street}, ${event.address.city}, ${event.address.state} ${event.address.zip}`}
-              description={getEventDescription(event)}
-              options={["Apple", "Google", "iCal", "Outlook.com"]}
-              buttonStyle="flat"
-              lightMode="dark"
-            />
-          );
-        })}
+        {isMultiDay ? (
+          <AddToCalendarButton
+            name={event.marketName}
+            dates={sessions.map((session) => ({
+              startDate: getCalendarDate(session.startDate),
+              startTime: getCalendarTime(session.startDate),
+              endDate: getCalendarDate(session.endDate),
+              endTime: getCalendarTime(session.endDate),
+              description: getEventDescription(event),
+            }))}
+            timeZone={EVENT_TIMEZONE}
+            location={`${event.address.street}, ${event.address.city}, ${event.address.state} ${event.address.zip}`}
+            options={["Apple", "Google", "iCal", "Outlook.com"]}
+            buttonStyle="flat"
+            lightMode="dark"
+          />
+        ) : (
+          <AddToCalendarButton
+            name={event.marketName}
+            startDate={getCalendarDate(sessions[0].startDate)}
+            startTime={getCalendarTime(sessions[0].startDate)}
+            endDate={getCalendarDate(sessions[0].endDate)}
+            endTime={getCalendarTime(sessions[0].endDate)}
+            timeZone={EVENT_TIMEZONE}
+            location={`${event.address.street}, ${event.address.city}, ${event.address.state} ${event.address.zip}`}
+            description={getEventDescription(event)}
+            options={["Apple", "Google", "iCal", "Outlook.com"]}
+            buttonStyle="flat"
+            lightMode="dark"
+          />
+        )}
       </div>
     </article>
   );

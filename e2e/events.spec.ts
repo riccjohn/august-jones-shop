@@ -257,33 +257,6 @@ test.describe("Events Page", () => {
     const sessionDates = card.locator('[data-testid="event-session-date"]');
     await expect(sessionDates).toHaveCount(1);
   });
-
-  // Skipped: fixture data always has events so the empty state never renders in E2E.
-  // Cover with a unit/component test that renders EventsPage with an empty array.
-  test.skip("empty state shows 'check back' text, Instagram link, and Etsy link", async ({
-    page,
-  }) => {
-    await page.goto("/events");
-
-    const main = page.getByRole("main");
-    await expect(main).toContainText(/check back/i);
-
-    const instagramLink = page
-      .getByRole("link", { name: /instagram/i })
-      .first();
-    await expect(instagramLink).toBeVisible();
-    await expect(instagramLink).toHaveAttribute(
-      "href",
-      /instagram\.com\/augustjonesshop/,
-    );
-
-    const etsyLink = page.getByRole("link", { name: /etsy/i }).first();
-    await expect(etsyLink).toBeVisible();
-    await expect(etsyLink).toHaveAttribute(
-      "href",
-      /etsy\.com\/shop\/TheAugustJonesShop/,
-    );
-  });
 });
 
 /**
