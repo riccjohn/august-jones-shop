@@ -41,6 +41,7 @@ const events: AugustJonesEvent[] = [
   {
     id: "chicago-artisan-market-2026-05-03",
     marketName: "Chicago Artisan Market – Fulton Market",
+    description: `Come find August Jones at Chicago Artisan Market! Use code below at checkout for free general admission.`,
     sessions: [
       {
         startDate: "2026-05-03T11:00:00-05:00",
