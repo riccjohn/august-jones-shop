@@ -232,7 +232,7 @@ test.describe("Events Page", () => {
     await expect(sessionDates).toHaveCount(2);
   });
 
-  test("multi-day event card shows one Add to Calendar button per session", async ({
+  test("multi-day event card shows exactly one Add to Calendar button", async ({
     page,
   }) => {
     await page.goto("/events");
@@ -243,7 +243,7 @@ test.describe("Events Page", () => {
     const calendarButtons = card.getByRole("button", {
       name: /add to calendar/i,
     });
-    await expect(calendarButtons).toHaveCount(2);
+    await expect(calendarButtons).toHaveCount(1);
   });
 
   test("single-day event card shows exactly one session date line", async ({
