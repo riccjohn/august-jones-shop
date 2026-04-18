@@ -6,7 +6,6 @@ import {
   formatEventDate,
   formatEventTime,
   getEventDescription,
-  getEventName,
   getEventUrgencyLabel,
 } from "@/data/events";
 
@@ -46,7 +45,7 @@ export function EventCard({ event, now }: EventCardProps) {
           className="group inline-flex items-center gap-2"
         >
           <span className="group-hover:underline decoration-[#ffb612] underline-offset-2">
-            {getEventName(event)}
+            {event.marketName}
           </span>
           <ExternalLink
             className="mb-0.5 h-5 w-5 shrink-0 text-[#222]/35 transition-colors duration-300 group-hover:text-[#ffb612]"
@@ -122,8 +121,8 @@ export function EventCard({ event, now }: EventCardProps) {
         {sessions.map((session) => {
           const start = new Date(session.startDate);
           const label = isMultiDay
-            ? `${getEventName(event)} – ${formatEventDate(start)}`
-            : getEventName(event);
+            ? `${event.marketName} – ${formatEventDate(start)}`
+            : event.marketName;
           return (
             <AddToCalendarButton
               key={session.startDate}

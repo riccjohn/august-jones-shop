@@ -1,4 +1,4 @@
-import { type AugustJonesEvent, getEventName } from "@/data/events";
+import type { AugustJonesEvent } from "@/data/events";
 
 interface EventsSchemaProps {
   events: AugustJonesEvent[];
@@ -9,7 +9,7 @@ export function EventsSchema({ events }: EventsSchemaProps) {
     "@context": "https://schema.org",
     "@graph": events.map((event) => ({
       "@type": "Event",
-      name: getEventName(event),
+      name: event.marketName,
       startDate: event.sessions[0].startDate,
       endDate: event.sessions[event.sessions.length - 1].endDate,
       eventStatus: "https://schema.org/EventScheduled",

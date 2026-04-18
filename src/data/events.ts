@@ -105,10 +105,6 @@ const events: AugustJonesEvent[] = [
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
-export function getEventName(event: AugustJonesEvent): string {
-  return event.marketName;
-}
-
 export function getEventDescription(event: AugustJonesEvent): string {
   return (
     event.description ??
