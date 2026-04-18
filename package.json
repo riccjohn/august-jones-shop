@@ -15,6 +15,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "add-to-calendar-button-react": "^2.13.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.563.0",
@@ -36,6 +37,7 @@
     "babel-plugin-react-compiler": "1.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
+    "serve": "^14.2.6",
     "shadcn": "^3.8.5",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.2.2",

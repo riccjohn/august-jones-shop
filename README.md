@@ -37,6 +37,53 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - `pnpm test:e2e` — Run Playwright e2e tests
 - `pnpm test:e2e:ui` — Run Playwright tests in UI mode
 
+## Managing Events
+
+Upcoming events are stored in **`src/data/events.ts`** as a plain TypeScript array — no CMS or database required. To add, edit, or remove events, edit that file directly and deploy.
+
+### Adding an event
+
+Add a new entry to the `events` array:
+
+```ts
+{
+  id: "event-slug-YYYY-MM-DD",          // unique, used as URL anchor (#event-slug-YYYY-MM-DD)
+  marketName: "Market Name",            // used in the card title: "August Jones at <marketName>"
+  sessions: [
+    {
+      startDate: "2026-09-06T10:00:00-05:00",  // ISO 8601, see datetime format note below
+      endDate:   "2026-09-06T16:00:00-05:00",
+    },
+    // add more sessions for multi-day events
+  ],
+  venueName: "Venue Name",
+  address: { street: "123 Main St", city: "Madison", state: "WI", zip: "53703" },
+  mapsUrl: "https://maps.google.com/?q=...",
+  eventWebsiteUrl: "https://example.com",  // optional — links the card title
+  description: "Custom description...",   // optional — falls back to a generic blurb
+  discount: { label: "Free entry", code: "CODE10" }, // optional — displays a discount badge on the card
+}
+```
+
+### Datetime format
+
+Dates use ISO 8601 with an explicit `America/Chicago` offset:
+
+```
+YYYY-MM-DDTHH:MM:SS-05:00   ← CDT (summer, March–November)
+YYYY-MM-DDTHH:MM:SS-06:00   ← CST (winter, November–March)
+```
+
+To generate these strings easily, use **[timestamp.online](https://timestamp.online)** — pick the date, time, and `America/Chicago` timezone, then copy the ISO 8601 output.
+
+### How events are filtered
+
+`getUpcomingEvents()` automatically hides events whose last session ended more than **one week ago** — no manual cleanup needed. Past events drop off on their own.
+
+### TODAY / TOMORROW badge
+
+Cards automatically show a **TODAY** or **TOMORROW** badge (yellow, top-right corner) when a session date matches the current calendar date or the next day in the `America/Chicago` timezone.
+
 ## Favicon/Icon Setup
 
 The site uses custom favicons located in `public/`:

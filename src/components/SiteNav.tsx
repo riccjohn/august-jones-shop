@@ -11,6 +11,7 @@ const ETSY_SHOP_URL = "https://www.etsy.com/shop/TheAugustJonesShop";
 
 const NAV_LINKS = [
   { label: "About", href: "/about", key: "about" },
+  { label: "Events", href: "/events", key: "events" },
   { label: "Contact", href: "/contact", key: "contact" },
 ] as const;
 
