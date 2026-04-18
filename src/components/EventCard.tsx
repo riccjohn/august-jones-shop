@@ -68,7 +68,7 @@ export function EventCard({ event }: EventCardProps) {
         </div>
       ) : (
         <p
-          className="mb-4 text-sm font-semibold uppercase tracking-widest text-[#222]/60"
+          className="mb-4 text-base font-semibold uppercase tracking-widest text-[#222]/80"
           data-testid="event-session-date"
         >
           {formatEventDate(new Date(sessions[0].startDate))} &middot;{" "}

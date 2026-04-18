@@ -125,9 +125,14 @@ export function formatEventDate(date: Date): string {
 }
 
 export function formatEventTime(date: Date): string {
+  const minutes = new Intl.DateTimeFormat("en-US", {
+    minute: "numeric",
+    timeZone: EVENT_TIMEZONE,
+  }).format(date);
+
   return date.toLocaleTimeString("en-US", {
     hour: "numeric",
-    minute: "2-digit",
+    minute: minutes === "0" ? undefined : "2-digit",
     hour12: true,
     timeZone: EVENT_TIMEZONE,
   });
