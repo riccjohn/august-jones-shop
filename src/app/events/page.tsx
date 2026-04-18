@@ -7,7 +7,7 @@ import { upcomingEvents as events, now } from "@/data/event-source";
 export const metadata: Metadata = {
   title: "Upcoming Events & Pop-Ups | August Jones",
   description:
-    "Find August Jones at upcoming pop-up markets and craft fairs in Madison WI and Chicago IL. Shop one-of-a-kind upcycled sports streetwear in person.",
+    "Find August Jones at upcoming pop-up shops, markets, and craft fairs in Madison WI, Milwaukee WI, and Chicago IL. Shop one-of-a-kind upcycled sports streetwear in person.",
   alternates: {
     canonical: "/events",
   },
@@ -46,7 +46,8 @@ export default function EventsPage() {
             &amp; Markets
           </h1>
           <p className="mt-4 max-w-xl text-base/relaxed text-[#f6f4f0]/80">
-            Find August Jones at pop-up markets and craft fairs near you.
+            Find August Jones at pop-up shops and markets in Madison, Milwaukee,
+            Chicago, and more.
           </p>
         </div>
       </section>
@@ -69,7 +70,7 @@ export default function EventsPage() {
               </h2>
               <p className="mb-8 text-base text-[#f6f4f0]/60">
                 No events scheduled right now. Follow us on Instagram for
-                announcements, or shop our current pieces on Etsy.
+                announcements, or shop our current pieces in our shop.
               </p>
               <div className="flex flex-wrap gap-4">
                 <a
@@ -78,7 +79,7 @@ export default function EventsPage() {
                   rel="noopener noreferrer"
                   className="inline-block bg-[#ffb612] px-6 py-3 font-bebas-neue text-lg tracking-widest text-[#222] transition-opacity hover:opacity-90"
                 >
-                  Shop on Etsy
+                  Shop
                 </a>
                 <a
                   href="https://instagram.com/augustjonesshop"
