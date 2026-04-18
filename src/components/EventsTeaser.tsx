@@ -1,11 +1,24 @@
-import { upcomingEvents } from "@/data/event-source";
-import { formatEventDateRange, formatEventTime } from "@/data/events";
+"use client";
+
+import { useEffect, useState } from "react";
+import type { AugustJonesEvent } from "@/data/events";
+import {
+  formatEventDateRange,
+  formatEventTime,
+  getUpcomingEvents,
+} from "@/data/events";
 import { cn } from "@/lib/utils";
 
-export function EventsTeaser() {
-  const events = upcomingEvents.slice(0, 2);
+export function EventsTeaser({ events }: { events: AugustJonesEvent[] }) {
+  // Same FOWC trade-off as EventListClient: initial slice may include past events,
+  // effect corrects post-hydration. Acceptable vs showing a blank teaser on first paint.
+  const [visible, setVisible] = useState(events.slice(0, 2));
 
-  if (events.length === 0) return null;
+  useEffect(() => {
+    setVisible(getUpcomingEvents(events, new Date()).slice(0, 2));
+  }, [events]);
+
+  if (visible.length === 0) return null;
 
   return (
     <section
@@ -24,7 +37,7 @@ export function EventsTeaser() {
           </h2>
         </div>
         <div className="flex flex-col">
-          {events.map((event, i) => {
+          {visible.map((event, i) => {
             const firstSession = event.sessions[0];
             const start = new Date(firstSession.startDate);
             const isMultiDay = event.sessions.length > 1;
@@ -34,7 +47,7 @@ export function EventsTeaser() {
                 key={event.id}
                 className={cn(
                   "flex flex-col gap-2 py-6 sm:flex-row sm:items-center sm:justify-between",
-                  i < events.length - 1 ? "border-b border-[#222]/15" : "",
+                  i < visible.length - 1 ? "border-b border-[#222]/15" : "",
                 )}
               >
                 <div className="flex flex-col gap-1">

@@ -17,7 +17,7 @@ export interface AugustJonesEvent {
   discount?: { code: string; label: string };
 }
 
-const events: AugustJonesEvent[] = [
+export const allEvents: AugustJonesEvent[] = [
   {
     id: "madison-makers-market-2026-05-02",
     marketName: "Madison Makers Market",
@@ -195,7 +195,7 @@ export function getEventUrgencyLabel(
 }
 
 export function getUpcomingEvents(
-  source: AugustJonesEvent[] = events,
+  source: AugustJonesEvent[] = allEvents,
   now = new Date(),
 ): AugustJonesEvent[] {
   return source.filter((e) => {
