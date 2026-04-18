@@ -1,4 +1,27 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
+
+// Freezes the browser's Date to the fixture "now" (2099-06-15T12:00:00-05:00) via addInitScript.
+// Must be called before page.goto. Date.UTC is intentionally inherited from OrigDate
+// (used by getEventUrgencyLabel to compute tomorrow's boundary).
+async function freezeToFixtureNow(page: Page) {
+  await page.addInitScript(() => {
+    const FROZEN_TIME = new Date("2099-06-15T12:00:00-05:00").getTime();
+    const OrigDate = Date;
+    class MockDate extends OrigDate {
+      constructor(...args: unknown[]) {
+        if (args.length === 0) super(FROZEN_TIME);
+        else super(...(args as ConstructorParameters<typeof Date>));
+      }
+      static now() {
+        return FROZEN_TIME;
+      }
+      static parse(s: string) {
+        return OrigDate.parse(s);
+      }
+    }
+    globalThis.Date = MockDate as unknown as DateConstructor;
+  });
+}
 
 /**
  * E2E tests for Events navigation links.
@@ -186,9 +209,14 @@ test.describe("Events Page", () => {
 
   // `now` is frozen to 2099-06-15 in event-source.e2e.ts, so fixture-single-day-event
   // (2099-06-15) renders TODAY and fixture-discount-event (2099-06-16) renders TOMORROW.
+  // Because EventUrgencyBadge is a client component (renders via useEffect after hydration),
+  // we must also freeze `Date` in the browser context via addInitScript so the badge knows
+  // which date is "today".
   test("event card shows TODAY badge for event happening today", async ({
     page,
   }) => {
+    await freezeToFixtureNow(page);
+
     await page.goto("/events");
 
     const card = page.locator("#fixture-single-day-event-2099-06-15");
@@ -201,6 +229,8 @@ test.describe("Events Page", () => {
   test("event card shows TOMORROW badge for event happening tomorrow", async ({
     page,
   }) => {
+    await freezeToFixtureNow(page);
+
     await page.goto("/events");
 
     const card = page.locator("#fixture-discount-event-2099-06-16");

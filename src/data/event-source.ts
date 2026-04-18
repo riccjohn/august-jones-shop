@@ -1,4 +1,4 @@
-import { getUpcomingEvents } from "./events";
+import { allEvents, getUpcomingEvents } from "./events";
 
-export const now = new Date();
-export const upcomingEvents = getUpcomingEvents(undefined, now);
+export { allEvents };
+export const upcomingEvents = getUpcomingEvents(undefined, new Date());

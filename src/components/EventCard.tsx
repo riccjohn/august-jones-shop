@@ -1,17 +1,16 @@
 import { ExternalLink, MapPin } from "lucide-react";
 import { AddToCalendarButton } from "@/components/AddToCalendarButton";
+import { EventUrgencyBadge } from "@/components/EventUrgencyBadge";
 import {
   type AugustJonesEvent,
   EVENT_TIMEZONE,
   formatEventDate,
   formatEventTime,
   getEventDescription,
-  getEventUrgencyLabel,
 } from "@/data/events";
 
 interface EventCardProps {
   event: AugustJonesEvent;
-  now: Date;
 }
 
 function getCalendarDate(dateString: string): string {
@@ -22,21 +21,16 @@ function getCalendarTime(dateString: string): string {
   return dateString.split("T")[1].slice(0, 5);
 }
 
-export function EventCard({ event, now }: EventCardProps) {
+export function EventCard({ event }: EventCardProps) {
   const { sessions } = event;
   const isMultiDay = sessions.length > 1;
-  const urgencyLabel = getEventUrgencyLabel(event, now);
 
   return (
     <article
       id={event.id}
       className="relative bg-[#f6f4f0] p-8 target:ring-2 target:ring-[#ffb612] sm:p-10"
     >
-      {urgencyLabel && (
-        <span className="absolute right-0 top-0 bg-[#ffb612] px-3 py-1.5 font-bebas-neue text-base tracking-widest text-[#222]">
-          {urgencyLabel}
-        </span>
-      )}
+      <EventUrgencyBadge event={event} />
       <h2 className="mb-3 font-bebas-neue text-3xl tracking-wide text-[#222] sm:text-4xl">
         <a
           href={event.eventWebsiteUrl}
@@ -74,7 +68,7 @@ export function EventCard({ event, now }: EventCardProps) {
         </div>
       ) : (
         <p
-          className="mb-4 text-sm font-semibold uppercase tracking-widest text-[#222]/60"
+          className="mb-4 text-base font-semibold uppercase tracking-widest text-[#222]/80"
           data-testid="event-session-date"
         >
           {formatEventDate(new Date(sessions[0].startDate))} &middot;{" "}

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { EventCard } from "@/components/EventCard";
+import { EventListClient } from "@/components/EventListClient";
 import { EventsSchema } from "@/components/EventsSchema";
 import { Footer } from "@/components/Footer";
-import { upcomingEvents as events, now } from "@/data/event-source";
+import { allEvents, upcomingEvents } from "@/data/event-source";
 
 export const metadata: Metadata = {
   title: "Upcoming Events & Pop-Ups | August Jones",
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 export default function EventsPage() {
   return (
     <main className="flex min-h-screen flex-col">
-      {events.length > 0 && <EventsSchema events={events} />}
+      {upcomingEvents.length > 0 && <EventsSchema events={upcomingEvents} />}
 
       <section
         className="bg-[#222] px-6 pb-16 pt-16 sm:pb-20 sm:pt-24"
@@ -54,44 +54,7 @@ export default function EventsPage() {
 
       <section className="bg-[#222] px-6 pb-24 sm:pb-32">
         <div className="mx-auto max-w-6xl">
-          {events.length > 0 ? (
-            <div className="flex flex-col">
-              {events.map((event, index) => (
-                <div key={event.id}>
-                  {index > 0 && <div className="h-px bg-[#ffb612]" />}
-                  <EventCard event={event} now={now} />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-20">
-              <h2 className="mb-3 font-bebas-neue text-3xl tracking-wide text-[#f6f4f0] sm:text-4xl">
-                Check back soon
-              </h2>
-              <p className="mb-8 text-base text-[#f6f4f0]/60">
-                No events scheduled right now. Follow us on Instagram for
-                announcements, or shop our current pieces in our shop.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <a
-                  href="https://www.etsy.com/shop/TheAugustJonesShop"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block bg-[#ffb612] px-6 py-3 font-bebas-neue text-lg tracking-widest text-[#222] transition-opacity hover:opacity-90"
-                >
-                  Shop
-                </a>
-                <a
-                  href="https://instagram.com/augustjonesshop"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block border border-[#ffb612]/50 px-6 py-3 font-bebas-neue text-lg tracking-widest text-[#f6f4f0] transition-opacity hover:opacity-90"
-                >
-                  Follow on Instagram
-                </a>
-              </div>
-            </div>
-          )}
+          <EventListClient events={allEvents} />
         </div>
       </section>
 

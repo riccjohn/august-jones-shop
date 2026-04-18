@@ -9,6 +9,7 @@ import { ProductGalleryLink } from "@/components/ProductGalleryLink";
 import { ProductGallerySchema } from "@/components/ProductGallerySchema";
 import { ShopifyCtaButton } from "@/components/ShopifyCtaButton";
 import { buttonVariants } from "@/components/ui/button";
+import { allEvents } from "@/data/event-source";
 import { cn } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -219,7 +220,7 @@ export default function Home() {
       </section>
 
       {/* ── EVENTS TEASER ─────────────────────────────────────────────────── */}
-      <EventsTeaser />
+      <EventsTeaser events={allEvents} />
 
       {/* ── BRAND STATEMENT ───────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-background px-6 py-24 sm:py-32">

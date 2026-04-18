@@ -17,7 +17,7 @@ export interface AugustJonesEvent {
   discount?: { code: string; label: string };
 }
 
-const events: AugustJonesEvent[] = [
+export const allEvents: AugustJonesEvent[] = [
   {
     id: "madison-makers-market-2026-05-02",
     marketName: "Madison Makers Market",
@@ -125,9 +125,14 @@ export function formatEventDate(date: Date): string {
 }
 
 export function formatEventTime(date: Date): string {
+  const minutes = new Intl.DateTimeFormat("en-US", {
+    minute: "numeric",
+    timeZone: EVENT_TIMEZONE,
+  }).format(date);
+
   return date.toLocaleTimeString("en-US", {
     hour: "numeric",
-    minute: "2-digit",
+    minute: minutes === "0" ? undefined : "2-digit",
     hour12: true,
     timeZone: EVENT_TIMEZONE,
   });
@@ -195,7 +200,7 @@ export function getEventUrgencyLabel(
 }
 
 export function getUpcomingEvents(
-  source: AugustJonesEvent[] = events,
+  source: AugustJonesEvent[] = allEvents,
   now = new Date(),
 ): AugustJonesEvent[] {
   return source.filter((e) => {
