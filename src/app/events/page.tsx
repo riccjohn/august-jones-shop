@@ -66,19 +66,30 @@ export default function EventsPage() {
           ) : (
             <div className="py-20">
               <p className="mb-3 font-bebas-neue text-3xl tracking-wide text-[#f6f4f0] sm:text-4xl">
-                No upcoming events
+                Check back soon
               </p>
               <p className="mb-8 text-base text-[#f6f4f0]/60">
-                Check Instagram for the latest announcements.
+                No events scheduled right now. Follow us on Instagram for
+                announcements, or shop our current pieces on Etsy.
               </p>
-              <a
-                href="https://instagram.com/augustjonesshop"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-[#ffb612] px-6 py-3 font-bebas-neue text-lg tracking-widest text-[#222] transition-opacity hover:opacity-90"
-              >
-                Follow on Instagram
-              </a>
+              <div className="flex flex-wrap gap-4">
+                <a
+                  href="https://www.etsy.com/shop/TheAugustJonesShop"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-[#ffb612] px-6 py-3 font-bebas-neue text-lg tracking-widest text-[#222] transition-opacity hover:opacity-90"
+                >
+                  Shop on Etsy
+                </a>
+                <a
+                  href="https://instagram.com/augustjonesshop"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block border border-[#ffb612]/50 px-6 py-3 font-bebas-neue text-lg tracking-widest text-[#f6f4f0] transition-opacity hover:opacity-90"
+                >
+                  Follow on Instagram
+                </a>
+              </div>
             </div>
           )}
         </div>

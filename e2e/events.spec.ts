@@ -260,8 +260,6 @@ test.describe("Events Page", () => {
 
   // Skipped: fixture data always has events so the empty state never renders in E2E.
   // Cover with a unit/component test that renders EventsPage with an empty array.
-  // NOTE: current empty state shows only an Instagram link — no Etsy link — update
-  // this test before unskipping.
   test.skip("empty state shows 'check back' text, Instagram link, and Etsy link", async ({
     page,
   }) => {
