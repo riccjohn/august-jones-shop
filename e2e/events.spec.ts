@@ -285,3 +285,45 @@ test.describe("Events Page", () => {
     );
   });
 });
+
+/**
+ * E2E tests for the EventsTeaser section on the homepage.
+ * Fixture data provides at least 2 upcoming events, so the teaser is always visible.
+ */
+
+test.describe("EventsTeaser (homepage)", () => {
+  test("teaser section is visible on the homepage", async ({ page }) => {
+    await page.goto("/");
+
+    const teaser = page.getByRole("region", { name: /upcoming pop-ups/i });
+    await expect(teaser).toBeVisible();
+  });
+
+  test("teaser shows at least one event row", async ({ page }) => {
+    await page.goto("/");
+
+    const teaser = page.getByRole("region", { name: /upcoming pop-ups/i });
+    const eventNames = teaser.locator("p.text-display");
+    await expect(eventNames.first()).toBeVisible();
+  });
+
+  test("'See all events' link points to /events/", async ({ page }) => {
+    await page.goto("/");
+
+    const teaser = page.getByRole("region", { name: /upcoming pop-ups/i });
+    const seeAllLink = teaser.getByRole("link", { name: /see all events/i });
+    await expect(seeAllLink).toBeVisible();
+    await expect(seeAllLink).toHaveAttribute("href", "/events/");
+  });
+
+  test("event rows link to the events page with an anchor", async ({
+    page,
+  }) => {
+    await page.goto("/");
+
+    const teaser = page.getByRole("region", { name: /upcoming pop-ups/i });
+    const detailsLink = teaser.getByRole("link", { name: /details/i }).first();
+    await expect(detailsLink).toBeVisible();
+    await expect(detailsLink).toHaveAttribute("href", /\/events\/#/);
+  });
+});
