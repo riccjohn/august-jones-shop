@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { trackShopifyClick } from "@/lib/analytics";
+import { trackShopClick } from "@/lib/analytics";
 
 interface ProductGalleryLinkProps {
   product: {
@@ -30,7 +30,7 @@ export function ProductGalleryLink({
       href={product.href}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() => trackShopifyClick(`gallery_${product.category}`)}
+      onClick={() => trackShopClick(`gallery_${product.category}`)}
       className="group flex flex-col gap-3 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffb612] focus-visible:ring-offset-4 focus-visible:ring-offset-[#f6f4f0]"
     >
       {/* Item number */}

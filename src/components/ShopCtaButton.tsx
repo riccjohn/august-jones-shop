@@ -3,13 +3,14 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { trackShopifyClick } from "@/lib/analytics";
+import { trackShopClick } from "@/lib/analytics";
+import { SHOP_URL } from "@/lib/constants";
 
 /**
- * Tracked CTA button for Shopify/Etsy store
+ * Tracked CTA button for the shop
  * Client component to handle click tracking
  */
-export function ShopifyCtaButton() {
+export function ShopCtaButton() {
   return (
     <Button
       asChild
@@ -18,10 +19,10 @@ export function ShopifyCtaButton() {
       className="group h-14 w-full px-12 text-lg font-medium uppercase tracking-widest sm:h-16"
     >
       <Link
-        href="https://www.etsy.com/shop/TheAugustJonesShop?utm_source=augustjones&utm_medium=website&utm_campaign=shop_cta"
+        href={`${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=shop_cta`}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={() => trackShopifyClick("hero")}
+        onClick={() => trackShopClick("hero")}
       >
         <span>Shop Now</span>
         <ArrowRight

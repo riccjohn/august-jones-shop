@@ -10,11 +10,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is the main marketing website (not a storefront). Pages:
 
-- **Home (`/`)** — Landing page with brief brand description and CTA linking to the Etsy store
+- **Home (`/`)** — Landing page with brief brand description and CTA linking to the shop
 - **About (`/about`)** — Background on the brand and maker
 - **Contact (`/contact`)** — Contact form
 
-Product purchases happen on a separate Etsy store (https://www.etsy.com/shop/TheAugustJonesShop); this site drives traffic there.
+Product purchases happen on a separate shop (https://store.augustjones.shop); this site drives traffic there.
 
 ## Key Priorities
 
@@ -66,7 +66,7 @@ Design should convey **sports-centered custom streetwear** that feels high-quali
 
 ## Analytics
 
-**Umami Cloud** — custom event tracking via `window.umami.track()`. Tracks Shopify clicks, Instagram clicks, email clicks. Dashboard at `cloud.umami.is`. See `docs/analytics.md` for setup, event reference, and sharing the dashboard.
+**Umami Cloud** — custom event tracking via `window.umami.track()`. Tracks shop clicks, Instagram clicks, email clicks. Dashboard at `cloud.umami.is`. See `docs/analytics.md` for setup, event reference, and sharing the dashboard.
 
 Key files: `src/lib/analytics.ts` (client tracking functions), `src/app/layout.tsx` (script tag).
 

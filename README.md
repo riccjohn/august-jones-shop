@@ -2,7 +2,7 @@
 
 Marketing website for **August Jones** — a solo, female-owned brand selling hand-made, one-of-a-kind, upcycled sports fashion created from upcycled NFL jerseys.
 
-This is a [Next.js](https://nextjs.org) marketing site (not a storefront) that drives traffic to the external Etsy shop.
+This is a [Next.js](https://nextjs.org) marketing site (not a storefront) that drives traffic to the external shop at https://store.augustjones.shop.
 
 ## Tech Stack
 

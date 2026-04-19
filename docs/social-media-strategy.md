@@ -191,7 +191,7 @@ Instagram followers are rented. Algorithm changes or account issues = lost audie
 
 ---
 
-## Strategic Milestone: Move to Shopify
+## Strategic Milestone: Move to Shopify ✓ DONE
 
 Etsy is a great start but its ad tracking limitations cap paid ad effectiveness. Shopify enables:
 
@@ -203,6 +203,8 @@ Etsy is a great start but its ad tracking limitations cap paid ad effectiveness.
 
 Priority: migrate to Shopify once sales are consistent.
 
+**Completed 2026-04.** Store is live at https://store.augustjones.shop.
+
 ---
 
 ## Priority Action Checklist
@@ -210,13 +212,13 @@ Priority: migrate to Shopify once sales are consistent.
 ### This Week
 
 - [ ] Check Instagram ad campaign objective in Meta Ads Manager → switch to Traffic if set to Engagement
-- [ ] Update Instagram bio link → point directly to Etsy shop (not marketing website)
-- [ ] Verify Etsy shop URL is clean and all listings have strong photos + descriptions
+- [x] Update Instagram bio link → point directly to shop (not marketing website)
+- [x] Verify shop URL is clean and all listings have strong photos + descriptions
 
 ### Short-Term
 
-- [ ] Install Meta Pixel via Etsy Seller Hub (limited but better than nothing)
-- [ ] Set up Instagram Shopping via Facebook Commerce Manager → Etsy catalog sync
+- [ ] Install Meta Pixel + Conversions API via Shopify (full funnel tracking now available)
+- [ ] Set up Instagram Shopping via Facebook Commerce Manager → Shopify catalog sync
 - [ ] Start Reels cadence: 2–3x/week (transformation process, jersey backstories, reveals)
 
 ### Ongoing

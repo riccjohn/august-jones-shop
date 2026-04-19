@@ -39,7 +39,7 @@ test.describe("Landing Page", () => {
     await expect(heroCTA).toBeVisible();
     await expect(heroCTA).toHaveAttribute(
       "href",
-      /^https:\/\/www\.etsy\.com\/shop\/TheAugustJonesShop\?utm_source=augustjones&utm_medium=website&utm_campaign=shop_cta$/,
+      /^https:\/\/store\.augustjones\.shop\?utm_source=augustjones&utm_medium=website&utm_campaign=shop_cta$/,
     );
     await expect(heroCTA).toHaveAttribute("target", "_blank");
 
@@ -50,7 +50,7 @@ test.describe("Landing Page", () => {
     await expect(footerShopLink).toBeVisible();
     await expect(footerShopLink).toHaveAttribute(
       "href",
-      "https://www.etsy.com/shop/TheAugustJonesShop",
+      "https://store.augustjones.shop",
     );
 
     // Test Instagram CTA link
@@ -108,7 +108,7 @@ test.describe("Landing Page", () => {
     await expect(vestsLink).toBeVisible();
     await expect(vestsLink).toHaveAttribute(
       "href",
-      /utm_source=augustjones&utm_medium=website&utm_campaign=gallery_hoodie/,
+      /collections\/vests.*utm_campaign=gallery_vests/,
     );
 
     const tshirtsLink = page.getByRole("link", {
@@ -116,7 +116,7 @@ test.describe("Landing Page", () => {
     });
     await expect(tshirtsLink).toHaveAttribute(
       "href",
-      /utm_campaign=gallery_streetwear/,
+      /utm_campaign=gallery_tshirts/,
     );
 
     const hoodiesLink = page.getByRole("link", {
@@ -124,7 +124,7 @@ test.describe("Landing Page", () => {
     });
     await expect(hoodiesLink).toHaveAttribute(
       "href",
-      /utm_campaign=gallery_reworked/,
+      /utm_campaign=gallery_hoodies/,
     );
 
     const jacketsLink = page.getByRole("link", {
@@ -132,7 +132,7 @@ test.describe("Landing Page", () => {
     });
     await expect(jacketsLink).toHaveAttribute(
       "href",
-      /utm_campaign=gallery_gameday/,
+      /utm_campaign=gallery_jackets/,
     );
   });
 

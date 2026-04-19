@@ -7,9 +7,10 @@ import InstagramIcon from "@/components/InstagramIcon";
 import { InstagramLink } from "@/components/InstagramLink";
 import { ProductGalleryLink } from "@/components/ProductGalleryLink";
 import { ProductGallerySchema } from "@/components/ProductGallerySchema";
-import { ShopifyCtaButton } from "@/components/ShopifyCtaButton";
+import { ShopCtaButton } from "@/components/ShopCtaButton";
 import { buttonVariants } from "@/components/ui/button";
 import { allEvents } from "@/data/event-source";
+import { SHOP_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -23,15 +24,13 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const ETSY_SHOP_URL = "https://www.etsy.com/shop/TheAugustJonesShop";
-
 const productImages = [
   {
     id: 1,
     title: "Vests",
     src: "/images/product/vests.webp",
     alt: "Hand-made upcycled sports jersey puffer vest by August Jones",
-    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_hoodie`,
+    href: `${SHOP_URL}/collections/vests?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_vests`,
     category: "vests",
   },
   {
@@ -39,7 +38,7 @@ const productImages = [
     title: "Jackets",
     src: "/images/product/jackets.webp",
     alt: "Unique game day outfit made from upcycled sports jerseys and thrifted military jacket",
-    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_gameday`,
+    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_jackets`,
     category: "jackets",
   },
   {
@@ -47,7 +46,7 @@ const productImages = [
     title: "Hoodies",
     src: "/images/product/hoodies.webp",
     alt: "One-of-a-kind Green Bay Packers hoodie made from upcycled fan gear",
-    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_reworked`,
+    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_hoodies`,
     category: "hoodies",
   },
   {
@@ -55,7 +54,7 @@ const productImages = [
     title: "Sweatpants",
     src: "/images/product/sweatpants.webp",
     alt: "One-of-a-kind Milwaukee Bucks sweatpants made from upcycled fan gear",
-    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_gameday`,
+    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_sweatpants`,
     category: "sweatpants",
   },
   {
@@ -63,15 +62,15 @@ const productImages = [
     title: "T-Shirts",
     src: "/images/product/tshirts.webp",
     alt: "Custom cropped Milwaukee Brewers t-shirt made from upcycled fan gear",
-    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_streetwear`,
+    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_tshirts`,
     category: "tshirts",
   },
   {
     id: 6,
     title: "Accessories",
     src: "/images/product/accessories.webp",
-    alt: "Hand-made Green Bay Packers and Denver Broncos fanny packs made from upcycled NFL jerseys",
-    href: `${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_gameday`,
+    alt: "Hand-made Green Bay Packers and Denver Broncos fanny packs made from upcycled NFL fan gear",
+    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_accessories`,
     category: "accessories",
   },
 ] as const;
@@ -131,7 +130,7 @@ export default function Home() {
 
             {/* CTAs */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <ShopifyCtaButton />
+              <ShopCtaButton />
             </div>
           </div>
 
@@ -185,12 +184,12 @@ export default function Home() {
               The Collection
             </h2>
             <a
-              href={`${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=collection_header`}
+              href={`${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=collection_header`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-eyebrow hidden shrink-0 text-[#222]/75 underline underline-offset-4 hover:text-[#ffb612] hover:no-underline sm:block"
             >
-              View all on Etsy ↗
+              View all in shop ↗
             </a>
           </div>
 
@@ -208,12 +207,12 @@ export default function Home() {
           {/* Mobile "view all" link */}
           <div className="mt-10 flex justify-center sm:hidden">
             <a
-              href={`${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=collection_footer`}
+              href={`${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=collection_footer`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-eyebrow text-[#222]/75 underline underline-offset-4 hover:text-[#ffb612] hover:no-underline"
             >
-              View all on Etsy ↗
+              View all in shop ↗
             </a>
           </div>
         </div>

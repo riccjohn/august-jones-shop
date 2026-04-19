@@ -5,9 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useLayoutEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { trackNavClick, trackShopifyClick } from "@/lib/analytics";
-
-const ETSY_SHOP_URL = "https://www.etsy.com/shop/TheAugustJonesShop";
+import { trackNavClick, trackShopClick } from "@/lib/analytics";
+import { SHOP_URL } from "@/lib/constants";
 
 const NAV_LINKS = [
   { label: "About", href: "/about", key: "about" },
@@ -112,10 +111,10 @@ export function SiteNav() {
           {/* Shop CTA — always visible */}
           <li className="sm:ml-3">
             <a
-              href={`${ETSY_SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=nav`}
+              href={`${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=nav`}
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => trackShopifyClick("nav")}
+              onClick={() => trackShopClick("nav")}
               className="group flex items-center gap-1.5 border border-accent/40 px-3.5 py-1.5 transition-all duration-200 hover:border-accent hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               style={{
                 transitionTimingFunction: "cubic-bezier(0.77, 0, 0.175, 1)",
