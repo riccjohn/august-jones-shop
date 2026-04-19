@@ -108,7 +108,7 @@ test.describe("Landing Page", () => {
     await expect(vestsLink).toBeVisible();
     await expect(vestsLink).toHaveAttribute(
       "href",
-      /utm_source=augustjones&utm_medium=website&utm_campaign=gallery_hoodie/,
+      /collections\/vests.*utm_campaign=gallery_vests/,
     );
 
     const tshirtsLink = page.getByRole("link", {
@@ -116,7 +116,7 @@ test.describe("Landing Page", () => {
     });
     await expect(tshirtsLink).toHaveAttribute(
       "href",
-      /utm_campaign=gallery_streetwear/,
+      /utm_campaign=gallery_tshirts/,
     );
 
     const hoodiesLink = page.getByRole("link", {
@@ -124,7 +124,7 @@ test.describe("Landing Page", () => {
     });
     await expect(hoodiesLink).toHaveAttribute(
       "href",
-      /utm_campaign=gallery_reworked/,
+      /utm_campaign=gallery_hoodies/,
     );
 
     const jacketsLink = page.getByRole("link", {
@@ -132,7 +132,7 @@ test.describe("Landing Page", () => {
     });
     await expect(jacketsLink).toHaveAttribute(
       "href",
-      /utm_campaign=gallery_gameday/,
+      /utm_campaign=gallery_jackets/,
     );
   });
 
