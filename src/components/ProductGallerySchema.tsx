@@ -56,7 +56,7 @@ export function ProductGallerySchema({ products }: ProductGallerySchemaProps) {
           "@type": "AggregateOffer",
           availability: "https://schema.org/PreOrder",
           priceCurrency: "USD",
-          url: "https://www.etsy.com/shop/TheAugustJonesShop",
+          url: "https://store.augustjones.shop",
         },
       },
     })),

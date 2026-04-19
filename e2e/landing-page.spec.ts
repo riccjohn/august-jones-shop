@@ -39,7 +39,7 @@ test.describe("Landing Page", () => {
     await expect(heroCTA).toBeVisible();
     await expect(heroCTA).toHaveAttribute(
       "href",
-      /^https:\/\/www\.etsy\.com\/shop\/TheAugustJonesShop\?utm_source=augustjones&utm_medium=website&utm_campaign=shop_cta$/,
+      /^https:\/\/store\.augustjones\.shop\?utm_source=augustjones&utm_medium=website&utm_campaign=shop_cta$/,
     );
     await expect(heroCTA).toHaveAttribute("target", "_blank");
 
@@ -50,7 +50,7 @@ test.describe("Landing Page", () => {
     await expect(footerShopLink).toBeVisible();
     await expect(footerShopLink).toHaveAttribute(
       "href",
-      "https://www.etsy.com/shop/TheAugustJonesShop",
+      "https://store.augustjones.shop",
     );
 
     // Test Instagram CTA link

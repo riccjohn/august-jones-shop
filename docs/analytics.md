@@ -2,7 +2,7 @@
 
 ## Overview
 
-The site uses **Umami Cloud** for analytics — pageviews, referrers, UTM campaigns, countries, devices, and custom event tracking (Shopify clicks, Instagram clicks, email clicks) via a shareable web dashboard.
+The site uses **Umami Cloud** for analytics — pageviews, referrers, UTM campaigns, countries, devices, and custom event tracking (shop clicks, Instagram clicks, email clicks) via a shareable web dashboard.
 
 ## Architecture
 
@@ -18,7 +18,7 @@ Client click → trackXxxClick() → window.umami.track(eventName, eventData)
 
 | Function | Event Name | Key `source` Values |
 |---|---|---|
-| `trackShopifyClick(source)` | `shopify_store_click` | `hero`, `footer`, `gallery_*` |
+| `trackShopClick(source)` | `shopify_store_click` | `hero`, `footer`, `gallery_*` |
 | `trackInstagramClick(location)` | `instagram_click` | `hero`, `footer` |
 | `trackEmailClick()` | `email_click` | — |
 
@@ -53,7 +53,7 @@ Log in at https://cloud.umami.is to see:
 - Pageviews, unique visitors, bounce rate
 - Top pages, referrers, UTM campaigns
 - Countries, browsers, devices
-- Custom events (Shopify clicks, Instagram clicks, email clicks) with their properties
+- Custom events (shop clicks, Instagram clicks, email clicks) with their properties
 
 Umami supports sharing a read-only dashboard link — useful for giving August access without a login.
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { trackShopifyClick } from "@/lib/analytics";
+import { trackShopClick } from "@/lib/analytics";
 
 /**
  * Tracked footer shop link component
@@ -9,10 +9,10 @@ import { trackShopifyClick } from "@/lib/analytics";
 export function FooterShopLink() {
   return (
     <a
-      href="https://www.etsy.com/shop/TheAugustJonesShop"
+      href="https://store.augustjones.shop"
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() => trackShopifyClick("footer")}
+      onClick={() => trackShopClick("footer")}
       className="text-sm text-foreground/60 transition-colors duration-200 hover:text-accent"
     >
       Shop Now

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { GrainOverlay } from "@/components/GrainOverlay";
-import { ShopifyCtaButton } from "@/components/ShopifyCtaButton";
+import { ShopCtaButton } from "@/components/ShopCtaButton";
 import { Button } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -231,7 +231,7 @@ export default function AboutPage() {
             When a piece is gone, it&apos;s gone for good.
           </p>
           <nav aria-label="Shop navigation" className="w-full max-w-sm">
-            <ShopifyCtaButton />
+            <ShopCtaButton />
           </nav>
         </div>
       </section>

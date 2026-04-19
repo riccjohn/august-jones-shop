@@ -11,7 +11,7 @@ function track(eventName: string, eventData?: Record<string, string>) {
   window.umami.track(eventName, eventData);
 }
 
-export function trackShopifyClick(source?: string) {
+export function trackShopClick(source?: string) {
   track("shopify_store_click", source ? { source } : undefined);
 }
 

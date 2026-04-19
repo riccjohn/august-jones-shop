@@ -154,7 +154,7 @@ export default function RootLayout({
             image: "https://www.augustjones.shop/images/social_02-1200.webp",
             sameAs: [
               "https://www.instagram.com/augustjonesshop",
-              "https://www.etsy.com/shop/TheAugustJonesShop",
+              "https://store.augustjones.shop",
             ],
             priceRange: "$$",
           })}
