@@ -38,7 +38,7 @@ const productImages = [
     title: "Jackets",
     src: "/images/product/jackets.webp",
     alt: "Unique game day outfit made from upcycled sports jerseys and thrifted military jacket",
-    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_gameday`,
+    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_jackets`,
     category: "jackets",
   },
   {
@@ -46,7 +46,7 @@ const productImages = [
     title: "Hoodies",
     src: "/images/product/hoodies.webp",
     alt: "One-of-a-kind Green Bay Packers hoodie made from upcycled fan gear",
-    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_reworked`,
+    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_hoodies`,
     category: "hoodies",
   },
   {
@@ -54,7 +54,7 @@ const productImages = [
     title: "Sweatpants",
     src: "/images/product/sweatpants.webp",
     alt: "One-of-a-kind Milwaukee Bucks sweatpants made from upcycled fan gear",
-    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_gameday`,
+    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_sweatpants`,
     category: "sweatpants",
   },
   {
@@ -62,15 +62,15 @@ const productImages = [
     title: "T-Shirts",
     src: "/images/product/tshirts.webp",
     alt: "Custom cropped Milwaukee Brewers t-shirt made from upcycled fan gear",
-    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_streetwear`,
+    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_tshirts`,
     category: "tshirts",
   },
   {
     id: 6,
     title: "Accessories",
     src: "/images/product/accessories.webp",
-    alt: "Hand-made Green Bay Packers and Denver Broncos fanny packs made from upcycled NFL jerseys",
-    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_gameday`,
+    alt: "Hand-made Green Bay Packers and Denver Broncos fanny packs made from upcycled NFL fan gear",
+    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_accessories`,
     category: "accessories",
   },
 ] as const;
