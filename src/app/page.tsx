@@ -30,7 +30,7 @@ const productImages = [
     title: "Vests",
     src: "/images/product/vests.webp",
     alt: "Hand-made upcycled sports jersey puffer vest by August Jones",
-    href: `${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_hoodie`,
+    href: `${SHOP_URL}/collections/vests?utm_source=augustjones&utm_medium=website&utm_campaign=gallery_vests`,
     category: "vests",
   },
   {
