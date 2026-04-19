@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { trackShopClick } from "@/lib/analytics";
+import { SHOP_URL } from "@/lib/constants";
 
 /**
  * Tracked CTA button for the shop
@@ -18,7 +19,7 @@ export function ShopCtaButton() {
       className="group h-14 w-full px-12 text-lg font-medium uppercase tracking-widest sm:h-16"
     >
       <Link
-        href="https://store.augustjones.shop?utm_source=augustjones&utm_medium=website&utm_campaign=shop_cta"
+        href={`${SHOP_URL}?utm_source=augustjones&utm_medium=website&utm_campaign=shop_cta`}
         target="_blank"
         rel="noopener noreferrer"
         onClick={() => trackShopClick("hero")}

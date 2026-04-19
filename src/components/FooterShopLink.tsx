@@ -1,6 +1,7 @@
 "use client";
 
 import { trackShopClick } from "@/lib/analytics";
+import { SHOP_URL } from "@/lib/constants";
 
 /**
  * Tracked footer shop link component
@@ -9,7 +10,7 @@ import { trackShopClick } from "@/lib/analytics";
 export function FooterShopLink() {
   return (
     <a
-      href="https://store.augustjones.shop"
+      href={SHOP_URL}
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => trackShopClick("footer")}

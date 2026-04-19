@@ -10,6 +10,7 @@ import { ProductGallerySchema } from "@/components/ProductGallerySchema";
 import { ShopCtaButton } from "@/components/ShopCtaButton";
 import { buttonVariants } from "@/components/ui/button";
 import { allEvents } from "@/data/event-source";
+import { SHOP_URL } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -22,8 +23,6 @@ export async function generateMetadata(): Promise<Metadata> {
     },
   };
 }
-
-const SHOP_URL = "https://store.augustjones.shop";
 
 const productImages = [
   {

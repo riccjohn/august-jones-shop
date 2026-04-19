@@ -7,6 +7,7 @@ import {
 } from "next/font/google";
 import Script from "next/script";
 import { SiteNav } from "@/components/SiteNav";
+import { SHOP_URL } from "@/lib/constants";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -152,10 +153,7 @@ export default function RootLayout({
             },
             logo: "https://www.augustjones.shop/logos/August_Jones-Horitontal_Logo-transparent_black.svg",
             image: "https://www.augustjones.shop/images/social_02-1200.webp",
-            sameAs: [
-              "https://www.instagram.com/augustjonesshop",
-              "https://store.augustjones.shop",
-            ],
+            sameAs: ["https://www.instagram.com/augustjonesshop", SHOP_URL],
             priceRange: "$$",
           })}
         </script>

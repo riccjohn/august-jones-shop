@@ -6,8 +6,7 @@ import Link from "next/link";
 import { useLayoutEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { trackNavClick, trackShopClick } from "@/lib/analytics";
-
-const SHOP_URL = "https://store.augustjones.shop";
+import { SHOP_URL } from "@/lib/constants";
 
 const NAV_LINKS = [
   { label: "About", href: "/about", key: "about" },

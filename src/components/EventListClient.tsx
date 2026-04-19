@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { EventCard } from "@/components/EventCard";
 import { type AugustJonesEvent, getUpcomingEvents } from "@/data/events";
 import { trackShopClick } from "@/lib/analytics";
+import { SHOP_URL } from "@/lib/constants";
 
 interface EventListClientProps {
   events: AugustJonesEvent[];
@@ -28,7 +29,7 @@ export function EventListClient({ events }: EventListClientProps) {
           No events scheduled right now. Follow us on Instagram for
           announcements, or shop our current pieces in our{" "}
           <a
-            href="https://store.augustjones.shop"
+            href={SHOP_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="underline underline-offset-2 hover:text-[#f6f4f0]"
@@ -40,7 +41,7 @@ export function EventListClient({ events }: EventListClientProps) {
         </p>
         <div className="flex flex-wrap gap-4">
           <a
-            href="https://store.augustjones.shop"
+            href={SHOP_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block bg-[#ffb612] px-6 py-3 font-bebas-neue text-lg tracking-widest text-[#222] transition-opacity hover:opacity-90"

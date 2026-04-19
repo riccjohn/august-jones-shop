@@ -1,3 +1,5 @@
+import { SHOP_URL } from "@/lib/constants";
+
 interface ProductItem {
   id: number;
   title: string;
@@ -56,7 +58,7 @@ export function ProductGallerySchema({ products }: ProductGallerySchemaProps) {
           "@type": "AggregateOffer",
           availability: "https://schema.org/PreOrder",
           priceCurrency: "USD",
-          url: "https://store.augustjones.shop",
+          url: SHOP_URL,
         },
       },
     })),
