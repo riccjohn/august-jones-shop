@@ -11,7 +11,7 @@
 The August Jones shop has migrated from Etsy to a standalone Shopify store at `https://store.augustjones.shop`. The codebase still contains Etsy URLs, Shopify-named identifiers (from an old Etsy era), and the analytics function is named `trackShopifyClick` while tracking Etsy clicks. All of this needs to be reconciled to reflect the new reality: a platform-agnostic "shop" and the new store URL.
 
 Key decisions from research:
-- Analytics event `shopify_store_click` → `shop_click` (breaking change for historical data — acceptable)
+- Analytics event name `shopify_store_click` **preserved** to retain Umami historical data continuity; only the TypeScript function name changes
 - Component `ShopifyCtaButton` → `ShopCtaButton` (file rename + import updates)
 - UTM parameters are platform-agnostic — preserve as-is
 - `docs/social-media-strategy.md` gets a light update: mark the "Move to Shopify" milestone as done, leave historical analysis intact
@@ -26,7 +26,7 @@ Replace all Etsy/Shopify-specific identifiers and URLs throughout the codebase w
 
 ## Acceptance Criteria
 
-- [ ] `src/lib/analytics.ts` exports `trackShopClick` (not `trackShopifyClick`), emits `"shop_click"` event
+- [ ] `src/lib/analytics.ts` exports `trackShopClick` (not `trackShopifyClick`), still emits `"shopify_store_click"` event (preserved for historical data)
 - [ ] `ShopifyCtaButton.tsx` renamed to `ShopCtaButton.tsx`, export renamed
 - [ ] All component files link to `https://store.augustjones.shop`
 - [ ] No remaining `ETSY_SHOP_URL` constants in source
@@ -79,12 +79,12 @@ _(none — only modifications)_
 **Goal:** Update the single source of truth for analytics before anything else imports it.
 
 **Tasks:**
-- In `src/lib/analytics.ts`: rename `trackShopifyClick` → `trackShopClick`, change event string `"shopify_store_click"` → `"shop_click"`
+- In `src/lib/analytics.ts`: rename `trackShopifyClick` → `trackShopClick`; **keep** event string `"shopify_store_click"` unchanged
 
 **Verification:**
 - `pnpm exec tsc --noEmit` exits 0
 - `pnpm lint` exits 0
-- `grep -r "shopifyClick\|shopify_store" src/lib/` returns empty
+- `grep -r "trackShopifyClick" src/lib/` returns empty
 
 #### Agent Context
 
@@ -94,11 +94,11 @@ Files to modify:
 
 Changes:
   - Rename exported function: trackShopifyClick → trackShopClick
-  - Change event name string: "shopify_store_click" → "shop_click"
+  - Keep event name string "shopify_store_click" unchanged
 
 Test command: pnpm exec tsc --noEmit && pnpm lint
 
-GREEN gate: tsc and lint both exit 0; no remaining "shopifyClick" or "shopify_store" in src/lib/
+GREEN gate: tsc and lint both exit 0; no remaining "trackShopifyClick" in src/lib/
 
 Constraints:
   - Do NOT disable or ignore any linter rules
@@ -168,7 +168,7 @@ Constraints:
 
 **Tasks:**
 - `e2e/landing-page.spec.ts`: update hero CTA URL regex and footer link URL to `store.augustjones.shop`
-- `e2e/analytics.spec.ts`: update test names and `"shopify_store_click"` assertions → `"shop_click"` (×3)
+- `e2e/analytics.spec.ts`: update test names / descriptions referencing "Shopify/Etsy" where appropriate; `"shopify_store_click"` event name assertions **stay unchanged**
 
 **Verification:**
 - `pnpm test:e2e` passes in all browsers (chromium, firefox, webkit)
@@ -182,7 +182,7 @@ Files to modify:
 
 Changes:
   - landing-page.spec.ts: update URL assertions from etsy.com → store.augustjones.shop
-  - analytics.spec.ts: update event name assertions "shopify_store_click" → "shop_click" (×3); update any test description strings referencing Shopify/Etsy
+  - analytics.spec.ts: keep "shopify_store_click" event name assertions unchanged; update only test description strings that reference Shopify/Etsy if they're misleading
 
 Test command: pnpm test:e2e
 
@@ -239,7 +239,7 @@ Constraints:
 - **No linter suppression:** Do not add `biome-ignore` or any suppression comments. Fix issues properly.
 - **No commits:** Do not commit at any phase. User will commit explicitly.
 - **UTM preservation:** Keep all UTM parameters (`utm_source=augustjones&utm_medium=website&utm_campaign=*`) unchanged.
-- **Analytics breaking change:** `shopify_store_click` → `shop_click` is a known, accepted breaking change in Umami historical data.
+- **Analytics event name preserved:** `shopify_store_click` stays as the emitted event to maintain Umami historical data continuity. Only the TS function name changes.
 - **JSON-LD accuracy:** The `sameAs` and product `url` fields in structured data must reflect the new URL for SEO.
 - **TypeScript strict mode:** Project uses strict TS. All imports must resolve after the file rename.
 
