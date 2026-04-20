@@ -205,8 +205,7 @@ export function getUpcomingEvents(
 ): AugustJonesEvent[] {
   return source.filter((e) => {
     const lastSession = e.sessions[e.sessions.length - 1];
-    return (
-      new Date(lastSession.endDate).getTime() + ONE_WEEK_MS > now.getTime()
-    );
+    const endTime = new Date(lastSession.endDate).getTime();
+    return endTime + ONE_WEEK_MS > now.getTime();
   });
 }

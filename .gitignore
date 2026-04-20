@@ -63,3 +63,6 @@ original_images/
 # Task tracking
 .yaks
 .yaks/
+
+# Lightfactory research / planning
+.light/sessions
