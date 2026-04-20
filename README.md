@@ -20,6 +20,14 @@ Install dependencies:
 pnpm install
 ```
 
+Install [gitleaks](https://github.com/gitleaks/gitleaks) for secret scanning in pre-commit hooks:
+
+```bash
+brew install gitleaks
+```
+
+> Without gitleaks, commits still work but pre-commit secret scanning is skipped with a warning.
+
 Run the development server:
 
 ```bash

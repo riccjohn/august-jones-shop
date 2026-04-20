@@ -1,1 +1,8 @@
 pnpm exec lint-staged
+pnpm exec tsc --noEmit
+
+if command -v gitleaks &> /dev/null; then
+  gitleaks protect --staged --redact
+else
+  echo "⚠️  gitleaks not installed — secret scanning skipped. Install with: brew install gitleaks"
+fi
