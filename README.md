@@ -88,9 +88,15 @@ To generate these strings easily, use **[timestamp.online](https://timestamp.onl
 
 `getUpcomingEvents()` automatically hides events whose last session ended more than **one week ago** — no manual cleanup needed. Past events drop off on their own.
 
+Events that ended within the last week are still shown but visually marked as past (see EVENT PASSED badge below).
+
 ### TODAY / TOMORROW badge
 
 Cards automatically show a **TODAY** or **TOMORROW** badge (yellow, top-right corner) when a session date matches the current calendar date or the next day in the `America/Chicago` timezone.
+
+### EVENT PASSED badge
+
+When an event's last session has ended but it's still within the one-week window, the card shows a gray **EVENT PASSED** badge instead of the urgency badge, hides the Add to Calendar button, and dims the card. This gives recent attendees a moment to find the event before it disappears entirely.
 
 ## Favicon/Icon Setup
 

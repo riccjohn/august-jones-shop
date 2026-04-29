@@ -1,11 +1,11 @@
 import { expect, type Page, test } from "@playwright/test";
 
-// Freezes the browser's Date to the fixture "now" (2099-06-15T12:00:00-05:00) via addInitScript.
+// Freezes the browser's Date to the fixture "now" (2026-04-29T12:00:00-05:00) via addInitScript.
 // Must be called before page.goto. Date.UTC is intentionally inherited from OrigDate
 // (used by getEventUrgencyLabel to compute tomorrow's boundary).
 async function freezeToFixtureNow(page: Page) {
   await page.addInitScript(() => {
-    const FROZEN_TIME = new Date("2099-06-15T12:00:00-05:00").getTime();
+    const FROZEN_TIME = new Date("2026-04-29T12:00:00-05:00").getTime();
     const OrigDate = Date;
     class MockDate extends OrigDate {
       constructor(...args: unknown[]) {
@@ -92,6 +92,13 @@ test.describe("Events navigation integration", () => {
  */
 
 test.describe("Events Page", () => {
+  // Freeze browser Date to fixture "now" (2026-04-29T12:00:00-05:00) so the client-side
+  // EventListClient useEffect sees the same time as the server-side fixture filter.
+  // Without this, a later real date would cause fixture events to be filtered out after hydration.
+  test.beforeEach(async ({ page }) => {
+    await freezeToFixtureNow(page);
+  });
+
   test("loads with correct page title", async ({ page }) => {
     await page.goto("/events");
 
@@ -188,7 +195,7 @@ test.describe("Events Page", () => {
   }) => {
     await page.goto("/events");
 
-    const card = page.locator("#fixture-single-day-event-2099-06-15");
+    const card = page.locator("#fixture-single-day-event-2026-04-29");
     await expect(card).toBeVisible();
 
     const titleLink = card.getByRole("link", {
@@ -201,25 +208,18 @@ test.describe("Events Page", () => {
   test("event card shows discount code when present", async ({ page }) => {
     await page.goto("/events");
 
-    const card = page.locator("#fixture-discount-event-2099-06-16");
+    const card = page.locator("#fixture-discount-event-2026-04-30");
     await expect(card).toBeVisible();
 
     await expect(card).toContainText("FIXTURE-CODE");
   });
 
-  // `now` is frozen to 2099-06-15 in event-source.e2e.ts, so fixture-single-day-event
-  // (2099-06-15) renders TODAY and fixture-discount-event (2099-06-16) renders TOMORROW.
-  // Because EventUrgencyBadge is a client component (renders via useEffect after hydration),
-  // we must also freeze `Date` in the browser context via addInitScript so the badge knows
-  // which date is "today".
   test("event card shows TODAY badge for event happening today", async ({
     page,
   }) => {
-    await freezeToFixtureNow(page);
-
     await page.goto("/events");
 
-    const card = page.locator("#fixture-single-day-event-2099-06-15");
+    const card = page.locator("#fixture-single-day-event-2026-04-29");
     await expect(card).toBeVisible();
 
     const badge = card.locator("span", { hasText: /^TODAY$/ });
@@ -229,11 +229,9 @@ test.describe("Events Page", () => {
   test("event card shows TOMORROW badge for event happening tomorrow", async ({
     page,
   }) => {
-    await freezeToFixtureNow(page);
-
     await page.goto("/events");
 
-    const card = page.locator("#fixture-discount-event-2099-06-16");
+    const card = page.locator("#fixture-discount-event-2026-04-30");
     await expect(card).toBeVisible();
 
     const badge = card.locator("span", { hasText: /^TOMORROW$/ });
@@ -255,7 +253,7 @@ test.describe("Events Page", () => {
   }) => {
     await page.goto("/events");
 
-    const card = page.locator("#fixture-multi-day-event-2099-06-17");
+    const card = page.locator("#fixture-multi-day-event-2026-05-01");
     await expect(card).toBeVisible();
 
     const sessionDates = card.locator('[data-testid="event-session-date"]');
@@ -267,7 +265,7 @@ test.describe("Events Page", () => {
   }) => {
     await page.goto("/events");
 
-    const card = page.locator("#fixture-multi-day-event-2099-06-17");
+    const card = page.locator("#fixture-multi-day-event-2026-05-01");
     await expect(card).toBeVisible();
 
     const calendarButtons = card.getByRole("button", {
@@ -281,11 +279,72 @@ test.describe("Events Page", () => {
   }) => {
     await page.goto("/events");
 
-    const card = page.locator("#fixture-single-day-event-2099-06-15");
+    const card = page.locator("#fixture-single-day-event-2026-04-29");
     await expect(card).toBeVisible();
 
     const sessionDates = card.locator('[data-testid="event-session-date"]');
     await expect(sessionDates).toHaveCount(1);
+  });
+});
+
+/**
+ * E2E tests for past event visual differentiation.
+ * fixture-past-event ended at 2026-04-22T17:00:00-05:00, which is before the frozen
+ * "now" of 2026-04-29T12:00:00-05:00, so it renders as past (EVENT PASSED, no calendar button).
+ * fixture-single-day-event starts/ends on 2026-04-29, so it is upcoming at the frozen time.
+ */
+
+test.describe("Past event visual differentiation", () => {
+  test.beforeEach(async ({ page }) => {
+    await freezeToFixtureNow(page);
+  });
+
+  test("past event card shows 'EVENT PASSED' badge", async ({ page }) => {
+    await page.goto("/events/");
+
+    const card = page.locator("#fixture-past-event");
+    await expect(card).toBeVisible();
+
+    const badge = card.locator("span", { hasText: /^EVENT PASSED$/ });
+    await expect(badge).toBeVisible();
+  });
+
+  test("past event card does NOT contain 'Add to Calendar' button", async ({
+    page,
+  }) => {
+    await page.goto("/events/");
+
+    const card = page.locator("#fixture-past-event");
+    await expect(card).toBeVisible();
+
+    const calendarButton = card.getByRole("button", {
+      name: /add to calendar/i,
+    });
+    await expect(calendarButton).toHaveCount(0);
+  });
+
+  test("upcoming event card does NOT show 'EVENT PASSED'", async ({ page }) => {
+    await page.goto("/events/");
+
+    const card = page.locator("#fixture-single-day-event-2026-04-29");
+    await expect(card).toBeVisible();
+
+    const passedBadge = card.locator("span", { hasText: /^EVENT PASSED$/ });
+    await expect(passedBadge).toHaveCount(0);
+  });
+
+  test("upcoming event card shows 'Add to Calendar' button", async ({
+    page,
+  }) => {
+    await page.goto("/events/");
+
+    const card = page.locator("#fixture-single-day-event-2026-04-29");
+    await expect(card).toBeVisible();
+
+    const calendarButton = card.getByRole("button", {
+      name: /add to calendar/i,
+    });
+    await expect(calendarButton).toBeVisible();
   });
 });
 
@@ -295,6 +354,10 @@ test.describe("Events Page", () => {
  */
 
 test.describe("EventsTeaser (homepage)", () => {
+  test.beforeEach(async ({ page }) => {
+    await freezeToFixtureNow(page);
+  });
+
   test("teaser section is visible on the homepage", async ({ page }) => {
     await page.goto("/");
 
