@@ -149,7 +149,7 @@ test.describe("Landing Page", () => {
     ).toBeVisible();
 
     // Check Connect section
-    await expect(footer.getByText("Connect")).toBeVisible();
+    await expect(footer.getByText("Connect", { exact: true })).toBeVisible();
 
     // Check Instagram link in footer
     const footerInstagram = footer.getByLabel("August Jones on Instagram");
@@ -164,6 +164,16 @@ test.describe("Landing Page", () => {
       name: /contact@augustjones\.shop/i,
     });
     await expect(footerEmail).toBeVisible();
+
+    // Check legal disclaimer
+    await expect(
+      footer.getByText(/AUGUST JONES is an independent brand/),
+    ).toBeVisible();
+    await expect(
+      footer.getByText(
+        /not affiliated with, endorsed by, or connected to any professional sports teams/,
+      ),
+    ).toBeVisible();
 
     // Check copyright
     await expect(
