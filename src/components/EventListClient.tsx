@@ -21,7 +21,8 @@ interface VisibleEvent {
 
 export function EventListClient({ events }: EventListClientProps) {
   // Initial state shows all events so SSR HTML is non-empty; effect trims past ones post-hydration.
-  // Past events may flash briefly on slow connections — acceptable trade-off vs blank first paint.
+  // Past-within-7d events initially appear as upcoming (full styling, calendar button visible)
+  // until useEffect corrects them — acceptable trade-off vs blank first paint.
   const [visible, setVisible] = useState<VisibleEvent[]>(
     events.map((event) => ({ event, isPast: false })),
   );

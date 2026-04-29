@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { type AugustJonesEvent, getEventUrgencyLabel } from "@/data/events";
-import { cn } from "@/lib/utils";
 
 interface EventUrgencyBadgeProps {
   event: AugustJonesEvent;
@@ -27,12 +26,7 @@ export function EventUrgencyBadge({ event, isPast }: EventUrgencyBadgeProps) {
   if (!label) return null;
 
   return (
-    <span
-      className={cn(
-        "absolute right-0 top-0 px-3 py-1.5 font-bebas-neue text-base tracking-widest",
-        "bg-[#ffb612] text-[#222]",
-      )}
-    >
+    <span className="absolute right-0 top-0 bg-[#ffb612] px-3 py-1.5 font-bebas-neue text-base tracking-widest text-[#222]">
       {label}
     </span>
   );

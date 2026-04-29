@@ -7,12 +7,12 @@ import type { AugustJonesEvent } from "./events";
 export const fixtureEvents: AugustJonesEvent[] = [
   {
     // Covers: title-links-to-website, single-day session count, city chip (Madison), TODAY badge
-    id: "fixture-single-day-event-2099-06-15",
+    id: "fixture-single-day-event-2026-04-29",
     marketName: "FAKE Market: Single Day",
     sessions: [
       {
-        startDate: "2099-06-15T12:00:00-05:00",
-        endDate: "2099-06-15T17:00:00-05:00",
+        startDate: "2026-04-29T12:00:00-05:00",
+        endDate: "2026-04-29T17:00:00-05:00",
       },
     ],
     venueName: "Imaginary Venue Alpha",
@@ -27,12 +27,12 @@ export const fixtureEvents: AugustJonesEvent[] = [
   },
   {
     // Covers: discount code display, TOMORROW badge
-    id: "fixture-discount-event-2099-06-16",
+    id: "fixture-discount-event-2026-04-30",
     marketName: "FAKE Market: Discount",
     sessions: [
       {
-        startDate: "2099-06-16T11:00:00-05:00",
-        endDate: "2099-06-16T17:00:00-05:00",
+        startDate: "2026-04-30T11:00:00-05:00",
+        endDate: "2026-04-30T17:00:00-05:00",
       },
     ],
     venueName: "Imaginary Venue Beta",
@@ -48,16 +48,16 @@ export const fixtureEvents: AugustJonesEvent[] = [
   },
   {
     // Covers: multi-day session count (2 sessions), single Add to Calendar button
-    id: "fixture-multi-day-event-2099-06-17",
+    id: "fixture-multi-day-event-2026-05-01",
     marketName: "FAKE Market: Multi Day",
     sessions: [
       {
-        startDate: "2099-06-17T17:00:00-05:00",
-        endDate: "2099-06-17T22:00:00-05:00",
+        startDate: "2026-05-01T17:00:00-05:00",
+        endDate: "2026-05-01T22:00:00-05:00",
       },
       {
-        startDate: "2099-06-18T17:00:00-05:00",
-        endDate: "2099-06-18T22:00:00-05:00",
+        startDate: "2026-05-02T17:00:00-05:00",
+        endDate: "2026-05-02T22:00:00-05:00",
       },
     ],
     venueName: "Imaginary Venue Gamma",
@@ -71,14 +71,14 @@ export const fixtureEvents: AugustJonesEvent[] = [
     eventWebsiteUrl: "https://example.com/fixture-multi-day",
   },
   {
-    // Covers: past event — ended ~1 day before frozen E2E now (2099-06-15T00:00:00-05:00)
-    // endDate is 2099-06-14T17:00:00-05:00, within the 7-day lookback window
+    // Covers: past event — ended 1 week before frozen E2E now (2026-04-29T12:00:00-05:00)
+    // endDate is 2026-04-22T17:00:00-05:00, within the 7-day lookback window
     id: "fixture-past-event",
     marketName: "FAKE Market: Past Event",
     sessions: [
       {
-        startDate: "2099-06-14T12:00:00-05:00",
-        endDate: "2099-06-14T17:00:00-05:00",
+        startDate: "2026-04-22T12:00:00-05:00",
+        endDate: "2026-04-22T17:00:00-05:00",
       },
     ],
     venueName: "Imaginary Venue Delta",
