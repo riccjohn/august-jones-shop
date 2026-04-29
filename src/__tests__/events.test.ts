@@ -7,6 +7,7 @@ import {
   getEventDescription,
   getEventUrgencyLabel,
   getUpcomingEvents,
+  isEventPast,
 } from "@/data/events";
 
 // ---------------------------------------------------------------------------
@@ -365,5 +366,88 @@ describe("getEventDescription", () => {
       description: "Specific custom text.",
     });
     expect(getEventDescription(event)).toBe("Specific custom text.");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// isEventPast
+// ---------------------------------------------------------------------------
+
+describe("isEventPast", () => {
+  it("returns false for an event whose last session endDate is in the future", () => {
+    const now = new Date("2026-05-02T14:00:00Z");
+    const event = makeEvent({
+      sessions: [
+        {
+          startDate: "2026-05-02T17:00:00-05:00",
+          endDate: "2026-05-02T22:00:00-05:00",
+        },
+      ],
+    });
+    expect(isEventPast(event, now)).toBe(false);
+  });
+
+  it("returns true for an event whose last session ended 1ms ago", () => {
+    // endDate is exactly now - 1ms
+    const endDate = new Date("2026-05-02T22:00:00-05:00");
+    const now = new Date(endDate.getTime() + 1);
+    const event = makeEvent({
+      sessions: [
+        {
+          startDate: "2026-05-02T17:00:00-05:00",
+          endDate: "2026-05-02T22:00:00-05:00",
+        },
+      ],
+    });
+    expect(isEventPast(event, now)).toBe(true);
+  });
+
+  it("returns true for an event that ended 3 days ago", () => {
+    const now = new Date("2026-05-10T17:00:00Z");
+    const event = makeEvent({
+      sessions: [
+        {
+          startDate: "2026-05-07T12:00:00-05:00",
+          endDate: "2026-05-07T17:00:00-05:00",
+        },
+      ],
+    });
+    expect(isEventPast(event, now)).toBe(true);
+  });
+
+  it("returns false for a multi-session event whose LAST session is still in the future (even if first session has passed)", () => {
+    const now = new Date("2026-05-09T14:00:00Z");
+    const event = makeEvent({
+      sessions: [
+        // First session already ended
+        {
+          startDate: "2026-05-08T17:00:00-05:00",
+          endDate: "2026-05-08T22:00:00-05:00",
+        },
+        // Last session is still in the future
+        {
+          startDate: "2026-05-10T17:00:00-05:00",
+          endDate: "2026-05-10T22:00:00-05:00",
+        },
+      ],
+    });
+    expect(isEventPast(event, now)).toBe(false);
+  });
+
+  it("respects the explicit now parameter (same testability pattern as getEventUrgencyLabel)", () => {
+    const event = makeEvent({
+      sessions: [
+        {
+          startDate: "2026-05-02T17:00:00-05:00",
+          endDate: "2026-05-02T22:00:00-05:00",
+        },
+      ],
+    });
+    // With now before the event ends: not past
+    const beforeEnd = new Date("2026-05-02T21:00:00-05:00");
+    expect(isEventPast(event, beforeEnd)).toBe(false);
+    // With now after the event ends: past
+    const afterEnd = new Date("2026-05-02T23:00:00-05:00");
+    expect(isEventPast(event, afterEnd)).toBe(true);
   });
 });

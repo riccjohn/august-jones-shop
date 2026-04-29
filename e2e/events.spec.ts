@@ -290,6 +290,71 @@ test.describe("Events Page", () => {
 });
 
 /**
+ * E2E tests for past event visual differentiation.
+ * fixture-past-event ended at 2099-06-14T17:00:00-05:00, which is before the frozen
+ * "now" of 2099-06-15T12:00:00-05:00, so it renders as past (EVENT PASSED, no calendar button).
+ * fixture-single-day-event starts/ends on 2099-06-15, so it is upcoming at the frozen time.
+ */
+
+test.describe("Past event visual differentiation", () => {
+  test("past event card shows 'EVENT PASSED' badge", async ({ page }) => {
+    await freezeToFixtureNow(page);
+
+    await page.goto("/events/");
+
+    const card = page.locator("#fixture-past-event");
+    await expect(card).toBeVisible();
+
+    const badge = card.locator("span", { hasText: /^EVENT PASSED$/ });
+    await expect(badge).toBeVisible();
+  });
+
+  test("past event card does NOT contain 'Add to Calendar' button", async ({
+    page,
+  }) => {
+    await freezeToFixtureNow(page);
+
+    await page.goto("/events/");
+
+    const card = page.locator("#fixture-past-event");
+    await expect(card).toBeVisible();
+
+    const calendarButton = card.getByRole("button", {
+      name: /add to calendar/i,
+    });
+    await expect(calendarButton).toHaveCount(0);
+  });
+
+  test("upcoming event card does NOT show 'EVENT PASSED'", async ({ page }) => {
+    await freezeToFixtureNow(page);
+
+    await page.goto("/events/");
+
+    const card = page.locator("#fixture-single-day-event-2099-06-15");
+    await expect(card).toBeVisible();
+
+    const passedBadge = card.locator("span", { hasText: /^EVENT PASSED$/ });
+    await expect(passedBadge).toHaveCount(0);
+  });
+
+  test("upcoming event card shows 'Add to Calendar' button", async ({
+    page,
+  }) => {
+    await freezeToFixtureNow(page);
+
+    await page.goto("/events/");
+
+    const card = page.locator("#fixture-single-day-event-2099-06-15");
+    await expect(card).toBeVisible();
+
+    const calendarButton = card.getByRole("button", {
+      name: /add to calendar/i,
+    });
+    await expect(calendarButton).toBeVisible();
+  });
+});
+
+/**
  * E2E tests for the EventsTeaser section on the homepage.
  * Fixture data provides at least 2 upcoming events, so the teaser is always visible.
  */

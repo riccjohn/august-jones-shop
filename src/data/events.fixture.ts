@@ -70,4 +70,25 @@ export const fixtureEvents: AugustJonesEvent[] = [
     mapsUrl: "https://maps.google.com/?q=3+Nonexistent+Blvd,+Chicago,+IL+00003",
     eventWebsiteUrl: "https://example.com/fixture-multi-day",
   },
+  {
+    // Covers: past event — ended ~1 day before frozen E2E now (2099-06-15T00:00:00-05:00)
+    // endDate is 2099-06-14T17:00:00-05:00, within the 7-day lookback window
+    id: "fixture-past-event",
+    marketName: "FAKE Market: Past Event",
+    sessions: [
+      {
+        startDate: "2099-06-14T12:00:00-05:00",
+        endDate: "2099-06-14T17:00:00-05:00",
+      },
+    ],
+    venueName: "Imaginary Venue Delta",
+    address: {
+      street: "4 Nonexistent Blvd",
+      city: "Madison",
+      state: "WI",
+      zip: "00004",
+    },
+    mapsUrl: "https://maps.google.com/?q=4+Nonexistent+Blvd,+Madison,+WI+00004",
+    eventWebsiteUrl: "https://example.com/fixture-past-event",
+  },
 ];

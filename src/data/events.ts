@@ -199,6 +199,14 @@ export function getEventUrgencyLabel(
   return null;
 }
 
+export function isEventPast(
+  event: AugustJonesEvent,
+  now = new Date(),
+): boolean {
+  const lastSession = event.sessions[event.sessions.length - 1];
+  return new Date(lastSession.endDate).getTime() < now.getTime();
+}
+
 export function getUpcomingEvents(
   source: AugustJonesEvent[] = allEvents,
   now = new Date(),
