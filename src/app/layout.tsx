@@ -139,7 +139,7 @@ export default function RootLayout({
             name: "August Jones",
             description: DESCRIPTION,
             url: "https://www.augustjones.shop",
-            email: "hello@augustjones.shop",
+            email: "contact@augustjones.shop",
             address: {
               "@type": "PostalAddress",
               addressLocality: "Madison",

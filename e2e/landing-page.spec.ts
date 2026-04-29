@@ -70,7 +70,7 @@ test.describe("Landing Page", () => {
     await expect(emailLink).toBeVisible();
     await expect(emailLink).toHaveAttribute(
       "href",
-      "mailto:hello@augustjones.shop",
+      "mailto:contact@augustjones.shop",
     );
   });
 
@@ -193,7 +193,7 @@ test.describe("Landing Page", () => {
         hasLocalBusiness = true;
         expect(content).toContain("Madison");
         expect(content).toContain("WI");
-        expect(content).toContain("hello@augustjones.shop");
+        expect(content).toContain("contact@augustjones.shop");
       }
       if (content?.includes('"@type":"ItemList"')) {
         hasItemList = true;

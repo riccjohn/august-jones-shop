@@ -11,7 +11,7 @@ import { trackEmailClick } from "@/lib/analytics";
 export function TrackedEmailLink() {
   return (
     <Link
-      href="mailto:hello@augustjones.shop"
+      href="mailto:contact@augustjones.shop"
       className="group flex items-center gap-2"
       onClick={trackEmailClick}
     >
@@ -20,7 +20,7 @@ export function TrackedEmailLink() {
         aria-hidden="true"
       />
       <span className="text-sm text-foreground/60 transition-colors duration-200 group-hover:text-accent">
-        hello@augustjones.shop
+        contact@augustjones.shop
       </span>
     </Link>
   );
