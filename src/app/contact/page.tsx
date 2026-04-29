@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ContactForm } from "@/components/ContactForm";
 import { Footer } from "@/components/Footer";
 import { GrainOverlay } from "@/components/GrainOverlay";
+import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Contact | August Jones",
@@ -70,10 +71,10 @@ export default function ContactPage() {
           <p className="mt-8 text-sm text-foreground/60">
             Prefer email or have other questions? Email{" "}
             <a
-              href="mailto:contact@augustjones.shop"
+              href={`mailto:${CONTACT_EMAIL}`}
               className="text-foreground/60 underline underline-offset-4 hover:text-accent hover:no-underline transition-colors duration-200"
             >
-              contact@augustjones.shop
+              {CONTACT_EMAIL}
             </a>
           </p>
         </div>

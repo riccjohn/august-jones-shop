@@ -65,7 +65,7 @@ test.describe("Landing Page", () => {
 
     // Test email link in footer
     const emailLink = page.getByRole("link", {
-      name: /hello@augustjones\.shop/i,
+      name: /contact@augustjones\.shop/i,
     });
     await expect(emailLink).toBeVisible();
     await expect(emailLink).toHaveAttribute(
@@ -161,7 +161,7 @@ test.describe("Landing Page", () => {
 
     // Check email link
     const footerEmail = footer.getByRole("link", {
-      name: /hello@augustjones\.shop/i,
+      name: /contact@augustjones\.shop/i,
     });
     await expect(footerEmail).toBeVisible();
 

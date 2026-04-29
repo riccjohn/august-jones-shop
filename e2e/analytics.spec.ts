@@ -124,7 +124,7 @@ test.describe("Analytics event tracking", () => {
     await page.goto("/");
 
     const emailLink = page.getByRole("link", {
-      name: /hello@augustjones\.shop/i,
+      name: /contact@augustjones\.shop/i,
     });
     await emailLink.scrollIntoViewIfNeeded();
     await expect(emailLink).toBeVisible();

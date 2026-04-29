@@ -7,7 +7,7 @@ import {
 } from "next/font/google";
 import Script from "next/script";
 import { SiteNav } from "@/components/SiteNav";
-import { SHOP_URL } from "@/lib/constants";
+import { CONTACT_EMAIL, SHOP_URL } from "@/lib/constants";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -139,7 +139,7 @@ export default function RootLayout({
             name: "August Jones",
             description: DESCRIPTION,
             url: "https://www.augustjones.shop",
-            email: "contact@augustjones.shop",
+            email: CONTACT_EMAIL,
             address: {
               "@type": "PostalAddress",
               addressLocality: "Madison",
