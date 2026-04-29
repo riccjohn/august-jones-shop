@@ -65,12 +65,12 @@ test.describe("Landing Page", () => {
 
     // Test email link in footer
     const emailLink = page.getByRole("link", {
-      name: /hello@augustjones\.shop/i,
+      name: /contact@augustjones\.shop/i,
     });
     await expect(emailLink).toBeVisible();
     await expect(emailLink).toHaveAttribute(
       "href",
-      "mailto:hello@augustjones.shop",
+      "mailto:contact@augustjones.shop",
     );
   });
 
@@ -161,7 +161,7 @@ test.describe("Landing Page", () => {
 
     // Check email link
     const footerEmail = footer.getByRole("link", {
-      name: /hello@augustjones\.shop/i,
+      name: /contact@augustjones\.shop/i,
     });
     await expect(footerEmail).toBeVisible();
 
@@ -193,7 +193,7 @@ test.describe("Landing Page", () => {
         hasLocalBusiness = true;
         expect(content).toContain("Madison");
         expect(content).toContain("WI");
-        expect(content).toContain("hello@augustjones.shop");
+        expect(content).toContain("contact@augustjones.shop");
       }
       if (content?.includes('"@type":"ItemList"')) {
         hasItemList = true;

@@ -3,6 +3,7 @@
 import { Mail } from "lucide-react";
 import Link from "next/link";
 import { trackEmailClick } from "@/lib/analytics";
+import { CONTACT_EMAIL } from "@/lib/constants";
 
 /**
  * Tracked email link component
@@ -11,7 +12,7 @@ import { trackEmailClick } from "@/lib/analytics";
 export function TrackedEmailLink() {
   return (
     <Link
-      href="mailto:hello@augustjones.shop"
+      href={`mailto:${CONTACT_EMAIL}`}
       className="group flex items-center gap-2"
       onClick={trackEmailClick}
     >
@@ -20,7 +21,7 @@ export function TrackedEmailLink() {
         aria-hidden="true"
       />
       <span className="text-sm text-foreground/60 transition-colors duration-200 group-hover:text-accent">
-        hello@augustjones.shop
+        {CONTACT_EMAIL}
       </span>
     </Link>
   );
