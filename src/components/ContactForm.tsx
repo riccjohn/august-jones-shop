@@ -13,9 +13,17 @@ export function ContactForm() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setState("submitting");
 
     const form = e.currentTarget;
+    const honeypot = (form.elements.namedItem("website") as HTMLInputElement)
+      .value;
+    if (honeypot) {
+      setState("success");
+      return;
+    }
+
+    setState("submitting");
+
     const data = {
       name: (form.elements.namedItem("name") as HTMLInputElement).value,
       email: (form.elements.namedItem("email") as HTMLInputElement).value,
@@ -59,6 +67,19 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <div
+        aria-hidden="true"
+        className="absolute left-[-9999px] top-[-9999px] overflow-hidden"
+      >
+        <label htmlFor="website">Website</label>
+        <input
+          id="website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <Label htmlFor="name">Name</Label>
