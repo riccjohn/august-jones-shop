@@ -43,7 +43,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const { error } = await resend.emails.send({
     from: "August Jones <customs@augustjones.shop>",
-    to: "customs@augustjones.shop",
+    to: "customs+form@augustjones.shop",
     replyTo: email,
     subject: `[Contact] ${subject} — ${name}`,
     text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\n\n${message}`,
