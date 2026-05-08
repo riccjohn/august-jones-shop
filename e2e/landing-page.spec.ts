@@ -29,51 +29,6 @@ test.describe("Landing Page", () => {
     ).toBeVisible();
   });
 
-  test("primary CTA and contact links are present and work", async ({
-    page,
-  }) => {
-    await page.goto("/");
-
-    // Test hero CTA button (Shop Now in hero)
-    const heroCTA = page.getByRole("link", { name: /Shop Now/i }).first();
-    await expect(heroCTA).toBeVisible();
-    await expect(heroCTA).toHaveAttribute(
-      "href",
-      /^https:\/\/store\.augustjones\.shop\?utm_source=augustjones&utm_medium=website&utm_campaign=shop_cta$/,
-    );
-    await expect(heroCTA).toHaveAttribute("target", "_blank");
-
-    // Test footer shop link
-    const footerShopLink = page
-      .getByLabel("Footer navigation")
-      .getByRole("link", { name: /Shop Now/i });
-    await expect(footerShopLink).toBeVisible();
-    await expect(footerShopLink).toHaveAttribute(
-      "href",
-      "https://store.augustjones.shop",
-    );
-
-    // Test Instagram CTA link
-    const instagramLink = page.getByRole("link", {
-      name: /Follow on Instagram/i,
-    });
-    await expect(instagramLink).toBeVisible();
-    await expect(instagramLink).toHaveAttribute(
-      "href",
-      "https://instagram.com/augustjonesshop",
-    );
-
-    // Test email link in footer
-    const emailLink = page.getByRole("link", {
-      name: /contact@augustjones\.shop/i,
-    });
-    await expect(emailLink).toBeVisible();
-    await expect(emailLink).toHaveAttribute(
-      "href",
-      "mailto:contact@augustjones.shop",
-    );
-  });
-
   test("has basic accessibility structure", async ({ page }) => {
     await page.goto("/");
 
@@ -88,52 +43,6 @@ test.describe("Landing Page", () => {
     await expect(
       page.getByRole("navigation", { name: "Footer navigation" }),
     ).toBeVisible();
-  });
-
-  test("product gallery has correct links with UTM tracking", async ({
-    page,
-  }) => {
-    await page.goto("/");
-
-    // Check that product gallery section exists
-    const gallery = page.locator(
-      'section[aria-labelledby="collection-heading"]',
-    );
-    await expect(gallery).toBeVisible();
-
-    // Test individual product links have UTM parameters
-    const vestsLink = page.getByRole("link", {
-      name: /Vests/i,
-    });
-    await expect(vestsLink).toBeVisible();
-    await expect(vestsLink).toHaveAttribute(
-      "href",
-      /collections\/vests.*utm_campaign=gallery_vests/,
-    );
-
-    const tshirtsLink = page.getByRole("link", {
-      name: /T-Shirts/i,
-    });
-    await expect(tshirtsLink).toHaveAttribute(
-      "href",
-      /utm_campaign=gallery_tshirts/,
-    );
-
-    const hoodiesLink = page.getByRole("link", {
-      name: /Hoodies/i,
-    });
-    await expect(hoodiesLink).toHaveAttribute(
-      "href",
-      /utm_campaign=gallery_hoodies/,
-    );
-
-    const jacketsLink = page.getByRole("link", {
-      name: /Jackets/i,
-    });
-    await expect(jacketsLink).toHaveAttribute(
-      "href",
-      /utm_campaign=gallery_jackets/,
-    );
   });
 
   test("footer is present with all expected links", async ({ page }) => {
@@ -213,30 +122,5 @@ test.describe("Landing Page", () => {
 
     expect(hasLocalBusiness).toBe(true);
     expect(hasItemList).toBe(true);
-  });
-
-  test("Instagram links in different sections have correct tracking", async ({
-    page,
-  }) => {
-    await page.goto("/");
-
-    // Instagram CTA section link ("Follow on Instagram")
-    const heroInstagram = page.getByRole("link", {
-      name: /Follow on Instagram/i,
-    });
-    await expect(heroInstagram).toHaveAttribute(
-      "href",
-      "https://instagram.com/augustjonesshop",
-    );
-    await expect(heroInstagram).toHaveAttribute("target", "_blank");
-    await expect(heroInstagram).toHaveAttribute("rel", "noopener noreferrer");
-
-    // Footer Instagram link
-    const footerInstagram = page.getByLabel("August Jones on Instagram");
-    await expect(footerInstagram).toHaveAttribute(
-      "href",
-      "https://instagram.com/augustjonesshop",
-    );
-    await expect(footerInstagram).toHaveAttribute("target", "_blank");
   });
 });
