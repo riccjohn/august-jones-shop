@@ -6,6 +6,7 @@ import {
   formatEventDateRange,
   formatEventTime,
   getUpcomingEvents,
+  isEventPast,
 } from "@/data/events";
 import { cn } from "@/lib/utils";
 
@@ -15,7 +16,12 @@ export function EventsTeaser({ events }: { events: AugustJonesEvent[] }) {
   const [visible, setVisible] = useState(events.slice(0, 2));
 
   useEffect(() => {
-    setVisible(getUpcomingEvents(events, new Date()).slice(0, 2));
+    const now = new Date();
+    setVisible(
+      getUpcomingEvents(events, now)
+        .filter((e) => !isEventPast(e, now))
+        .slice(0, 2),
+    );
   }, [events]);
 
   if (visible.length === 0) return null;

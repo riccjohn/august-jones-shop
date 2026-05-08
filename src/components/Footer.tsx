@@ -76,8 +76,18 @@ export const Footer = () => {
           </div>
         </div>
 
+        {/* Legal disclaimer */}
+        <p className="mt-12 text-xs/relaxed text-foreground/35">
+          All items are one-of-a-kind pieces created from pre-owned garments and
+          materials. AUGUST JONES is an independent brand and is not affiliated
+          with, endorsed by, or connected to any professional sports teams,
+          leagues, or original garment manufacturers. Any trademarks, logos, or
+          brand names used remain the property of their respective owners and
+          are used solely as part of the original materials.
+        </p>
+
         {/* Divider */}
-        <div className="mt-12 border-t border-border pt-6 sm:mt-14">
+        <div className="mt-6 border-t border-border pt-6">
           <div className="flex flex-col items-center gap-1 text-center text-xs tracking-wider text-foreground/55 sm:flex-row sm:justify-between">
             <p>&copy; 2026 August Jones. All rights reserved.</p>
             <p>Made with love in Madison, WI</p>

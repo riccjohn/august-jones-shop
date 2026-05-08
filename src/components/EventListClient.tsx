@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { EventCard } from "@/components/EventCard";
-import { type AugustJonesEvent, getUpcomingEvents } from "@/data/events";
+import {
+  type AugustJonesEvent,
+  getUpcomingEvents,
+  isEventPast,
+} from "@/data/events";
 import { trackShopClick } from "@/lib/analytics";
 import { SHOP_URL } from "@/lib/constants";
 
@@ -10,13 +14,27 @@ interface EventListClientProps {
   events: AugustJonesEvent[];
 }
 
+interface VisibleEvent {
+  event: AugustJonesEvent;
+  isPast: boolean;
+}
+
 export function EventListClient({ events }: EventListClientProps) {
   // Initial state shows all events so SSR HTML is non-empty; effect trims past ones post-hydration.
-  // Past events may flash briefly on slow connections — acceptable trade-off vs blank first paint.
-  const [visible, setVisible] = useState(events);
+  // Past-within-7d events initially appear as upcoming (full styling, calendar button visible)
+  // until useEffect corrects them — acceptable trade-off vs blank first paint.
+  const [visible, setVisible] = useState<VisibleEvent[]>(
+    events.map((event) => ({ event, isPast: false })),
+  );
 
   useEffect(() => {
-    setVisible(getUpcomingEvents(events, new Date()));
+    const now = new Date();
+    setVisible(
+      getUpcomingEvents(events, now).map((event) => ({
+        event,
+        isPast: isEventPast(event, now),
+      })),
+    );
   }, [events]);
 
   if (visible.length === 0) {
@@ -64,10 +82,10 @@ export function EventListClient({ events }: EventListClientProps) {
 
   return (
     <div className="flex flex-col">
-      {visible.map((event, index) => (
+      {visible.map(({ event, isPast }, index) => (
         <div key={event.id}>
           {index > 0 && <div className="h-px bg-[#ffb612]" />}
-          <EventCard event={event} />
+          <EventCard event={event} isPast={isPast} />
         </div>
       ))}
     </div>

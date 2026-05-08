@@ -27,6 +27,41 @@ describe("ContactForm", () => {
     vi.restoreAllMocks();
   });
 
+  describe("honeypot anti-spam", () => {
+    it("renders a hidden honeypot input that is not visible to users", () => {
+      render(<ContactForm />);
+      const honeypot = document.querySelector('input[name="website"]');
+      expect(honeypot).toBeInTheDocument();
+      expect(honeypot?.closest("[aria-hidden]")).toHaveAttribute(
+        "aria-hidden",
+        "true",
+      );
+    });
+
+    it("silently shows success without calling the API when the honeypot is filled", async () => {
+      const user = userEvent.setup();
+      const mockFetch = vi.fn();
+      vi.stubGlobal("fetch", mockFetch);
+
+      render(<ContactForm />);
+      await fillForm(user);
+
+      const honeypot = document.querySelector(
+        'input[name="website"]',
+      ) as HTMLInputElement;
+      await user.type(honeypot, "http://spam.example.com");
+
+      await user.click(
+        screen.getByRole("button", { name: /request a custom/i }),
+      );
+
+      await waitFor(() =>
+        expect(screen.getByText(/request received/i)).toBeInTheDocument(),
+      );
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+  });
+
   describe("idle state", () => {
     it("renders all form fields enabled with the submit button", () => {
       render(<ContactForm />);
