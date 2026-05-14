@@ -85,21 +85,21 @@ export const allEvents: AugustJonesEvent[] = [
   {
     id: "madison-night-market-may-2026",
     marketName: "Madison Night Market",
-    description: `Come find August Jones at the Madison Night Market on May 14th! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear.\n Note: exact booth location won't be set until the day of, so check instagram to see exactly where I'll be set up!`,
+    description: `Come find August Jones at the Madison Night Market on May 14th! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear.`,
     sessions: [
       {
         startDate: "2026-05-14T17:00:00-05:00",
         endDate: "2026-05-14T21:00:00-05:00",
       },
     ],
-    venueName: "State Street",
+    venueName: "State Street (near 320 State St)",
     address: {
-      street: "State Street",
+      street: "320 State Street",
       city: "Madison",
       state: "WI",
       zip: "53703",
     },
-    mapsUrl: "https://maps.app.goo.gl/UFf9YHXkfb9LcjgZ6",
+    mapsUrl: "https://maps.app.goo.gl/UvM8ywdY61irXrn96",
     eventWebsiteUrl: "https://www.instagram.com/madisonnightmarket/",
   },
   {
