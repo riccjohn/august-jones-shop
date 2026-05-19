@@ -122,6 +122,212 @@ export const allEvents: AugustJonesEvent[] = [
       "https://maps.google.com/?q=2903+W+Diversey+Ave,+Chicago,+IL+60647",
     eventWebsiteUrl: "https://www.caplockathletics.com/",
   },
+  {
+    id: "rusty-bee-2026-05-21:",
+    address: {
+      street: "5134 E Cheryl Pkwy",
+      city: "Fitchburg",
+      state: "WI",
+      zip: "53711",
+    },
+    eventWebsiteUrl: "https://www.instagram.com/p/DYfShtomhec/?img_index=1",
+    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
+    marketName: "Rusty Bee Night Market",
+    sessions: [
+      {
+        startDate: "2026-05-21T17:00:00-05:00",
+        endDate: "2026-05-21T21:00:00-05:00",
+      },
+    ],
+    venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "sauced-milaukee-2026-06-12",
+    address: {
+      street: "324 N 12th St",
+      city: "Milwaukee",
+      state: "WI",
+      zip: "53233",
+    },
+    eventWebsiteUrl: "https://www.saucedmarket.com/milwaukee",
+    mapsUrl: "https://maps.app.goo.gl/m9TkpmsE1WV1WkSU7",
+    marketName: "Sauced Night Market Milwaukee",
+    sessions: [
+      {
+        startDate: "2026-06-12T17:00:00-05:00",
+        endDate: "2026-06-12T22:00:00-05:00",
+      },
+      {
+        startDate: "2026-06-13T17:00:00-05:00",
+        endDate: "2026-06-13T22:00:00-05:00",
+      },
+    ],
+    venueName: "House of RAD",
+  },
+  {
+    id: "rusty-bee-2026-06-18:",
+    address: {
+      street: "5134 E Cheryl Pkwy",
+      city: "Fitchburg",
+      state: "WI",
+      zip: "53711",
+    },
+    eventWebsiteUrl: "https://www.instagram.com/therustybeelounge/",
+    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
+    marketName: "Rusty Bee Night Market",
+    sessions: [
+      {
+        startDate: "2026-06-18T17:00:00-05:00",
+        endDate: "2026-06-18T21:00:00-05:00",
+      },
+    ],
+    venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "sauced-night-market-chicago-2026-07-11",
+    marketName: "Sauced Night Market Chicago",
+    sessions: [
+      {
+        startDate: "2026-07-10T17:00:00-05:00",
+        endDate: "2026-07-10T22:00:00-05:00",
+      },
+      {
+        startDate: "2026-07-11T17:00:00-05:00",
+        endDate: "2026-07-11T22:00:00-05:00",
+      },
+    ],
+    venueName: "Ignite Glass Studios",
+    address: {
+      street: "401 N Armour St",
+      city: "Chicago",
+      state: "IL",
+      zip: "60642",
+    },
+    mapsUrl: "https://maps.app.goo.gl/DZKQfQ4t6nMRU37g6",
+    eventWebsiteUrl: "https://www.saucedmarket.com/chicago",
+  },
+  {
+    id: "rusty-bee-2026-07-23:",
+    address: {
+      street: "5134 E Cheryl Pkwy",
+      city: "Fitchburg",
+      state: "WI",
+      zip: "53711",
+    },
+    eventWebsiteUrl: "https://www.instagram.com/therustybeelounge/",
+    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
+    marketName: "Rusty Bee Night Market",
+    sessions: [
+      {
+        startDate: "2026-07-23T17:00:00-05:00",
+        endDate: "2026-07-23T21:00:00-05:00",
+      },
+    ],
+    venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "milwaukee-night-market-2026-07-24",
+    address: {
+      street:
+        "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
+      city: "Milwaukee",
+      state: "WI",
+      zip: "53203",
+    },
+    mapsUrl: "https://maps.app.goo.gl/MY3NKXeRmr5wBfUD6",
+    eventWebsiteUrl: "https://www.mkenightmarket.com/",
+    marketName: "Milwaukee Night Market",
+    sessions: [
+      {
+        startDate: "2026-07-24T17:00:00-05:00",
+        endDate: "2026-07-24T21:00:00-05:00",
+      },
+    ],
+    venueName:
+      "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
+    description:
+      "Come find August Jones at Milwaukee Night Market! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear. Follow my instagram for updates on exactly where my tent will be!",
+  },
+  {
+    id: "rusty-bee-2026-08-27:",
+    address: {
+      street: "5134 E Cheryl Pkwy",
+      city: "Fitchburg",
+      state: "WI",
+      zip: "53711",
+    },
+    eventWebsiteUrl: "https://www.instagram.com/therustybeelounge/",
+    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
+    marketName: "Rusty Bee Night Market",
+    sessions: [
+      {
+        startDate: "2026-08-27T17:00:00-05:00",
+        endDate: "2026-08-27T21:00:00-05:00",
+      },
+    ],
+    venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "milwaukee-night-market-2026-09-16",
+    address: {
+      street:
+        "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
+      city: "Milwaukee",
+      state: "WI",
+      zip: "53203",
+    },
+    mapsUrl: "https://maps.app.goo.gl/MY3NKXeRmr5wBfUD6",
+    eventWebsiteUrl: "https://www.mkenightmarket.com/",
+    marketName: "Milwaukee Night Market",
+    sessions: [
+      {
+        startDate: "2026-09-16T17:00:00-05:00",
+        endDate: "2026-09-16T21:00:00-05:00",
+      },
+    ],
+    venueName:
+      "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
+    description:
+      "Come find August Jones at Milwaukee Night Market! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear. Follow my instagram for updates on exactly where my tent will be!",
+  },
+  {
+    id: "rusty-bee-2026-09-24:",
+    address: {
+      street: "5134 E Cheryl Pkwy",
+      city: "Fitchburg",
+      state: "WI",
+      zip: "53711",
+    },
+    eventWebsiteUrl: "https://www.instagram.com/therustybeelounge/",
+    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
+    marketName: "Rusty Bee Night Market",
+    sessions: [
+      {
+        startDate: "2026-09-24T17:00:00-05:00",
+        endDate: "2026-09-24T21:00:00-05:00",
+      },
+    ],
+    venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "rusty-bee-2026-10-22:",
+    address: {
+      street: "5134 E Cheryl Pkwy",
+      city: "Fitchburg",
+      state: "WI",
+      zip: "53711",
+    },
+    eventWebsiteUrl: "https://www.instagram.com/therustybeelounge/",
+    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
+    marketName: "Rusty Bee Night Market",
+    sessions: [
+      {
+        startDate: "2026-10-22T17:00:00-05:00",
+        endDate: "2026-10-22T21:00:00-05:00",
+      },
+    ],
+    venueName: "The Rusty Bee Lounge",
+  },
 ];
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
