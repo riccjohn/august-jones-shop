@@ -122,6 +122,120 @@ export const allEvents: AugustJonesEvent[] = [
       "https://maps.google.com/?q=2903+W+Diversey+Ave,+Chicago,+IL+60647",
     eventWebsiteUrl: "https://www.caplockathletics.com/",
   },
+  {
+    id: "rusty-bee-2026-05-21:",
+    address: {
+      street: "5134 E Cheryl Pkwy",
+      city: "Fitchburg",
+      state: "WI",
+      zip: "53711",
+    },
+    eventWebsiteUrl: "https://www.instagram.com/p/DYfShtomhec/?img_index=1",
+    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
+    marketName: "Rusty Bee Night Market",
+    sessions: [
+      {
+        startDate: "2026-05-21T17:00:00-05:00",
+        endDate: "2026-05-21T21:00:00-05:00",
+      },
+    ],
+    venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "rusty-bee-2026-06-18:",
+    address: {
+      street: "5134 E Cheryl Pkwy",
+      city: "Fitchburg",
+      state: "WI",
+      zip: "53711",
+    },
+    eventWebsiteUrl: "https://www.instagram.com/therustybeelounge/",
+    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
+    marketName: "Rusty Bee Night Market",
+    sessions: [
+      {
+        startDate: "2026-06-18T17:00:00-05:00",
+        endDate: "2026-06-18T21:00:00-05:00",
+      },
+    ],
+    venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "rusty-bee-2026-07-23:",
+    address: {
+      street: "5134 E Cheryl Pkwy",
+      city: "Fitchburg",
+      state: "WI",
+      zip: "53711",
+    },
+    eventWebsiteUrl: "https://www.instagram.com/therustybeelounge/",
+    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
+    marketName: "Rusty Bee Night Market",
+    sessions: [
+      {
+        startDate: "2026-07-23T17:00:00-05:00",
+        endDate: "2026-07-23T21:00:00-05:00",
+      },
+    ],
+    venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "rusty-bee-2026-08-27:",
+    address: {
+      street: "5134 E Cheryl Pkwy",
+      city: "Fitchburg",
+      state: "WI",
+      zip: "53711",
+    },
+    eventWebsiteUrl: "https://www.instagram.com/therustybeelounge/",
+    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
+    marketName: "Rusty Bee Night Market",
+    sessions: [
+      {
+        startDate: "2026-08-27T17:00:00-05:00",
+        endDate: "2026-08-27T21:00:00-05:00",
+      },
+    ],
+    venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "rusty-bee-2026-09-24:",
+    address: {
+      street: "5134 E Cheryl Pkwy",
+      city: "Fitchburg",
+      state: "WI",
+      zip: "53711",
+    },
+    eventWebsiteUrl: "https://www.instagram.com/therustybeelounge/",
+    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
+    marketName: "Rusty Bee Night Market",
+    sessions: [
+      {
+        startDate: "2026-09-24T17:00:00-05:00",
+        endDate: "2026-09-24T21:00:00-05:00",
+      },
+    ],
+    venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "rusty-bee-2026-10-22:",
+    address: {
+      street: "5134 E Cheryl Pkwy",
+      city: "Fitchburg",
+      state: "WI",
+      zip: "53711",
+    },
+    eventWebsiteUrl: "https://www.instagram.com/therustybeelounge/",
+    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
+    marketName: "Rusty Bee Night Market",
+    sessions: [
+      {
+        startDate: "2026-10-22T17:00:00-05:00",
+        endDate: "2026-10-22T21:00:00-05:00",
+      },
+    ],
+    venueName: "The Rusty Bee Lounge",
+  },
 ];
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
