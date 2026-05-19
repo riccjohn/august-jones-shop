@@ -142,6 +142,29 @@ export const allEvents: AugustJonesEvent[] = [
     venueName: "The Rusty Bee Lounge",
   },
   {
+    id: "sauced-milaukee-2026-06-12",
+    address: {
+      street: "324 N 12th St",
+      city: "Milwaukee",
+      state: "WI",
+      zip: "53233",
+    },
+    eventWebsiteUrl: "https://www.saucedmarket.com/milwaukee",
+    mapsUrl: "https://maps.app.goo.gl/m9TkpmsE1WV1WkSU7",
+    marketName: "Sauced Night Market Milwaukee",
+    sessions: [
+      {
+        startDate: "2026-06-12T17:00:00-05:00",
+        endDate: "2026-06-12T22:00:00-05:00",
+      },
+      {
+        startDate: "2026-06-13T17:00:00-05:00",
+        endDate: "2026-06-13T22:00:00-05:00",
+      },
+    ],
+    venueName: "House of RAD",
+  },
+  {
     id: "rusty-bee-2026-06-18:",
     address: {
       street: "5134 E Cheryl Pkwy",
@@ -159,6 +182,29 @@ export const allEvents: AugustJonesEvent[] = [
       },
     ],
     venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "sauced-night-market-chicago-2026-07-11",
+    marketName: "Sauced Night Market Chicago",
+    sessions: [
+      {
+        startDate: "2026-07-10T17:00:00-05:00",
+        endDate: "2026-07-10T22:00:00-05:00",
+      },
+      {
+        startDate: "2026-07-11T17:00:00-05:00",
+        endDate: "2026-07-11T22:00:00-05:00",
+      },
+    ],
+    venueName: "Ignite Glass Studios",
+    address: {
+      street: "401 N Armour St",
+      city: "Chicago",
+      state: "IL",
+      zip: "60642",
+    },
+    mapsUrl: "https://maps.app.goo.gl/DZKQfQ4t6nMRU37g6",
+    eventWebsiteUrl: "https://www.saucedmarket.com/chicago",
   },
   {
     id: "rusty-bee-2026-07-23:",
@@ -180,6 +226,29 @@ export const allEvents: AugustJonesEvent[] = [
     venueName: "The Rusty Bee Lounge",
   },
   {
+    id: "milwaukee-night-market-2026-07-24",
+    address: {
+      street:
+        "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
+      city: "Milwaukee",
+      state: "WI",
+      zip: "53203",
+    },
+    mapsUrl: "https://maps.app.goo.gl/MY3NKXeRmr5wBfUD6",
+    eventWebsiteUrl: "https://www.mkenightmarket.com/",
+    marketName: "Milwaukee Night Market",
+    sessions: [
+      {
+        startDate: "2026-07-24T17:00:00-05:00",
+        endDate: "2026-07-24T21:00:00-05:00",
+      },
+    ],
+    venueName:
+      "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
+    description:
+      "Come find August Jones at Milwaukee Night Market! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear. Follow my instagram for updates on exactly where my tent will be!",
+  },
+  {
     id: "rusty-bee-2026-08-27:",
     address: {
       street: "5134 E Cheryl Pkwy",
@@ -197,6 +266,29 @@ export const allEvents: AugustJonesEvent[] = [
       },
     ],
     venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "milwaukee-night-market-2026-09-16",
+    address: {
+      street:
+        "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
+      city: "Milwaukee",
+      state: "WI",
+      zip: "53203",
+    },
+    mapsUrl: "https://maps.app.goo.gl/MY3NKXeRmr5wBfUD6",
+    eventWebsiteUrl: "https://www.mkenightmarket.com/",
+    marketName: "Milwaukee Night Market",
+    sessions: [
+      {
+        startDate: "2026-09-16T17:00:00-05:00",
+        endDate: "2026-09-16T21:00:00-05:00",
+      },
+    ],
+    venueName:
+      "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
+    description:
+      "Come find August Jones at Milwaukee Night Market! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear. Follow my instagram for updates on exactly where my tent will be!",
   },
   {
     id: "rusty-bee-2026-09-24:",
