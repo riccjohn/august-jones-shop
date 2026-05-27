@@ -184,6 +184,29 @@ export const allEvents: AugustJonesEvent[] = [
     venueName: "The Rusty Bee Lounge",
   },
   {
+    id: "milwaukee-night-market-2026-06-24",
+    address: {
+      street:
+        "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
+      city: "Milwaukee",
+      state: "WI",
+      zip: "53203",
+    },
+    mapsUrl: "https://maps.app.goo.gl/MY3NKXeRmr5wBfUD6",
+    eventWebsiteUrl: "https://www.mkenightmarket.com/",
+    marketName: "Milwaukee Night Market",
+    sessions: [
+      {
+        startDate: "2026-06-24T17:00:00-05:00",
+        endDate: "2026-06-24T21:00:00-05:00",
+      },
+    ],
+    venueName:
+      "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
+    description:
+      "Come find August Jones at Milwaukee Night Market! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear. Follow my instagram for updates on exactly where my tent will be!",
+  },
+  {
     id: "sauced-night-market-chicago-2026-07-11",
     marketName: "Sauced Night Market Chicago",
     sessions: [
@@ -225,29 +248,7 @@ export const allEvents: AugustJonesEvent[] = [
     ],
     venueName: "The Rusty Bee Lounge",
   },
-  {
-    id: "milwaukee-night-market-2026-07-24",
-    address: {
-      street:
-        "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
-      city: "Milwaukee",
-      state: "WI",
-      zip: "53203",
-    },
-    mapsUrl: "https://maps.app.goo.gl/MY3NKXeRmr5wBfUD6",
-    eventWebsiteUrl: "https://www.mkenightmarket.com/",
-    marketName: "Milwaukee Night Market",
-    sessions: [
-      {
-        startDate: "2026-07-24T17:00:00-05:00",
-        endDate: "2026-07-24T21:00:00-05:00",
-      },
-    ],
-    venueName:
-      "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
-    description:
-      "Come find August Jones at Milwaukee Night Market! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear. Follow my instagram for updates on exactly where my tent will be!",
-  },
+
   {
     id: "rusty-bee-2026-08-27:",
     address: {
