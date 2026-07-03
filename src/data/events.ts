@@ -19,194 +19,6 @@ export interface AugustJonesEvent {
 
 export const allEvents: AugustJonesEvent[] = [
   {
-    id: "madison-makers-market-2026-05-02",
-    marketName: "Madison Makers Market",
-    sessions: [
-      {
-        startDate: "2026-05-02T12:00:00-05:00",
-        endDate: "2026-05-02T17:00:00-05:00",
-      },
-    ],
-    venueName: "Vintage Brewing",
-    address: {
-      street: "803 E Washington Ave",
-      city: "Madison",
-      state: "WI",
-      zip: "53703",
-    },
-    mapsUrl:
-      "https://maps.google.com/?q=803+E+Washington+Ave,+Madison,+WI+53703",
-    eventWebsiteUrl: "https://www.madisonmakersmarket.com/spring-market",
-  },
-  {
-    id: "chicago-artisan-market-2026-05-03",
-    marketName: "Chicago Artisan Market – Fulton Market",
-    description: `Come find August Jones at Chicago Artisan Market! Use code below at checkout for free general admission.`,
-    sessions: [
-      {
-        startDate: "2026-05-03T11:00:00-05:00",
-        endDate: "2026-05-03T17:00:00-05:00",
-      },
-    ],
-    venueName: "Morgan MFG",
-    address: {
-      street: "401 N Morgan St",
-      city: "Chicago",
-      state: "IL",
-      zip: "60642",
-    },
-    mapsUrl: "https://maps.google.com/?q=401+N+Morgan+St,+Chicago,+IL+60642",
-    eventWebsiteUrl: "https://chicagoartisanmarket.com/tickets-fulton-market/",
-    discount: { code: "augustjones", label: "Free General Admission" },
-  },
-  {
-    id: "sauced-night-market-2026-05-08",
-    marketName: "Sauced Night Market Chicago",
-    sessions: [
-      {
-        startDate: "2026-05-08T17:00:00-05:00",
-        endDate: "2026-05-08T22:00:00-05:00",
-      },
-      {
-        startDate: "2026-05-09T17:00:00-05:00",
-        endDate: "2026-05-09T22:00:00-05:00",
-      },
-    ],
-    venueName: "Ignite Glass Studios",
-    address: {
-      street: "401 N Armour St",
-      city: "Chicago",
-      state: "IL",
-      zip: "60642",
-    },
-    mapsUrl: "https://maps.google.com/?q=401+N+Armour+St,+Chicago,+IL+60642",
-    eventWebsiteUrl: "https://www.saucedmarket.com/next-market",
-  },
-  {
-    id: "madison-night-market-may-2026",
-    marketName: "Madison Night Market",
-    description: `Come find August Jones at the Madison Night Market on May 14th! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear.`,
-    sessions: [
-      {
-        startDate: "2026-05-14T17:00:00-05:00",
-        endDate: "2026-05-14T21:00:00-05:00",
-      },
-    ],
-    venueName: "State Street (near 320 State St)",
-    address: {
-      street: "320 State Street",
-      city: "Madison",
-      state: "WI",
-      zip: "53703",
-    },
-    mapsUrl: "https://maps.app.goo.gl/UvM8ywdY61irXrn96",
-    eventWebsiteUrl: "https://www.instagram.com/madisonnightmarket/",
-  },
-  {
-    id: "caplock-athletics-2026-05-16",
-    marketName: "Pop-Up at Caplock Athletics",
-    sessions: [
-      {
-        startDate: "2026-05-16T10:00:00-05:00",
-        endDate: "2026-05-16T15:00:00-05:00",
-      },
-    ],
-    venueName: "Caplock Athletics",
-    address: {
-      street: "2903 W Diversey Ave",
-      city: "Chicago",
-      state: "IL",
-      zip: "60647",
-    },
-    mapsUrl:
-      "https://maps.google.com/?q=2903+W+Diversey+Ave,+Chicago,+IL+60647",
-    eventWebsiteUrl: "https://www.caplockathletics.com/",
-  },
-  {
-    id: "rusty-bee-2026-05-21:",
-    address: {
-      street: "5134 E Cheryl Pkwy",
-      city: "Fitchburg",
-      state: "WI",
-      zip: "53711",
-    },
-    eventWebsiteUrl: "https://www.instagram.com/p/DYfShtomhec/?img_index=1",
-    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
-    marketName: "Rusty Bee Night Market",
-    sessions: [
-      {
-        startDate: "2026-05-21T17:00:00-05:00",
-        endDate: "2026-05-21T21:00:00-05:00",
-      },
-    ],
-    venueName: "The Rusty Bee Lounge",
-  },
-  {
-    id: "sauced-milaukee-2026-06-12",
-    address: {
-      street: "324 N 12th St",
-      city: "Milwaukee",
-      state: "WI",
-      zip: "53233",
-    },
-    eventWebsiteUrl: "https://www.saucedmarket.com/milwaukee",
-    mapsUrl: "https://maps.app.goo.gl/m9TkpmsE1WV1WkSU7",
-    marketName: "Sauced Night Market Milwaukee",
-    sessions: [
-      {
-        startDate: "2026-06-12T17:00:00-05:00",
-        endDate: "2026-06-12T22:00:00-05:00",
-      },
-      {
-        startDate: "2026-06-13T17:00:00-05:00",
-        endDate: "2026-06-13T22:00:00-05:00",
-      },
-    ],
-    venueName: "House of RAD",
-  },
-  {
-    id: "rusty-bee-2026-06-18:",
-    address: {
-      street: "5134 E Cheryl Pkwy",
-      city: "Fitchburg",
-      state: "WI",
-      zip: "53711",
-    },
-    eventWebsiteUrl: "https://www.instagram.com/therustybeelounge/",
-    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
-    marketName: "Rusty Bee Night Market",
-    sessions: [
-      {
-        startDate: "2026-06-18T17:00:00-05:00",
-        endDate: "2026-06-18T21:00:00-05:00",
-      },
-    ],
-    venueName: "The Rusty Bee Lounge",
-  },
-  {
-    id: "milwaukee-night-market-2026-06-24",
-    address: {
-      street:
-        "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
-      city: "Milwaukee",
-      state: "WI",
-      zip: "53203",
-    },
-    mapsUrl: "https://maps.app.goo.gl/MY3NKXeRmr5wBfUD6",
-    eventWebsiteUrl: "https://www.mkenightmarket.com/",
-    marketName: "Milwaukee Night Market",
-    sessions: [
-      {
-        startDate: "2026-06-24T17:00:00-05:00",
-        endDate: "2026-06-24T21:00:00-05:00",
-      },
-    ],
-    venueName:
-      "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
-    description:
-      "Come find August Jones at Milwaukee Night Market! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear. Follow my instagram for updates on exactly where my tent will be!",
-  },
-  {
     id: "sauced-night-market-chicago-2026-07-11",
     marketName: "Sauced Night Market Chicago",
     sessions: [
@@ -228,6 +40,51 @@ export const allEvents: AugustJonesEvent[] = [
     },
     mapsUrl: "https://maps.app.goo.gl/DZKQfQ4t6nMRU37g6",
     eventWebsiteUrl: "https://www.saucedmarket.com/chicago",
+  },
+  {
+    id: "chicago-artisan-market-2026-07-12",
+    marketName: "Chicago Artisan Market – Fulton Market",
+    description:
+      "Come find August Jones at Chicago Artisan Market! Buy tickets ahead of time for a discount! See website below.",
+    sessions: [
+      {
+        startDate: "2026-07-12T11:00-05:00",
+        endDate: "2026-07-12T17:00-05:00",
+      },
+    ],
+    venueName: "Morgan MFG",
+    address: {
+      street: "401 N Morgan St",
+      city: "Chicago",
+      state: "IL",
+      zip: "60642",
+    },
+    mapsUrl: "https://maps.google.com/?q=401+N+Morgan+St,+Chicago,+IL+60642",
+    eventWebsiteUrl: "https://chicagoartisanmarket.com/tickets-fulton-market/",
+  },
+  {
+    id: "renegade-craft-chicago-2026-07-18",
+    marketName: "Renegade Craft Chicago",
+    sessions: [
+      {
+        startDate: "2026-07-18T11:00-05:00",
+        endDate: "2026-07-18T18:00-05:00",
+      },
+      {
+        startDate: "2026-07-19T11:00-05:00",
+        endDate: "2026-07-19T18:00-05:00",
+      },
+    ],
+    venueName:
+      "Booth 167 - Kedzie Blvd. between W. Fullerton Ave. + W. Palmer Square",
+    address: {
+      street: "Kedzie Blvd. between W. Fullerton Ave. + W. Palmer Square",
+      city: "Chicago",
+      state: "IL",
+      zip: "60647",
+    },
+    mapsUrl: "https://maps.app.goo.gl/TB3LeUxQWuNknjub9",
+    eventWebsiteUrl: "https://www.renegadecraft.com/event/chicago-summer/",
   },
   {
     id: "rusty-bee-2026-07-23:",
@@ -267,6 +124,30 @@ export const allEvents: AugustJonesEvent[] = [
       },
     ],
     venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "marina-fest-door-county-2027-09-05",
+    marketName: "Marina Fest - Door County",
+    sessions: [
+      {
+        startDate: "2027-09-05T09:00-05:00",
+        endDate: "2027-09-05T17:00-05:00",
+      },
+      {
+        startDate: "2027-09-06T09:00-05:00",
+        endDate: "2027-09-06T17:00-05:00",
+      },
+    ],
+    venueName: "Sister Bay Marina",
+    address: {
+      street: "10708 N Bay Shore Dr.",
+      city: "Sister Bay",
+      state: "WI",
+      zip: "54234",
+    },
+    mapsUrl: "https://maps.app.goo.gl/Ncz5e6YZKGGMK2hZ6",
+    eventWebsiteUrl:
+      "https://sisterbay.com/events/marina-fest-labor-day-weekend/",
   },
   {
     id: "milwaukee-night-market-2026-09-16",
