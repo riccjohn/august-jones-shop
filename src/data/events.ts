@@ -45,7 +45,7 @@ export const allEvents: AugustJonesEvent[] = [
     id: "chicago-artisan-market-2026-07-12",
     marketName: "Chicago Artisan Market – Fulton Market",
     description:
-      "Come find August Jones at Chicago Artisan Market! Buy tickets ahead of time for a discount! See website below.",
+      "Come find August Jones at Chicago Artisan Market! Click the event name above to visit the organizer's site and use the code below for free admission",
     sessions: [
       {
         startDate: "2026-07-12T11:00-05:00",
@@ -58,6 +58,11 @@ export const allEvents: AugustJonesEvent[] = [
       city: "Chicago",
       state: "IL",
       zip: "60642",
+    },
+    discount: {
+      code: "augustjones",
+      label:
+        "Use coupon code for free admission if you buy tickets in advance!",
     },
     mapsUrl: "https://maps.google.com/?q=401+N+Morgan+St,+Chicago,+IL+60642",
     eventWebsiteUrl: "https://chicagoartisanmarket.com/tickets-fulton-market/",
