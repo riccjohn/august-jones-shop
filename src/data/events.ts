@@ -41,32 +41,7 @@ export const allEvents: AugustJonesEvent[] = [
     mapsUrl: "https://maps.app.goo.gl/DZKQfQ4t6nMRU37g6",
     eventWebsiteUrl: "https://www.saucedmarket.com/chicago",
   },
-  {
-    id: "chicago-artisan-market-2026-07-12",
-    marketName: "Chicago Artisan Market – Fulton Market",
-    description:
-      "Come find August Jones at Chicago Artisan Market! Click the event name above to visit the organizer's site and use the code below for free admission",
-    sessions: [
-      {
-        startDate: "2026-07-12T11:00-05:00",
-        endDate: "2026-07-12T17:00-05:00",
-      },
-    ],
-    venueName: "Morgan MFG",
-    address: {
-      street: "401 N Morgan St",
-      city: "Chicago",
-      state: "IL",
-      zip: "60642",
-    },
-    discount: {
-      code: "augustjones",
-      label:
-        "Use coupon code for free admission if you buy tickets in advance!",
-    },
-    mapsUrl: "https://maps.google.com/?q=401+N+Morgan+St,+Chicago,+IL+60642",
-    eventWebsiteUrl: "https://chicagoartisanmarket.com/tickets-fulton-market/",
-  },
+
   {
     id: "renegade-craft-chicago-2026-07-18",
     marketName: "Renegade Craft Chicago",
@@ -195,6 +170,32 @@ export const allEvents: AugustJonesEvent[] = [
       },
     ],
     venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "chicago-artisan-market-2026-07-12",
+    marketName: "Chicago Artisan Market – Fulton Market",
+    description:
+      "Come find August Jones at Chicago Artisan Market! Click the event name above to visit the organizer's site and use the code below for free admission",
+    sessions: [
+      {
+        startDate: "2026-10-18T11:00-05:00",
+        endDate: "2026-10-18T17:00-05:00",
+      },
+    ],
+    venueName: "Morgan MFG",
+    address: {
+      street: "401 N Morgan St",
+      city: "Chicago",
+      state: "IL",
+      zip: "60642",
+    },
+    discount: {
+      code: "augustjones",
+      label:
+        "Use coupon code for free admission if you buy tickets in advance!",
+    },
+    mapsUrl: "https://maps.google.com/?q=401+N+Morgan+St,+Chicago,+IL+60642",
+    eventWebsiteUrl: "https://chicagoartisanmarket.com/tickets-fulton-market/",
   },
   {
     id: "rusty-bee-2026-10-22:",
