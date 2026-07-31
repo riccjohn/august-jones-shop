@@ -19,7 +19,7 @@ export interface AugustJonesEvent {
 
 export const allEvents: AugustJonesEvent[] = [
   {
-    id: "sauced-night-market-chicago-2026-07-11",
+    id: "sauced-night-market-chicago-2026-07-10",
     marketName: "Sauced Night Market Chicago",
     sessions: [
       {
@@ -67,7 +67,7 @@ export const allEvents: AugustJonesEvent[] = [
     eventWebsiteUrl: "https://www.renegadecraft.com/event/chicago-summer/",
   },
   {
-    id: "rusty-bee-2026-07-23:",
+    id: "rusty-bee-2026-07-23",
     address: {
       street: "5134 E Cheryl Pkwy",
       city: "Fitchburg",
@@ -87,7 +87,7 @@ export const allEvents: AugustJonesEvent[] = [
   },
 
   {
-    id: "rusty-bee-2026-08-27:",
+    id: "rusty-bee-2026-08-27",
     address: {
       street: "5134 E Cheryl Pkwy",
       city: "Fitchburg",
@@ -153,7 +153,7 @@ export const allEvents: AugustJonesEvent[] = [
       "Come find August Jones at Milwaukee Night Market! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear. Follow my instagram for updates on exactly where my tent will be!",
   },
   {
-    id: "rusty-bee-2026-09-24:",
+    id: "rusty-bee-2026-09-24",
     address: {
       street: "5134 E Cheryl Pkwy",
       city: "Fitchburg",
@@ -172,7 +172,7 @@ export const allEvents: AugustJonesEvent[] = [
     venueName: "The Rusty Bee Lounge",
   },
   {
-    id: "chicago-artisan-market-2026-07-12",
+    id: "chicago-artisan-market-2026-10-18",
     marketName: "Chicago Artisan Market – Fulton Market",
     description:
       "Come find August Jones at Chicago Artisan Market! Click the event name above to visit the organizer's site and use the code below for free admission",
@@ -198,7 +198,7 @@ export const allEvents: AugustJonesEvent[] = [
     eventWebsiteUrl: "https://chicagoartisanmarket.com/tickets-fulton-market/",
   },
   {
-    id: "sauced-madison-09-11",
+    id: "sauced-madison-2026-09-11",
     marketName: "Sauced Night Market - Madison",
     eventWebsiteUrl: "https://www.saucedmarket.com/madison",
     venueName: "Garver Feed Mill",
@@ -221,7 +221,7 @@ export const allEvents: AugustJonesEvent[] = [
     mapsUrl: "https://maps.app.goo.gl/3VEQJu6EJYiB3q9GA",
   },
   {
-    id: "rusty-bee-2026-10-22:",
+    id: "rusty-bee-2026-10-22",
     address: {
       street: "5134 E Cheryl Pkwy",
       city: "Fitchburg",
