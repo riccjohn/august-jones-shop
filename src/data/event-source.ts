@@ -1,4 +1,8 @@
-import { allEvents, getUpcomingEvents } from "./events";
+import {
+  getUpcomingEvents,
+  sortEventsByDate,
+  allEvents as unsortedEvents,
+} from "./events";
 
-export { allEvents };
-export const upcomingEvents = getUpcomingEvents(undefined, new Date());
+export const allEvents = sortEventsByDate(unsortedEvents);
+export const upcomingEvents = getUpcomingEvents(allEvents, new Date());

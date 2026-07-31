@@ -354,3 +354,16 @@ export function getUpcomingEvents(
     return endTime + ONE_WEEK_MS > now.getTime();
   });
 }
+
+// Events are authored in whatever order is convenient, so callers must sort before
+// rendering — the list pages and the homepage teaser's "next 2" slice both depend on
+// chronological order. Sorted by first session so multi-day events sit at their start.
+export function sortEventsByDate(
+  source: AugustJonesEvent[],
+): AugustJonesEvent[] {
+  return [...source].sort(
+    (a, b) =>
+      new Date(a.sessions[0].startDate).getTime() -
+      new Date(b.sessions[0].startDate).getTime(),
+  );
+}
