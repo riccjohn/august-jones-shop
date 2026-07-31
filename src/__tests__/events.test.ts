@@ -8,6 +8,7 @@ import {
   getEventUrgencyLabel,
   getUpcomingEvents,
   isEventPast,
+  sortEventsByDate,
 } from "@/data/events";
 
 // ---------------------------------------------------------------------------
@@ -331,6 +332,94 @@ describe("getUpcomingEvents", () => {
     const result = getUpcomingEvents([eventA, eventB], now);
     expect(result).toHaveLength(2);
     expect(result.map((e) => e.id)).toEqual(["a", "b"]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// sortEventsByDate
+// ---------------------------------------------------------------------------
+
+describe("sortEventsByDate", () => {
+  it("orders events chronologically by first session", () => {
+    const later = makeEvent({
+      id: "later",
+      sessions: [
+        {
+          startDate: "2026-10-18T11:00-05:00",
+          endDate: "2026-10-18T17:00-05:00",
+        },
+      ],
+    });
+    const earlier = makeEvent({
+      id: "earlier",
+      sessions: [
+        {
+          startDate: "2026-09-11T17:00-05:00",
+          endDate: "2026-09-11T22:00-05:00",
+        },
+      ],
+    });
+
+    expect(sortEventsByDate([later, earlier]).map((e) => e.id)).toEqual([
+      "earlier",
+      "later",
+    ]);
+  });
+
+  it("places a multi-day event at its first session, not its last", () => {
+    const multiDay = makeEvent({
+      id: "multi-day",
+      sessions: [
+        {
+          startDate: "2026-09-11T17:00-05:00",
+          endDate: "2026-09-11T22:00-05:00",
+        },
+        {
+          startDate: "2026-09-12T17:00-05:00",
+          endDate: "2026-09-12T22:00-05:00",
+        },
+      ],
+    });
+    const between = makeEvent({
+      id: "between",
+      sessions: [
+        {
+          startDate: "2026-09-12T09:00-05:00",
+          endDate: "2026-09-12T15:00-05:00",
+        },
+      ],
+    });
+
+    expect(sortEventsByDate([between, multiDay]).map((e) => e.id)).toEqual([
+      "multi-day",
+      "between",
+    ]);
+  });
+
+  it("does not mutate the source array", () => {
+    const first = makeEvent({
+      id: "first",
+      sessions: [
+        {
+          startDate: "2026-10-18T11:00-05:00",
+          endDate: "2026-10-18T17:00-05:00",
+        },
+      ],
+    });
+    const second = makeEvent({
+      id: "second",
+      sessions: [
+        {
+          startDate: "2026-09-11T17:00-05:00",
+          endDate: "2026-09-11T22:00-05:00",
+        },
+      ],
+    });
+    const source = [first, second];
+
+    sortEventsByDate(source);
+
+    expect(source.map((e) => e.id)).toEqual(["first", "second"]);
   });
 });
 
