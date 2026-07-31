@@ -106,16 +106,16 @@ export const allEvents: AugustJonesEvent[] = [
     venueName: "The Rusty Bee Lounge",
   },
   {
-    id: "marina-fest-door-county-2027-09-05",
+    id: "marina-fest-door-county-2026-09-05",
     marketName: "Marina Fest - Door County",
     sessions: [
       {
-        startDate: "2027-09-05T09:00-05:00",
-        endDate: "2027-09-05T17:00-05:00",
+        startDate: "2026-09-05T09:00-05:00",
+        endDate: "2026-09-05T17:00-05:00",
       },
       {
-        startDate: "2027-09-06T09:00-05:00",
-        endDate: "2027-09-06T17:00-05:00",
+        startDate: "2026-09-06T09:00-05:00",
+        endDate: "2026-09-06T17:00-05:00",
       },
     ],
     venueName: "Sister Bay Marina",
