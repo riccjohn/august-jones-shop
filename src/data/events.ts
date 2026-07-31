@@ -198,6 +198,29 @@ export const allEvents: AugustJonesEvent[] = [
     eventWebsiteUrl: "https://chicagoartisanmarket.com/tickets-fulton-market/",
   },
   {
+    id: "sauced-madison-09-11",
+    marketName: "Sauced Night Market - Madison",
+    eventWebsiteUrl: "https://www.saucedmarket.com/madison",
+    venueName: "Garver Feed Mill",
+    address: {
+      street: "3241 Garver Green",
+      city: "Madison",
+      state: "WI",
+      zip: "53704",
+    },
+    sessions: [
+      {
+        startDate: "2026-09-11T17:00:00-05:00",
+        endDate: "2026-09-11T22:00:00-05:00",
+      },
+      {
+        startDate: "2026-09-12T17:00:00-05:00",
+        endDate: "2026-09-12T22:00:00-05:00",
+      },
+    ],
+    mapsUrl: "https://maps.app.goo.gl/3VEQJu6EJYiB3q9GA",
+  },
+  {
     id: "rusty-bee-2026-10-22:",
     address: {
       street: "5134 E Cheryl Pkwy",
