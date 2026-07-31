@@ -1,0 +1,28 @@
+// Event ids are rendered as DOM `id` attributes (EventCard) and linked as URL
+// fragments (EventsTeaser -> /events/#<id>), so they must survive both a URL
+// round-trip and a `querySelector("#" + id)` call.
+//
+// Characters that break things: "%" produces an invalid escape sequence and
+// corrupts the fragment outright, while ":", ".", "#", "?", "/", "&" and spaces
+// are CSS selector syntax, so querySelector either returns null or throws --
+// note that getElementById still finds the element, which is what let a stray
+// trailing colon survive unnoticed in the data for so long.
+//
+// Restricting to lowercase letters, digits, and hyphens is stricter than the
+// minimum needed (uppercase and "_" do work), but it matches the existing
+// <slug>-YYYY-MM-DD convention and leaves no ambiguity about what is allowed.
+//
+// Applied only to src/data/events.ts via `overrides` in biome.json, since that
+// is the sole source of ids that become public URL fragments.
+language js
+
+`id: $val` where {
+  // Non-capturing group is required: GritQL treats `(...)` as a metavariable
+  // capture and errors with "regex pattern matched 1 variables, but expected 0".
+  !$val <: r"\"[a-z0-9]+(?:-[a-z0-9]+)*\"",
+  register_diagnostic(
+    span = $val,
+    message = "Event ids are used as URL fragments and querySelector targets, so they must contain only lowercase letters, digits, and hyphens.",
+    severity = "error"
+  )
+}

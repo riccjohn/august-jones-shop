@@ -7,7 +7,15 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!node_modules", "!.next", "!dist", "!build", "!out"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!.next",
+      "!dist",
+      "!build",
+      "!out",
+      "!lint/**/*.grit"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -34,5 +42,11 @@
         "organizeImports": "on"
       }
     }
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["src/data/events.ts"],
+      "plugins": ["./lint/event-id-fragment-safe.grit"]
+    }
+  ]
 }
