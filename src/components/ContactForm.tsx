@@ -155,7 +155,9 @@ export function ContactForm() {
           Request Received
         </p>
         <p className="mt-3 text-sm/relaxed text-muted-foreground sm:text-base">
-          Thanks for reaching out. I typically respond within 2–3 days.
+          Thanks for pitching your idea! I can't wait to read through your
+          request and will get back to you via email soon to discuss the
+          details.
         </p>
       </div>
     );
