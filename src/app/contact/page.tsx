@@ -48,19 +48,12 @@ export default function ContactPage() {
 
       {/* ── CONTACT FORM ──────────────────────────────────────────────────── */}
       <section
-        aria-labelledby="form-heading"
+        aria-label="Contact form"
         className="relative overflow-hidden bg-background px-6 py-16 sm:py-24"
       >
         <GrainOverlay />
         <div className="relative z-10 mx-auto max-w-2xl">
           <div className="h-px bg-border mb-12" aria-hidden="true" />
-          <h2
-            id="form-heading"
-            className="text-display mb-10 text-foreground"
-            style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}
-          >
-            Send a Message
-          </h2>
           <ContactForm />
           <p className="mt-8 text-sm text-foreground/60">
             Prefer email or have other questions? Email{" "}
