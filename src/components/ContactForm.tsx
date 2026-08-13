@@ -2,21 +2,112 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 type FormState = "idle" | "submitting" | "success" | "error";
 
+type FormOption = { value: string; label: string };
+
+const PIECE_TYPES: FormOption[] = [
+  { value: "fanny-pack", label: "Fanny Pack ($85–$115)" },
+  { value: "cropped-flannel", label: "Cropped Flannel ($110–$145)" },
+  {
+    value: "cropped-military-jacket",
+    label: "Cropped Military Jacket ($195–$245)",
+  },
+  {
+    value: "full-length-military-jacket",
+    label: "Full Length Military Jacket ($195–$245)",
+  },
+  { value: "vest", label: "Vest ($285–$350)" },
+];
+
+type SizeOption = FormOption & { onlyFor: string | null | undefined };
+
+// onlyFor: a specific piece-type value restricts this size to that piece
+// type; null means "any piece type except fanny-pack"; undefined means
+// "always visible regardless of piece type" (Custom / Other).
+const SIZE_OPTIONS: SizeOption[] = [
+  {
+    value: "one-size",
+    label: "One Size (Fanny Packs)",
+    onlyFor: "fanny-pack",
+  },
+  { value: "unisex-s", label: "Unisex S", onlyFor: null },
+  { value: "unisex-m", label: "Unisex M", onlyFor: null },
+  { value: "unisex-l", label: "Unisex L", onlyFor: null },
+  { value: "unisex-xl", label: "Unisex XL", onlyFor: null },
+  {
+    value: "custom-other",
+    label: "Custom / Other (Leave details in your description)",
+    onlyFor: undefined,
+  },
+];
+
+const MATERIALS_SOURCE_OPTIONS: FormOption[] = [
+  { value: "self", label: "I am sending you my own garments/materials." },
+  {
+    value: "source",
+    label: "I want you to source the vintage materials for me.",
+  },
+];
+
+const POLICY_LABEL =
+  "I have read below custom policy and I understand that if my custom design is accepted, a 50% non-refundable deposit is required to secure my spot before production begins.";
+
+function visibleSizeOptions(pieceType: string) {
+  return SIZE_OPTIONS.filter((option) => {
+    if (option.onlyFor === undefined) return true;
+    if (!pieceType) return true;
+    if (option.onlyFor === null) return pieceType !== "fanny-pack";
+    return option.onlyFor === pieceType;
+  });
+}
+
+function pieceTypeLabel(value: string) {
+  const match = PIECE_TYPES.find((p) => p.value === value);
+  return match ? match.label.replace(/\s*\([^)]*\)\s*$/, "") : value;
+}
+
+function optionLabel(options: FormOption[], value: string) {
+  return options.find((option) => option.value === value)?.label ?? value;
+}
+
 export function ContactForm() {
   const [state, setState] = useState<FormState>("idle");
+  const [pieceType, setPieceType] = useState("");
+  const [size, setSize] = useState("");
+
+  const sizeOptions = visibleSizeOptions(pieceType);
+  const disabled = state === "submitting";
+
+  function handlePieceTypeChange(value: string) {
+    setPieceType(value);
+    const stillVisible = visibleSizeOptions(value).some(
+      (option) => option.value === size,
+    );
+    if (!stillVisible) {
+      setSize("");
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const form = e.currentTarget;
-    const honeypot = (form.elements.namedItem("website") as HTMLInputElement)
-      .value;
+    const formData = new FormData(form);
+    const honeypot = formData.get("website") as string;
     if (honeypot) {
       setState("success");
       return;
@@ -25,11 +116,19 @@ export function ContactForm() {
     setState("submitting");
 
     const data = {
-      name: (form.elements.namedItem("name") as HTMLInputElement).value,
-      email: (form.elements.namedItem("email") as HTMLInputElement).value,
-      subject: "custom-commission",
-      message: (form.elements.namedItem("message") as HTMLTextAreaElement)
-        .value,
+      firstName: formData.get("firstName") as string,
+      lastName: formData.get("lastName") as string,
+      email: formData.get("email") as string,
+      instagram: formData.get("instagram") as string,
+      team: formData.get("team") as string,
+      pieceType: pieceTypeLabel(pieceType),
+      size: optionLabel(SIZE_OPTIONS, formData.get("size") as string),
+      materialsSource: optionLabel(
+        MATERIALS_SOURCE_OPTIONS,
+        formData.get("materialsSource") as string,
+      ),
+      message: formData.get("message") as string,
+      policyAgreed: formData.get("policyAgreed") === "on",
     };
 
     try {
@@ -80,18 +179,33 @@ export function ContactForm() {
           autoComplete="off"
         />
       </div>
+
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
-          <Label htmlFor="name">Name</Label>
+          <Label htmlFor="firstName">First Name</Label>
           <Input
-            id="name"
-            name="name"
+            id="firstName"
+            name="firstName"
             type="text"
-            placeholder="Your name"
+            placeholder="Jane"
             required
-            disabled={state === "submitting"}
+            disabled={disabled}
           />
         </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="lastName">Last Name</Label>
+          <Input
+            id="lastName"
+            name="lastName"
+            type="text"
+            placeholder="Doe"
+            required
+            disabled={disabled}
+          />
+        </div>
+      </div>
+
+      <div className="grid gap-6 sm:grid-cols-2">
         <div className="flex flex-col gap-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -100,21 +214,132 @@ export function ContactForm() {
             type="email"
             placeholder="you@example.com"
             required
-            disabled={state === "submitting"}
+            disabled={disabled}
+          />
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="instagram">Instagram Handle</Label>
+          <Input
+            id="instagram"
+            name="instagram"
+            type="text"
+            placeholder="@yourhandle"
+            disabled={disabled}
           />
         </div>
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label htmlFor="message">Tell me about your custom request</Label>
+        <Label htmlFor="team">
+          What Team or University are we celebrating?
+        </Label>
+        <Input
+          id="team"
+          name="team"
+          type="text"
+          placeholder="e.g. Wisconsin Badgers"
+          required
+          disabled={disabled}
+        />
+      </div>
+
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="pieceType">What type of piece are we creating?</Label>
+        <Select
+          name="pieceType"
+          required
+          disabled={disabled}
+          value={pieceType}
+          onValueChange={handlePieceTypeChange}
+        >
+          <SelectTrigger id="pieceType" className="w-full">
+            <SelectValue placeholder="Choose a piece type" />
+          </SelectTrigger>
+          <SelectContent>
+            {PIECE_TYPES.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <fieldset className="flex flex-col gap-3">
+        <legend className="mb-1 text-sm font-medium text-foreground">
+          What size are we aiming for?
+        </legend>
+        <RadioGroup
+          name="size"
+          required
+          disabled={disabled}
+          value={size}
+          onValueChange={setSize}
+          className="gap-3"
+        >
+          {sizeOptions.map((option) => (
+            <div key={option.value} className="flex items-center gap-2">
+              <RadioGroupItem
+                value={option.value}
+                id={`size-${option.value}`}
+              />
+              <Label htmlFor={`size-${option.value}`} className="font-normal">
+                {option.label}
+              </Label>
+            </div>
+          ))}
+        </RadioGroup>
+      </fieldset>
+
+      <fieldset className="flex flex-col gap-3">
+        <legend className="mb-1 text-sm font-medium text-foreground">
+          Are you providing the baseline vintage materials, or would you like me
+          to source them?
+        </legend>
+        <RadioGroup
+          name="materialsSource"
+          required
+          disabled={disabled}
+          className="gap-3"
+        >
+          {MATERIALS_SOURCE_OPTIONS.map((option) => (
+            <div key={option.value} className="flex items-center gap-2">
+              <RadioGroupItem
+                value={option.value}
+                id={`materials-${option.value}`}
+              />
+              <Label
+                htmlFor={`materials-${option.value}`}
+                className="font-normal"
+              >
+                {option.label}
+              </Label>
+            </div>
+          ))}
+        </RadioGroup>
+      </fieldset>
+
+      <div className="flex flex-col gap-2">
+        <Label htmlFor="message">Description</Label>
         <Textarea
           id="message"
           name="message"
-          placeholder="Include team, style, size, any inspiration from my Instagram or shop, etc. Details help!"
+          placeholder="Include style, inspiration from my Instagram or shop, or any other details. Optional, but details help!"
           rows={6}
-          required
-          disabled={state === "submitting"}
+          disabled={disabled}
         />
+      </div>
+
+      <div className="flex items-start gap-3">
+        <Checkbox
+          id="policyAgreed"
+          name="policyAgreed"
+          required
+          disabled={disabled}
+        />
+        <Label htmlFor="policyAgreed" className="font-normal leading-snug">
+          {POLICY_LABEL}
+        </Label>
       </div>
 
       {state === "error" && (
@@ -134,7 +359,7 @@ export function ContactForm() {
         type="submit"
         size="lg"
         variant="brand"
-        disabled={state === "submitting"}
+        disabled={disabled}
         className="h-14 w-full text-base font-medium uppercase tracking-widest sm:w-auto sm:px-12"
       >
         {state === "submitting" ? "Sending..." : "Request a Custom"}
