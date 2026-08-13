@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { ContactForm } from "@/components/ContactForm";
 import { Footer } from "@/components/Footer";
 import { GrainOverlay } from "@/components/GrainOverlay";
+import { TermsAndConditions } from "@/components/TermsAndConditions";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -79,6 +80,9 @@ export default function ContactPage() {
           </p>
         </div>
       </section>
+
+      {/* ── TERMS & CONDITIONS ──────────────────────────────────────────── */}
+      <TermsAndConditions />
 
       <Footer />
     </main>

@@ -56,9 +56,6 @@ const MATERIALS_SOURCE_OPTIONS: FormOption[] = [
   },
 ];
 
-const POLICY_LABEL =
-  "I have read below custom policy and I understand that if my custom design is accepted, a 50% non-refundable deposit is required to secure my spot before production begins.";
-
 function visibleSizeOptions(pieceType: string) {
   if (pieceType === FANNY_PACK_VALUE) {
     return SIZE_OPTIONS.filter((option) => option.value === ONE_SIZE_VALUE);
@@ -338,7 +335,16 @@ export function ContactForm() {
           disabled={disabled}
         />
         <Label htmlFor="policyAgreed" className="font-normal leading-snug">
-          {POLICY_LABEL}
+          I have read the{" "}
+          <a
+            href="#terms"
+            className="text-foreground underline underline-offset-4 hover:text-accent hover:no-underline transition-colors duration-200"
+          >
+            custom policy
+          </a>{" "}
+          below and understand that if my custom design is accepted, a 50%
+          non-refundable deposit is required to secure my spot before production
+          begins.
         </Label>
       </div>
 

@@ -143,6 +143,12 @@ describe("ContactForm", () => {
         screen.getByRole("radio", { name: /unisex xl/i }),
       ).toBeInTheDocument();
     });
+
+    it("links the policy checkbox label to the Terms & Conditions section", () => {
+      render(<ContactForm />);
+      const link = screen.getByRole("link", { name: /custom policy/i });
+      expect(link).toHaveAttribute("href", "#terms");
+    });
   });
 
   describe("piece type -> size dependency", () => {
