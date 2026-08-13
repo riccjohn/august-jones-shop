@@ -4,21 +4,62 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ContactForm } from "@/components/ContactForm";
 
+async function selectPieceType(
+  user: ReturnType<typeof userEvent.setup>,
+  label: RegExp,
+) {
+  await user.click(
+    screen.getByRole("combobox", { name: /what type of piece/i }),
+  );
+  await user.click(await screen.findByRole("option", { name: label }));
+}
+
 async function fillForm(
   user: ReturnType<typeof userEvent.setup>,
-  overrides: { name?: string; email?: string; message?: string } = {},
+  overrides: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    team?: string;
+    pieceTypeLabel?: RegExp;
+    sizeName?: RegExp;
+    materialsSourceName?: RegExp;
+    message?: string;
+  } = {},
 ) {
-  const name = overrides.name ?? "Jane Doe";
+  const firstName = overrides.firstName ?? "Jane";
+  const lastName = overrides.lastName ?? "Doe";
   const email = overrides.email ?? "jane@example.com";
+  const team = overrides.team ?? "Wisconsin Badgers";
+  const pieceTypeLabel = overrides.pieceTypeLabel ?? /cropped flannel/i;
+  const sizeName = overrides.sizeName ?? /unisex m/i;
+  const materialsSourceName =
+    overrides.materialsSourceName ?? /sending you my own/i;
   const message = overrides.message ?? "I want a custom hoodie";
 
-  await user.type(screen.getByRole("textbox", { name: /name/i }), name);
-  await user.type(screen.getByRole("textbox", { name: /email/i }), email);
   await user.type(
-    screen.getByRole("textbox", {
-      name: /tell me about your custom request/i,
-    }),
+    screen.getByRole("textbox", { name: /first name/i }),
+    firstName,
+  );
+  await user.type(
+    screen.getByRole("textbox", { name: /last name/i }),
+    lastName,
+  );
+  await user.type(screen.getByRole("textbox", { name: /^email$/i }), email);
+  await user.type(
+    screen.getByRole("textbox", { name: /team or university/i }),
+    team,
+  );
+
+  await selectPieceType(user, pieceTypeLabel);
+  await user.click(screen.getByRole("radio", { name: sizeName }));
+  await user.click(screen.getByRole("radio", { name: materialsSourceName }));
+  await user.type(
+    screen.getByRole("textbox", { name: /description/i }),
     message,
+  );
+  await user.click(
+    screen.getByRole("checkbox", { name: /50% non-refundable deposit/i }),
   );
 }
 
@@ -65,16 +106,121 @@ describe("ContactForm", () => {
   describe("idle state", () => {
     it("renders all form fields enabled with the submit button", () => {
       render(<ContactForm />);
-      expect(screen.getByRole("textbox", { name: /name/i })).toBeEnabled();
-      expect(screen.getByRole("textbox", { name: /email/i })).toBeEnabled();
       expect(
-        screen.getByRole("textbox", {
-          name: /tell me about your custom request/i,
-        }),
+        screen.getByRole("textbox", { name: /first name/i }),
+      ).toBeEnabled();
+      expect(screen.getByRole("textbox", { name: /last name/i })).toBeEnabled();
+      expect(screen.getByRole("textbox", { name: /^email$/i })).toBeEnabled();
+      expect(
+        screen.getByRole("textbox", { name: /instagram handle/i }),
+      ).toBeEnabled();
+      expect(
+        screen.getByRole("textbox", { name: /team or university/i }),
+      ).toBeEnabled();
+      expect(
+        screen.getByRole("combobox", { name: /what type of piece/i }),
+      ).toBeEnabled();
+      expect(
+        screen.getByRole("textbox", { name: /description/i }),
+      ).toBeEnabled();
+      expect(
+        screen.getByRole("checkbox", { name: /50% non-refundable deposit/i }),
       ).toBeEnabled();
       expect(
         screen.getByRole("button", { name: /request a custom/i }),
       ).toBeEnabled();
+    });
+
+    it("shows every size option when no piece type is selected yet", () => {
+      render(<ContactForm />);
+      expect(
+        screen.getByRole("radio", { name: /one size \(fanny packs\)/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("radio", { name: /unisex s/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("radio", { name: /unisex xl/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("links the policy checkbox label to the Terms & Conditions section", () => {
+      render(<ContactForm />);
+      const link = screen.getByRole("link", { name: /custom policy/i });
+      expect(link).toHaveAttribute("href", "#terms");
+    });
+  });
+
+  describe("piece type -> size dependency", () => {
+    it("shows only One Size, pre-selected, when Fanny Pack is selected", async () => {
+      const user = userEvent.setup();
+      render(<ContactForm />);
+
+      await selectPieceType(user, /fanny pack/i);
+
+      expect(
+        screen.getByRole("radio", { name: /one size \(fanny packs\)/i }),
+      ).toBeChecked();
+      expect(
+        screen.queryByRole("radio", { name: /custom \/ other/i }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("radio", { name: /unisex s/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("hides One Size and shows Unisex S/M/L/XL for any non-Fanny-Pack piece", async () => {
+      const user = userEvent.setup();
+      render(<ContactForm />);
+
+      await selectPieceType(user, /cropped flannel/i);
+
+      expect(
+        screen.queryByRole("radio", { name: /one size \(fanny packs\)/i }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("radio", { name: /unisex s/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("radio", { name: /unisex xl/i }),
+      ).toBeInTheDocument();
+    });
+
+    it("replaces a previously selected size with the auto-selected One Size when switching to Fanny Pack", async () => {
+      const user = userEvent.setup();
+      render(<ContactForm />);
+
+      await selectPieceType(user, /cropped flannel/i);
+      await user.click(screen.getByRole("radio", { name: /unisex m/i }));
+      expect(screen.getByRole("radio", { name: /unisex m/i })).toBeChecked();
+
+      await selectPieceType(user, /fanny pack/i);
+
+      expect(
+        screen.getByRole("radio", { name: /one size \(fanny packs\)/i }),
+      ).toBeChecked();
+      expect(
+        screen.queryByRole("radio", { name: /unisex m/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("clears the auto-selected One Size when switching away from Fanny Pack", async () => {
+      const user = userEvent.setup();
+      render(<ContactForm />);
+
+      await selectPieceType(user, /fanny pack/i);
+      expect(
+        screen.getByRole("radio", { name: /one size \(fanny packs\)/i }),
+      ).toBeChecked();
+
+      await selectPieceType(user, /cropped flannel/i);
+
+      expect(
+        screen.queryByRole("radio", { name: /one size \(fanny packs\)/i }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("radio", { name: /unisex m/i }),
+      ).not.toBeChecked();
     });
   });
 
@@ -98,12 +244,12 @@ describe("ContactForm", () => {
         screen.getByRole("button", { name: /request a custom/i }),
       );
 
-      expect(screen.getByRole("textbox", { name: /name/i })).toBeDisabled();
-      expect(screen.getByRole("textbox", { name: /email/i })).toBeDisabled();
       expect(
-        screen.getByRole("textbox", {
-          name: /tell me about your custom request/i,
-        }),
+        screen.getByRole("textbox", { name: /first name/i }),
+      ).toBeDisabled();
+      expect(screen.getByRole("textbox", { name: /^email$/i })).toBeDisabled();
+      expect(
+        screen.getByRole("combobox", { name: /what type of piece/i }),
       ).toBeDisabled();
       expect(
         screen.getByRole("button", { name: /sending/i }),
@@ -112,7 +258,7 @@ describe("ContactForm", () => {
       resolveFetch(new Response(JSON.stringify({}), { status: 200 }));
     });
 
-    it("calls fetch with correct payload including subject custom-commission", async () => {
+    it("calls fetch with correct payload shape", async () => {
       const user = userEvent.setup();
       const mockFetch = vi
         .fn()
@@ -132,15 +278,29 @@ describe("ContactForm", () => {
       expect(init.method).toBe("POST");
 
       const body = JSON.parse(init.body as string) as {
-        name: string;
+        firstName: string;
+        lastName: string;
         email: string;
-        subject: string;
+        instagram: string;
+        team: string;
+        pieceType: string;
+        size: string;
+        materialsSource: string;
         message: string;
+        policyAgreed: boolean;
       };
-      expect(body.subject).toBe("custom-commission");
-      expect(body.name).toBe("Jane Doe");
+      expect(body.firstName).toBe("Jane");
+      expect(body.lastName).toBe("Doe");
       expect(body.email).toBe("jane@example.com");
+      expect(body.instagram).toBe("");
+      expect(body.team).toBe("Wisconsin Badgers");
+      expect(body.pieceType).toBe("Cropped Flannel");
+      expect(body.size).toBe("Unisex M");
+      expect(body.materialsSource).toBe(
+        "I am sending you my own garments/materials.",
+      );
       expect(body.message).toBe("I want a custom hoodie");
+      expect(body.policyAgreed).toBe(true);
     });
   });
 
@@ -164,15 +324,10 @@ describe("ContactForm", () => {
         expect(screen.getByText(/request received/i)).toBeInTheDocument(),
       );
       expect(
-        screen.queryByRole("textbox", { name: /name/i }),
+        screen.queryByRole("textbox", { name: /first name/i }),
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByRole("textbox", { name: /email/i }),
-      ).not.toBeInTheDocument();
-      expect(
-        screen.queryByRole("textbox", {
-          name: /tell me about your custom request/i,
-        }),
+        screen.queryByRole("combobox", { name: /what type of piece/i }),
       ).not.toBeInTheDocument();
     });
   });

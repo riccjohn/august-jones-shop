@@ -11,7 +11,7 @@ import { SHOP_URL } from "@/lib/constants";
 const NAV_LINKS = [
   { label: "About", href: "/about", key: "about" },
   { label: "Events", href: "/events", key: "events" },
-  { label: "Contact", href: "/contact", key: "contact" },
+  { label: "Customs & Contact", href: "/contact", key: "contact" },
 ] as const;
 
 export function SiteNav() {
@@ -37,7 +37,7 @@ export function SiteNav() {
       style={{ transitionTimingFunction: "cubic-bezier(0.77, 0, 0.175, 1)" }}
     >
       {/*
-       * Desktop: [Logo] ................. [About] [Contact] [Shop]
+       * Desktop: [Logo] ................. [About] [Customs & Contact] [Shop]
        * Mobile:  [☰] .... [Logo] .... [Shop]
        *
        * On mobile the logo is absolutely centered between the two edge controls.
