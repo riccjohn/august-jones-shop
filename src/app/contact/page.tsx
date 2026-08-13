@@ -28,13 +28,6 @@ export default function ContactPage() {
           >
             Get in Touch
           </h1>
-          <p
-            className="text-editorial mt-6 max-w-lg text-foreground/60"
-            style={{ fontSize: "clamp(1.05rem, 1.8vw, 1.25rem)" }}
-          >
-            Questions about a custom commission? I read every message personally
-            and respond within 2 - 3 days.
-          </p>
         </div>
       </section>
 
