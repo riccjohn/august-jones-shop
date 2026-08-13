@@ -336,7 +336,10 @@ export function ContactForm() {
           required
           disabled={disabled}
         />
-        <Label htmlFor="policyAgreed" className="font-normal leading-snug">
+        <Label
+          htmlFor="policyAgreed"
+          className="block font-normal leading-snug"
+        >
           I have read the{" "}
           <a
             href="#terms"

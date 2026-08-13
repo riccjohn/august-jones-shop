@@ -3,7 +3,7 @@ export function TermsAndConditions() {
     <section
       id="terms"
       aria-labelledby="terms-heading"
-      className="relative overflow-hidden bg-background px-6 py-16 sm:py-24"
+      className="relative scroll-mt-24 overflow-hidden bg-background px-6 pb-16 sm:pb-24"
     >
       <div className="relative z-10 mx-auto max-w-2xl">
         <div className="h-px bg-border mb-12" aria-hidden="true" />
