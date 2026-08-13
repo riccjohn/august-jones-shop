@@ -146,7 +146,7 @@ describe("ContactForm", () => {
   });
 
   describe("piece type -> size dependency", () => {
-    it("narrows size options to One Size + Custom/Other when Fanny Pack is selected", async () => {
+    it("shows only One Size, pre-selected, when Fanny Pack is selected", async () => {
       const user = userEvent.setup();
       render(<ContactForm />);
 
@@ -154,10 +154,10 @@ describe("ContactForm", () => {
 
       expect(
         screen.getByRole("radio", { name: /one size \(fanny packs\)/i }),
-      ).toBeInTheDocument();
+      ).toBeChecked();
       expect(
-        screen.getByRole("radio", { name: /custom \/ other/i }),
-      ).toBeInTheDocument();
+        screen.queryByRole("radio", { name: /custom \/ other/i }),
+      ).not.toBeInTheDocument();
       expect(
         screen.queryByRole("radio", { name: /unisex s/i }),
       ).not.toBeInTheDocument();
@@ -180,7 +180,7 @@ describe("ContactForm", () => {
       ).toBeInTheDocument();
     });
 
-    it("clears a selected size that becomes invalid when piece type changes", async () => {
+    it("replaces a previously selected size with the auto-selected One Size when switching to Fanny Pack", async () => {
       const user = userEvent.setup();
       render(<ContactForm />);
 
@@ -192,10 +192,29 @@ describe("ContactForm", () => {
 
       expect(
         screen.getByRole("radio", { name: /one size \(fanny packs\)/i }),
-      ).not.toBeChecked();
+      ).toBeChecked();
       expect(
         screen.queryByRole("radio", { name: /unisex m/i }),
       ).not.toBeInTheDocument();
+    });
+
+    it("clears the auto-selected One Size when switching away from Fanny Pack", async () => {
+      const user = userEvent.setup();
+      render(<ContactForm />);
+
+      await selectPieceType(user, /fanny pack/i);
+      expect(
+        screen.getByRole("radio", { name: /one size \(fanny packs\)/i }),
+      ).toBeChecked();
+
+      await selectPieceType(user, /cropped flannel/i);
+
+      expect(
+        screen.queryByRole("radio", { name: /one size \(fanny packs\)/i }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("radio", { name: /unisex m/i }),
+      ).not.toBeChecked();
     });
   });
 

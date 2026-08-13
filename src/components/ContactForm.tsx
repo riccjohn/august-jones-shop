@@ -33,25 +33,18 @@ const PIECE_TYPES: FormOption[] = [
   { value: "vest", label: "Vest ($285–$350)" },
 ];
 
-type SizeOption = FormOption & { onlyFor: string | null | undefined };
+const ONE_SIZE_VALUE = "one-size";
+const FANNY_PACK_VALUE = "fanny-pack";
 
-// onlyFor: a specific piece-type value restricts this size to that piece
-// type; null means "any piece type except fanny-pack"; undefined means
-// "always visible regardless of piece type" (Custom / Other).
-const SIZE_OPTIONS: SizeOption[] = [
-  {
-    value: "one-size",
-    label: "One Size (Fanny Packs)",
-    onlyFor: "fanny-pack",
-  },
-  { value: "unisex-s", label: "Unisex S", onlyFor: null },
-  { value: "unisex-m", label: "Unisex M", onlyFor: null },
-  { value: "unisex-l", label: "Unisex L", onlyFor: null },
-  { value: "unisex-xl", label: "Unisex XL", onlyFor: null },
+const SIZE_OPTIONS: FormOption[] = [
+  { value: ONE_SIZE_VALUE, label: "One Size (Fanny Packs)" },
+  { value: "unisex-s", label: "Unisex S" },
+  { value: "unisex-m", label: "Unisex M" },
+  { value: "unisex-l", label: "Unisex L" },
+  { value: "unisex-xl", label: "Unisex XL" },
   {
     value: "custom-other",
     label: "Custom / Other (Leave details in your description)",
-    onlyFor: undefined,
   },
 ];
 
@@ -67,12 +60,13 @@ const POLICY_LABEL =
   "I have read below custom policy and I understand that if my custom design is accepted, a 50% non-refundable deposit is required to secure my spot before production begins.";
 
 function visibleSizeOptions(pieceType: string) {
-  return SIZE_OPTIONS.filter((option) => {
-    if (option.onlyFor === undefined) return true;
-    if (!pieceType) return true;
-    if (option.onlyFor === null) return pieceType !== "fanny-pack";
-    return option.onlyFor === pieceType;
-  });
+  if (pieceType === FANNY_PACK_VALUE) {
+    return SIZE_OPTIONS.filter((option) => option.value === ONE_SIZE_VALUE);
+  }
+  if (!pieceType) {
+    return SIZE_OPTIONS;
+  }
+  return SIZE_OPTIONS.filter((option) => option.value !== ONE_SIZE_VALUE);
 }
 
 function pieceTypeLabel(value: string) {
@@ -94,6 +88,12 @@ export function ContactForm() {
 
   function handlePieceTypeChange(value: string) {
     setPieceType(value);
+
+    if (value === FANNY_PACK_VALUE) {
+      setSize(ONE_SIZE_VALUE);
+      return;
+    }
+
     const stillVisible = visibleSizeOptions(value).some(
       (option) => option.value === size,
     );
