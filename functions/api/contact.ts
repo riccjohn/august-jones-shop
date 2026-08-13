@@ -6,26 +6,54 @@ interface Env {
 }
 
 interface ContactPayload {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  subject: string;
+  instagram: string;
+  team: string;
+  pieceType: string;
+  size: string;
+  materialsSource: string;
   message: string;
+  policyAgreed: boolean;
 }
 
 function isContactPayload(value: unknown): value is ContactPayload {
   if (typeof value !== "object" || value === null) {
     return false;
   }
-  const name = Reflect.get(value, "name");
+  const firstName = Reflect.get(value, "firstName");
+  const lastName = Reflect.get(value, "lastName");
   const email = Reflect.get(value, "email");
-  const subject = Reflect.get(value, "subject");
+  const instagram = Reflect.get(value, "instagram");
+  const team = Reflect.get(value, "team");
+  const pieceType = Reflect.get(value, "pieceType");
+  const size = Reflect.get(value, "size");
+  const materialsSource = Reflect.get(value, "materialsSource");
   const message = Reflect.get(value, "message");
+  const policyAgreed = Reflect.get(value, "policyAgreed");
+
   return (
-    typeof name === "string" &&
+    typeof firstName === "string" &&
+    typeof lastName === "string" &&
     typeof email === "string" &&
-    typeof subject === "string" &&
+    typeof instagram === "string" &&
+    typeof team === "string" &&
+    typeof pieceType === "string" &&
+    typeof size === "string" &&
+    typeof materialsSource === "string" &&
     typeof message === "string" &&
-    Boolean(name && email && subject && message)
+    typeof policyAgreed === "boolean" &&
+    Boolean(
+      firstName &&
+        lastName &&
+        email &&
+        team &&
+        pieceType &&
+        size &&
+        materialsSource &&
+        policyAgreed,
+    )
   );
 }
 
@@ -37,7 +65,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       headers: { "Content-Type": "application/json" },
     });
   }
-  const { name, email, subject, message } = raw;
+  const {
+    firstName,
+    lastName,
+    email,
+    instagram,
+    team,
+    pieceType,
+    size,
+    materialsSource,
+    message,
+    policyAgreed,
+  } = raw;
 
   const resend = new Resend(context.env.RESEND_API_KEY);
 
@@ -45,8 +84,20 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     from: "August Jones <customs@augustjones.shop>",
     to: "customs+form@augustjones.shop",
     replyTo: email,
-    subject: `[Contact] ${subject} — ${name}`,
-    text: `Name: ${name}\nEmail: ${email}\nSubject: ${subject}\n\n${message}`,
+    subject: `[Contact] ${pieceType} — ${firstName} ${lastName}`,
+    text: [
+      `Name: ${firstName} ${lastName}`,
+      `Email: ${email}`,
+      `Instagram: ${instagram || "(not provided)"}`,
+      `Team/University: ${team}`,
+      `Piece Type: ${pieceType}`,
+      `Size: ${size}`,
+      `Materials: ${materialsSource}`,
+      `Policy Agreed: ${policyAgreed ? "Yes" : "No"}`,
+      "",
+      "Description:",
+      message || "(not provided)",
+    ].join("\n"),
   });
 
   if (error) {
