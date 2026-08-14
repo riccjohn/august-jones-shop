@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   trackEmailClick,
+  trackEmailSignup,
   trackInstagramClick,
   trackNavClick,
   trackShopClick,
@@ -97,5 +98,37 @@ describe("trackEmailClick", () => {
   it('calls window.umami.track with event name "email_click" and no payload', () => {
     trackEmailClick();
     expect(mockTrack).toHaveBeenCalledWith("email_click", undefined);
+  });
+});
+
+describe("trackEmailSignup", () => {
+  let mockTrack: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    mockTrack = vi.fn();
+    vi.stubGlobal("umami", { track: mockTrack });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('calls window.umami.track with event name "email_signup" and payload { source: "footer" }', () => {
+    trackEmailSignup("footer");
+    expect(mockTrack).toHaveBeenCalledWith("email_signup", {
+      source: "footer",
+    });
+  });
+
+  it('calls window.umami.track with event name "email_signup" and payload { source: "join" }', () => {
+    trackEmailSignup("join");
+    expect(mockTrack).toHaveBeenCalledWith("email_signup", {
+      source: "join",
+    });
+  });
+
+  it("does not throw when window.umami is undefined", () => {
+    vi.stubGlobal("umami", undefined);
+    expect(() => trackEmailSignup("footer")).not.toThrow();
   });
 });
