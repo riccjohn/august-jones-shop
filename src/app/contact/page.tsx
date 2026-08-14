@@ -50,51 +50,55 @@ export default function ContactPage() {
                 </>
               ) : (
                 <>
-                  I'm temporarily closed for custom commissions. Join our{" "}
+                  I'm temporarily closed for custom commissions while I focus on
+                  existing orders. Join our{" "}
                   <Link
                     href="/join"
                     className="text-foreground/55 underline underline-offset-2 hover:text-accent transition-colors duration-200"
                   >
                     email list
                   </Link>{" "}
-                  to get notified when commissions reopen.
+                  to get notified when they reopen.
                 </>
               )}
             </p>
+            {!CUSTOMS_OPEN && (
+              <p className="mt-4 max-w-xl text-sm text-foreground/55">
+                Prefer email or have other questions? Email{" "}
+                <a
+                  href={`mailto:${CONTACT_EMAIL}`}
+                  className="text-foreground/55 underline underline-offset-2 hover:text-accent transition-colors duration-200"
+                >
+                  {CONTACT_EMAIL}
+                </a>
+              </p>
+            )}
           </div>
         </div>
       </section>
 
-      {/* ── CONTACT FORM OR CLOSED MESSAGE ────────────────────────────────── */}
-      <section
-        aria-label={CUSTOMS_OPEN ? "Contact form" : "Custom commissions closed"}
-        className="relative overflow-hidden bg-background px-6 py-16 sm:py-24"
-      >
-        <GrainOverlay />
-        <div className="relative z-10 mx-auto max-w-2xl">
-          <div className="h-px bg-border mb-12" aria-hidden="true" />
-          {CUSTOMS_OPEN ? (
+      {/* ── CONTACT FORM ─────────────────────────────────────────────────── */}
+      {CUSTOMS_OPEN && (
+        <section
+          aria-label="Contact form"
+          className="relative overflow-hidden bg-background px-6 py-16 sm:py-24"
+        >
+          <GrainOverlay />
+          <div className="relative z-10 mx-auto max-w-2xl">
+            <div className="h-px bg-border mb-12" aria-hidden="true" />
             <ContactForm />
-          ) : (
-            <div>
-              <p className="text-foreground/70 text-sm/relaxed sm:text-base">
-                Custom commissions are temporarily closed while I focus on
-                existing orders. I appreciate your interest and look forward to
-                reopening soon!
-              </p>
-            </div>
-          )}
-          <p className="mt-8 text-sm text-foreground/60">
-            Prefer email or have other questions? Email{" "}
-            <a
-              href={`mailto:${CONTACT_EMAIL}`}
-              className="text-foreground/60 underline underline-offset-4 hover:text-accent hover:no-underline transition-colors duration-200"
-            >
-              {CONTACT_EMAIL}
-            </a>
-          </p>
-        </div>
-      </section>
+            <p className="mt-8 text-sm text-foreground/60">
+              Prefer email or have other questions? Email{" "}
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                className="text-foreground/60 underline underline-offset-4 hover:text-accent hover:no-underline transition-colors duration-200"
+              >
+                {CONTACT_EMAIL}
+              </a>
+            </p>
+          </div>
+        </section>
+      )}
 
       {/* ── TERMS & CONDITIONS ──────────────────────────────────────────── */}
       <TermsAndConditions />

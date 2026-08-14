@@ -130,22 +130,12 @@ describe("Contact Page", () => {
       render(<ContactPage />);
 
       expect(
-        screen.getByText(/i'm temporarily closed for custom commissions/i),
+        screen.getByText(
+          /i'm temporarily closed for custom commissions while i focus on existing orders/i,
+        ),
       ).toBeInTheDocument();
       const joinLink = screen.getByRole("link", { name: /email list/i });
       expect(joinLink).toHaveAttribute("href", "/join");
-    });
-
-    it("renders the closed state message", async () => {
-      vi.resetModules();
-      const ContactPage = (await import("../page")).default;
-      render(<ContactPage />);
-
-      expect(
-        screen.getByText(
-          /custom commissions are temporarily closed while i focus on existing orders/i,
-        ),
-      ).toBeInTheDocument();
     });
 
     it("shows the email fallback line", async () => {
