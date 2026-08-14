@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { ContactForm } from "@/components/ContactForm";
 import { Footer } from "@/components/Footer";
 import { GrainOverlay } from "@/components/GrainOverlay";
 import { TermsAndConditions } from "@/components/TermsAndConditions";
+import { CUSTOMS_OPEN } from "@/lib/config";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -36,25 +38,52 @@ export default function ContactPage() {
         <div className="mx-auto max-w-6xl">
           <div className="border-l-2 border-accent bg-accent/5 py-6 pl-6 pr-6 sm:py-8 sm:pl-8">
             <h2 className="text-display text-2xl text-foreground sm:text-3xl">
-              Custom Commissions Are Open
+              {CUSTOMS_OPEN
+                ? "Custom Commissions Are Open"
+                : "Custom Commissions Are Closed"}
             </h2>
             <p className="mt-2 max-w-xl text-sm/relaxed text-foreground/55 sm:text-base">
-              Looking for a custom piece? Send a message and I'll get back to
-              you within 2 - 3 days.
+              {CUSTOMS_OPEN ? (
+                <>
+                  Looking for a custom piece? Send a message and I'll get back
+                  to you within 2 - 3 days.
+                </>
+              ) : (
+                <>
+                  I'm temporarily closed for custom commissions. Join our{" "}
+                  <Link
+                    href="/join"
+                    className="text-foreground/55 underline underline-offset-2 hover:text-accent transition-colors duration-200"
+                  >
+                    email list
+                  </Link>{" "}
+                  to get notified when commissions reopen.
+                </>
+              )}
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── CONTACT FORM ──────────────────────────────────────────────────── */}
+      {/* ── CONTACT FORM OR CLOSED MESSAGE ────────────────────────────────── */}
       <section
-        aria-label="Contact form"
+        aria-label={CUSTOMS_OPEN ? "Contact form" : "Custom commissions closed"}
         className="relative overflow-hidden bg-background px-6 py-16 sm:py-24"
       >
         <GrainOverlay />
         <div className="relative z-10 mx-auto max-w-2xl">
           <div className="h-px bg-border mb-12" aria-hidden="true" />
-          <ContactForm />
+          {CUSTOMS_OPEN ? (
+            <ContactForm />
+          ) : (
+            <div>
+              <p className="text-foreground/70 text-sm/relaxed sm:text-base">
+                Custom commissions are temporarily closed while I focus on
+                existing orders. I appreciate your interest and look forward to
+                reopening soon!
+              </p>
+            </div>
+          )}
           <p className="mt-8 text-sm text-foreground/60">
             Prefer email or have other questions? Email{" "}
             <a
