@@ -6,7 +6,9 @@ import {
   Instrument_Serif,
 } from "next/font/google";
 import Script from "next/script";
+import { CustomsClosedBanner } from "@/components/CustomsClosedBanner";
 import { SiteNav } from "@/components/SiteNav";
+import { CUSTOMS_OPEN } from "@/lib/config";
 import { CONTACT_EMAIL, SHOP_URL } from "@/lib/constants";
 import "./globals.css";
 
@@ -119,6 +121,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${bebasNeue.variable} ${instrumentSerif.variable} antialiased`}
       >
+        <CustomsClosedBanner isClosed={!CUSTOMS_OPEN} />
         <SiteNav />
         {children}
         {/* afterInteractive loads Umami after hydration to avoid blocking LCP.
