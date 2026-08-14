@@ -36,7 +36,7 @@ export function TermsAndConditions() {
             <strong className="text-foreground">
               Phase 1: Consultation & Concept
             </strong>{" "}
-            — We map out your vision, team preferences, sizing, and style
+            — I map out your vision, team preferences, sizing, and style
             direction. You can provide your own pieces to be reinvented or I can
             source for you.
           </li>
@@ -44,7 +44,7 @@ export function TermsAndConditions() {
             <strong className="text-foreground">
               Phase 2: Secure Your Slot
             </strong>{" "}
-            — Once we agree on the scope and estimated cost, a 50%
+            — Once you approve the scope and estimated cost, a 50%
             non-refundable deposit secures your place in my production schedule,
             locks in your 4–8 week window, and initiates material sourcing.
           </li>

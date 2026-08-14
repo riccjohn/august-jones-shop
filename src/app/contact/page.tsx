@@ -51,7 +51,7 @@ export default function ContactPage() {
               ) : (
                 <>
                   I'm temporarily closed for custom commissions while I focus on
-                  existing orders. Join our{" "}
+                  existing orders. Join my{" "}
                   <Link
                     href="/join"
                     className="text-foreground/55 underline underline-offset-2 hover:text-accent transition-colors duration-200"
