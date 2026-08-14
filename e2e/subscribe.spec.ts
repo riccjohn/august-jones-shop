@@ -1,8 +1,9 @@
 import { expect, type Locator, type Page, test } from "@playwright/test";
 
 /**
- * E2E coverage for EmailSignupForm (rendered in the footer on every page, and
- * as the primary form on /join).
+ * E2E coverage for EmailSignupForm (rendered in the footer on every page, in
+ * a dedicated "Get First Dibs" section on the homepage, and as the primary
+ * form on /join).
  *
  * The e2e webServer runs a plain static file server (`serve out`) — Cloudflare
  * Pages Functions (functions/api/*.ts) do not run in that environment, so a
@@ -68,6 +69,12 @@ function testSignupForm(path: string, locateForm: (page: Page) => Locator) {
 
 test.describe("Footer email signup form", () => {
   testSignupForm("/", (page) => page.locator("footer"));
+});
+
+test.describe("Homepage signup section", () => {
+  testSignupForm("/", (page) =>
+    page.locator('section[aria-labelledby="signup-heading"]'),
+  );
 });
 
 test.describe("/join page", () => {

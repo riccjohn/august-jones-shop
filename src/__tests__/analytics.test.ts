@@ -127,6 +127,13 @@ describe("trackEmailSignup", () => {
     });
   });
 
+  it('calls window.umami.track with event name "email_signup" and payload { source: "home" }', () => {
+    trackEmailSignup("home");
+    expect(mockTrack).toHaveBeenCalledWith("email_signup", {
+      source: "home",
+    });
+  });
+
   it("does not throw when window.umami is undefined", () => {
     vi.stubGlobal("umami", undefined);
     expect(() => trackEmailSignup("footer")).not.toThrow();

@@ -18,7 +18,7 @@ async function fillAndSubmit(
   await user.click(screen.getByRole("button", { name: "Sign Up" }));
 }
 
-const sources = ["footer", "join"] as const;
+const sources = ["footer", "join", "home"] as const;
 
 describe("EmailSignupForm", () => {
   beforeEach(() => {

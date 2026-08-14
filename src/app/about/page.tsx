@@ -216,6 +216,48 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* ── JOIN THE LIST ─────────────────────────────────────────────────── */}
+      <section
+        aria-labelledby="join-heading"
+        className="relative overflow-hidden bg-background px-6 py-20 sm:py-28"
+      >
+        <GrainOverlay />
+        <div className="relative z-10 mx-auto max-w-6xl">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[3fr_2fr] lg:items-end">
+            <div className="flex flex-col gap-6">
+              <p className="text-eyebrow text-accent/80">Get first dibs</p>
+              <h2
+                id="join-heading"
+                className="text-display text-foreground"
+                style={{
+                  fontSize: "clamp(3rem, 7vw, 6rem)",
+                  textWrap: "balance",
+                }}
+              >
+                Join the list
+              </h2>
+              <p className="max-w-xl text-base/relaxed text-foreground/60 sm:text-lg">
+                Early access to new drops, plus market and event dates near you.
+              </p>
+            </div>
+
+            <div className="flex items-end">
+              <Button
+                asChild
+                size="lg"
+                variant="brand"
+                className="h-14 gap-3 px-10 text-base font-medium uppercase tracking-widest"
+              >
+                <Link href="/join">
+                  <span>Join the List</span>
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── SHOP CTA ──────────────────────────────────────────────────────── */}
       <section className="bg-[#f6f4f0] px-6 py-20 sm:py-28">
         <div className="mx-auto flex max-w-2xl flex-col items-center gap-6 text-center">

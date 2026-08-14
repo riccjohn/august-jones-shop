@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { EmailSignupForm } from "@/components/EmailSignupForm";
 import { EventsTeaser } from "@/components/EventsTeaser";
 import { Footer } from "@/components/Footer";
 import { GrainOverlay } from "@/components/GrainOverlay";
@@ -214,6 +215,43 @@ export default function Home() {
             >
               View all in shop ↗
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* ── EMAIL SIGNUP ──────────────────────────────────────────────────── */}
+      <section
+        aria-labelledby="signup-heading"
+        className="relative overflow-hidden bg-background px-6 py-20 sm:py-28"
+      >
+        <GrainOverlay />
+        <div className="relative z-10 mx-auto max-w-6xl">
+          <div className="flex flex-col items-start gap-8 sm:flex-row sm:items-end sm:justify-between">
+            <div className="flex flex-col gap-4">
+              <p className="text-eyebrow text-foreground/65">
+                Never miss a drop
+              </p>
+              <h2
+                id="signup-heading"
+                className="text-display text-foreground"
+                style={{
+                  fontSize: "clamp(2.5rem, 6vw, 5rem)",
+                  textWrap: "balance",
+                }}
+              >
+                Get First Dibs
+              </h2>
+              <p className="max-w-sm text-sm/relaxed text-foreground/70">
+                New pieces sell in hours, not days. Join the list for drop
+                alerts and market dates near you.
+              </p>
+            </div>
+
+            <EmailSignupForm
+              source="home"
+              aria-labelledby="signup-heading"
+              className="w-full sm:w-auto sm:shrink-0"
+            />
           </div>
         </div>
       </section>
