@@ -99,3 +99,13 @@ Key files: `src/lib/analytics.ts` (client tracking functions), `src/app/layout.t
 - **Dark mode:** Uses `prefers-color-scheme` media query with CSS custom properties (`--background`, `--foreground`)
 - **Biome:** `noUnknownAtRules` disabled (for Tailwind's `@theme` directive)
 - **shadcn components:** Installed to `src/components/ui/`, customizable after copying
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs live as GitHub issues on `riccjohn/august-jones-shop`, using the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Domain docs
+
+Single-context layout — `CONTEXT.md` + `docs/adr/` at the repo root, created lazily as domain terms/decisions get resolved. See `docs/agents/domain.md`.

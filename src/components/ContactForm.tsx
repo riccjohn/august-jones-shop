@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { HoneypotField } from "@/components/HoneypotField";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -83,6 +83,16 @@ export function ContactForm() {
 
   const sizeOptions = visibleSizeOptions(pieceType);
   const disabled = state === "submitting";
+  const successRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (state === "success") {
+      successRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [state]);
 
   function handlePieceTypeChange(value: string) {
     setPieceType(value);
@@ -136,7 +146,10 @@ export function ContactForm() {
 
   if (state === "success") {
     return (
-      <div className="rounded-sm bg-accent/10 border border-accent/30 px-6 py-10 text-center">
+      <div
+        ref={successRef}
+        className="scroll-mt-24 rounded-sm border border-accent/30 bg-accent/10 px-6 py-10 text-center"
+      >
         <p className="font-bebas-neue text-2xl tracking-wider text-foreground sm:text-3xl">
           Request Received
         </p>
@@ -150,205 +163,214 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      <HoneypotField id={honeypotId} />
-
-      <div className="grid gap-6 sm:grid-cols-2">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="firstName">First Name</Label>
-          <Input
-            id="firstName"
-            name="firstName"
-            type="text"
-            placeholder="Jane"
-            required
-            disabled={disabled}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="lastName">Last Name</Label>
-          <Input
-            id="lastName"
-            name="lastName"
-            type="text"
-            placeholder="Doe"
-            required
-            disabled={disabled}
-          />
-        </div>
-      </div>
-
-      <div className="grid gap-6 sm:grid-cols-2">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="you@example.com"
-            required
-            disabled={disabled}
-          />
-        </div>
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="instagram">Instagram Handle</Label>
-          <Input
-            id="instagram"
-            name="instagram"
-            type="text"
-            placeholder="@yourhandle"
-            disabled={disabled}
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="team">
-          What Team or University are we celebrating?
-        </Label>
-        <Input
-          id="team"
-          name="team"
-          type="text"
-          placeholder="e.g. Wisconsin Badgers"
-          required
-          disabled={disabled}
-        />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="pieceType">What type of piece are we creating?</Label>
-        <Select
-          name="pieceType"
-          required
-          disabled={disabled}
-          value={pieceType}
-          onValueChange={handlePieceTypeChange}
-        >
-          <SelectTrigger id="pieceType" className="w-full">
-            <SelectValue placeholder="Choose a piece type" />
-          </SelectTrigger>
-          <SelectContent>
-            {PIECE_TYPES.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <fieldset className="flex flex-col gap-3">
-        <legend className="mb-1 text-sm font-medium text-foreground">
-          What size are we aiming for?
-        </legend>
-        <RadioGroup
-          name="size"
-          required
-          disabled={disabled}
-          value={size}
-          onValueChange={setSize}
-          className="gap-3"
-        >
-          {sizeOptions.map((option) => (
-            <div key={option.value} className="flex items-center gap-2">
-              <RadioGroupItem
-                value={option.value}
-                id={`size-${option.value}`}
-              />
-              <Label htmlFor={`size-${option.value}`} className="font-normal">
-                {option.label}
-              </Label>
-            </div>
-          ))}
-        </RadioGroup>
-      </fieldset>
-
-      <fieldset className="flex flex-col gap-3">
-        <legend className="mb-1 text-sm font-medium text-foreground">
-          Are you providing the baseline vintage materials, or would you like me
-          to source them?
-        </legend>
-        <RadioGroup
-          name="materialsSource"
-          required
-          disabled={disabled}
-          className="gap-3"
-        >
-          {MATERIALS_SOURCE_OPTIONS.map((option) => (
-            <div key={option.value} className="flex items-center gap-2">
-              <RadioGroupItem
-                value={option.value}
-                id={`materials-${option.value}`}
-              />
-              <Label
-                htmlFor={`materials-${option.value}`}
-                className="font-normal"
-              >
-                {option.label}
-              </Label>
-            </div>
-          ))}
-        </RadioGroup>
-      </fieldset>
-
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="message">Description</Label>
-        <Textarea
-          id="message"
-          name="message"
-          placeholder="Include style, inspiration from my Instagram or shop, or any other details. Optional, but details help!"
-          rows={6}
-          disabled={disabled}
-        />
-      </div>
-
-      <div className="flex items-start gap-3">
-        <Checkbox
-          id="policyAgreed"
-          name="policyAgreed"
-          required
-          disabled={disabled}
-        />
-        <Label
-          htmlFor="policyAgreed"
-          className="block font-normal leading-snug"
-        >
-          I have read the{" "}
-          <a
-            href="#terms"
-            className="text-foreground underline underline-offset-4 hover:text-accent hover:no-underline transition-colors duration-200"
-          >
-            custom policy
-          </a>{" "}
-          below and understand that if my custom design is accepted, a 50%
-          non-refundable deposit is required to secure my spot before production
-          begins.
-        </Label>
-      </div>
-
-      {state === "error" && (
-        <p className="text-sm text-red-600">
-          Something went wrong. Try emailing{" "}
-          <a
-            href="mailto:customs@augustjones.shop"
-            className="underline hover:no-underline"
-          >
-            customs@augustjones.shop
-          </a>{" "}
-          directly.
-        </p>
-      )}
-
-      <Button
-        type="submit"
-        size="lg"
-        variant="brand"
-        disabled={disabled}
-        className="h-14 w-full text-base font-medium uppercase tracking-widest sm:w-auto sm:px-12"
+    <>
+      <h2
+        id="form-heading"
+        className="text-display mb-10 text-foreground"
+        style={{ fontSize: "clamp(2rem, 4vw, 3rem)" }}
       >
-        {state === "submitting" ? "Sending..." : "Request a Custom"}
-      </Button>
-    </form>
+        Send a Message
+      </h2>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <HoneypotField id={honeypotId} />
+
+        <div className="grid gap-6 sm:grid-cols-2">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="firstName">First Name</Label>
+            <Input
+              id="firstName"
+              name="firstName"
+              type="text"
+              placeholder="Jane"
+              required
+              disabled={disabled}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="lastName">Last Name</Label>
+            <Input
+              id="lastName"
+              name="lastName"
+              type="text"
+              placeholder="Doe"
+              required
+              disabled={disabled}
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-6 sm:grid-cols-2">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="you@example.com"
+              required
+              disabled={disabled}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="instagram">Instagram Handle</Label>
+            <Input
+              id="instagram"
+              name="instagram"
+              type="text"
+              placeholder="@yourhandle"
+              disabled={disabled}
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="team">
+            What Team or University are we celebrating?
+          </Label>
+          <Input
+            id="team"
+            name="team"
+            type="text"
+            placeholder="e.g. Wisconsin Badgers"
+            required
+            disabled={disabled}
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="pieceType">What type of piece are we creating?</Label>
+          <Select
+            name="pieceType"
+            required
+            disabled={disabled}
+            value={pieceType}
+            onValueChange={handlePieceTypeChange}
+          >
+            <SelectTrigger id="pieceType" className="w-full">
+              <SelectValue placeholder="Choose a piece type" />
+            </SelectTrigger>
+            <SelectContent>
+              {PIECE_TYPES.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        <fieldset className="flex flex-col gap-3">
+          <legend className="mb-1 text-sm font-medium text-foreground">
+            What size are we aiming for?
+          </legend>
+          <RadioGroup
+            name="size"
+            required
+            disabled={disabled}
+            value={size}
+            onValueChange={setSize}
+            className="gap-3"
+          >
+            {sizeOptions.map((option) => (
+              <div key={option.value} className="flex items-center gap-2">
+                <RadioGroupItem
+                  value={option.value}
+                  id={`size-${option.value}`}
+                />
+                <Label htmlFor={`size-${option.value}`} className="font-normal">
+                  {option.label}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </fieldset>
+
+        <fieldset className="flex flex-col gap-3">
+          <legend className="mb-1 text-sm font-medium text-foreground">
+            Are you providing the baseline vintage materials, or would you like
+            me to source them?
+          </legend>
+          <RadioGroup
+            name="materialsSource"
+            required
+            disabled={disabled}
+            className="gap-3"
+          >
+            {MATERIALS_SOURCE_OPTIONS.map((option) => (
+              <div key={option.value} className="flex items-center gap-2">
+                <RadioGroupItem
+                  value={option.value}
+                  id={`materials-${option.value}`}
+                />
+                <Label
+                  htmlFor={`materials-${option.value}`}
+                  className="font-normal"
+                >
+                  {option.label}
+                </Label>
+              </div>
+            ))}
+          </RadioGroup>
+        </fieldset>
+
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="message">Description</Label>
+          <Textarea
+            id="message"
+            name="message"
+            placeholder="Include style, inspiration from my Instagram or shop, or any other details. Optional, but details help!"
+            rows={6}
+            disabled={disabled}
+          />
+        </div>
+
+        <div className="flex items-start gap-3">
+          <Checkbox
+            id="policyAgreed"
+            name="policyAgreed"
+            required
+            disabled={disabled}
+          />
+          <Label
+            htmlFor="policyAgreed"
+            className="block font-normal leading-snug"
+          >
+            I have read the{" "}
+            <a
+              href="#terms"
+              className="text-foreground underline underline-offset-4 hover:text-accent hover:no-underline transition-colors duration-200"
+            >
+              custom policy
+            </a>{" "}
+            below and understand that if my custom design is accepted, a 50%
+            non-refundable deposit is required to secure my spot before
+            production begins.
+          </Label>
+        </div>
+
+        {state === "error" && (
+          <p className="text-sm text-red-600">
+            Something went wrong. Try emailing{" "}
+            <a
+              href="mailto:customs@augustjones.shop"
+              className="underline hover:no-underline"
+            >
+              customs@augustjones.shop
+            </a>{" "}
+            directly.
+          </p>
+        )}
+
+        <Button
+          type="submit"
+          size="lg"
+          variant="brand"
+          disabled={disabled}
+          className="h-14 w-full text-base font-medium uppercase tracking-widest sm:w-auto sm:px-12"
+        >
+          {state === "submitting" ? "Sending..." : "Request a Custom"}
+        </Button>
+      </form>
+    </>
   );
 }
