@@ -26,14 +26,15 @@ You only need to do this once. If the template already exists in Resend, skip to
 1. In Resend, go to **Broadcasts** and click **Create broadcast**.
 2. Choose the **audience/segment** you want to email — for a general announcement, that's **Website Signups**. This step matters beyond just picking recipients: the unsubscribe link in the footer only resolves correctly when a broadcast has an audience attached — skipping it can leave the unsubscribe link broken.
 3. Select **August Jones — Standard Email** as the template.
-4. Fill in the four fields:
+4. Set the **From** address to `August Jones <hello@augustjones.shop>`. Don't reuse `customs@augustjones.shop` — that's the contact-form inbox for custom order inquiries, and mixing it with bulk marketing sends can hurt its deliverability if a broadcast ever gets spam complaints. Make sure `hello@augustjones.shop` is an inbox you actually check (or forward to your main email) — people do reply to these.
+5. Fill in the four fields:
    - **HEADLINE** — short, punchy, all caps reads best (e.g. `NEW DROP: BEARS RESTORATION HOODIES`)
    - **BODY_TEXT** — a sentence or two about what's new or happening. Keep it short — this is a nudge to click through, not the full story.
    - **CTA_TEXT** — the button text (defaults to "Shop Now" — change it if it fits better, e.g. "See the Drop")
    - **CTA_URL** — where the button should link (defaults to the shop homepage — change it if linking to a specific product or collection)
-5. Set the subject line (this is separate from the HEADLINE inside the email — keep it short, this is what shows in the inbox).
-6. Use Resend's **Send test email** feature to send a copy to yourself first. Check it on your phone if you can — most people read email on mobile.
-7. Once it looks right, click **Send** (or schedule it).
+6. Set the subject line (this is separate from the HEADLINE inside the email — keep it short, this is what shows in the inbox).
+7. Use Resend's **Send test email** feature to send a copy to yourself first. Check it on your phone if you can — most people read email on mobile.
+8. Once it looks right, click **Send** (or schedule it).
 
 ## Notes
 
