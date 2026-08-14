@@ -27,11 +27,13 @@ You only need to do this once. If the template already exists in Resend, skip to
 2. Choose the **audience/segment** you want to email — for a general announcement, that's **Website Signups**. This step matters beyond just picking recipients: the unsubscribe link in the footer only resolves correctly when a broadcast has an audience attached — skipping it can leave the unsubscribe link broken.
 3. Select **August Jones — Standard Email** as the template.
 4. Set the **From** address to `August Jones <hello@augustjones.shop>`. Don't reuse `customs@augustjones.shop` — that's the contact-form inbox for custom order inquiries, and mixing it with bulk marketing sends can hurt its deliverability if a broadcast ever gets spam complaints. Make sure `hello@augustjones.shop` is an inbox you actually check (or forward to your main email) — people do reply to these.
-5. Fill in the four fields:
-   - **HEADLINE** — short, punchy, all caps reads best (e.g. `NEW DROP: BEARS RESTORATION HOODIES`)
-   - **BODY_TEXT** — a sentence or two about what's new or happening. Keep it short — this is a nudge to click through, not the full story.
-   - **CTA_TEXT** — the button text (defaults to "Shop Now" — change it if it fits better, e.g. "See the Drop")
-   - **CTA_URL** — where the button should link (defaults to the shop homepage — change it if linking to a specific product or collection)
+5. Fill in the four fields. Creating the broadcast from the template makes its own independent copy of the variables — it does **not** carry over the fallback values you set on the Template, so this step is required every time, even though it feels repetitive:
+   - In the email preview area, click directly on each `{{{...}}}` block (you'll see one for HEADLINE, BODY_TEXT, and CTA_TEXT — each shows a small warning triangle until it's filled in).
+   - A **Variable** panel opens on the right with a **Fallback value** field. Type the real content for this email into that field — for this broadcast, that field *is* the content, not a backup:
+     - `HEADLINE` — short, punchy, all caps reads best (e.g. `NEW DROP: BEARS RESTORATION HOODIES`)
+     - `BODY_TEXT` — a sentence or two about what's new or happening. Keep it short — this is a nudge to click through, not the full story.
+     - `CTA_TEXT` — the button text (e.g. `Shop Now` or `See the Drop`)
+   - Do the same for `CTA_URL` (where the button should link) if it's not already showing the shop homepage.
 6. Set the subject line (this is separate from the HEADLINE inside the email — keep it short, this is what shows in the inbox).
 7. Use Resend's **Send test email** feature to send a copy to yourself first. Check it on your phone if you can — most people read email on mobile.
 8. Once it looks right, click **Send** (or schedule it).
@@ -40,4 +42,4 @@ You only need to do this once. If the template already exists in Resend, skip to
 
 - The footer's physical address and unsubscribe link are required by law and are already built into the template — don't remove them.
 - If something looks broken after editing, it's safest to re-paste the original `email-template.html` and start the variable setup over rather than trying to fix HTML by hand.
-- If, when creating a broadcast from this template, you don't see fields to fill in HEADLINE/BODY_TEXT/etc., look for a "Preview" or "Edit variables" option in the broadcast composer — the fill-in step happens there, separate from editing the template itself.
+- Before sending, check the preview for any leftover `{{{...}}}` text with a warning triangle — that means a variable's Fallback value on this broadcast is still empty and needs to be filled in.
