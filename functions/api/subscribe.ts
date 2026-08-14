@@ -1,6 +1,7 @@
 import type { PagesFunction } from "@cloudflare/workers-types";
 import { Resend } from "resend";
 import { jsonResponse } from "./_lib/json-response";
+import { getStringField, isObject, isValidEmail } from "./_lib/validate";
 
 interface Env {
   RESEND_API_KEY: string;
@@ -9,15 +10,29 @@ interface Env {
 
 interface SubscribePayload {
   email: string;
+  source: string;
+  website?: string;
 }
 
 function isSubscribePayload(value: unknown): value is SubscribePayload {
-  if (typeof value !== "object" || value === null) {
+  if (!isObject(value)) {
     return false;
   }
-  const email = Reflect.get(value, "email");
 
-  return typeof email === "string" && Boolean(email);
+  const email = getStringField(value, "email");
+  const source = getStringField(value, "source");
+
+  if (!email || !source || !isValidEmail(email)) {
+    return false;
+  }
+
+  // Reject if honeypot is filled (non-empty website field)
+  const website = Reflect.get(value, "website");
+  if (typeof website === "string" && website.length > 0) {
+    return false;
+  }
+
+  return true;
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
@@ -25,13 +40,14 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (!isSubscribePayload(raw)) {
     return jsonResponse({ error: "A valid email is required" }, 400);
   }
-  const { email } = raw;
+  const { email, source } = raw;
 
   const resend = new Resend(context.env.RESEND_API_KEY);
 
   const { error } = await resend.contacts.create({
     email,
     segments: [{ id: context.env.RESEND_SEGMENT_ID }],
+    properties: { source },
   });
 
   if (error) {

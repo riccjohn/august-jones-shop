@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { GrainOverlay } from "@/components/GrainOverlay";
+import { PromoSection } from "@/components/PromoSection";
 import { ShopCtaButton } from "@/components/ShopCtaButton";
 import { Button } from "@/components/ui/button";
 
@@ -217,46 +218,31 @@ export default function AboutPage() {
       </section>
 
       {/* ── JOIN THE LIST ─────────────────────────────────────────────────── */}
-      <section
-        aria-labelledby="join-heading"
-        className="relative overflow-hidden bg-background px-6 py-20 sm:py-28"
+      <PromoSection
+        headingId="join-heading"
+        eyebrow="Get first dibs"
+        eyebrowClassName="text-accent/80"
+        heading="Join the list"
+        headingClampSize="clamp(3rem, 7vw, 6rem)"
+        body="Early access to new drops, plus market and event dates near you."
+        bodyClassName="max-w-xl text-base/relaxed text-foreground/60 sm:text-lg"
+        layoutClassName="grid grid-cols-1 gap-8 lg:grid-cols-[3fr_2fr] lg:items-end"
+        textWrapperClassName="flex flex-col gap-6"
       >
-        <GrainOverlay />
-        <div className="relative z-10 mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[3fr_2fr] lg:items-end">
-            <div className="flex flex-col gap-6">
-              <p className="text-eyebrow text-accent/80">Get first dibs</p>
-              <h2
-                id="join-heading"
-                className="text-display text-foreground"
-                style={{
-                  fontSize: "clamp(3rem, 7vw, 6rem)",
-                  textWrap: "balance",
-                }}
-              >
-                Join the list
-              </h2>
-              <p className="max-w-xl text-base/relaxed text-foreground/60 sm:text-lg">
-                Early access to new drops, plus market and event dates near you.
-              </p>
-            </div>
-
-            <div className="flex items-end">
-              <Button
-                asChild
-                size="lg"
-                variant="brand"
-                className="h-14 gap-3 px-10 text-base font-medium uppercase tracking-widest"
-              >
-                <Link href="/join">
-                  <span>Join the List</span>
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </Link>
-              </Button>
-            </div>
-          </div>
+        <div className="flex items-end">
+          <Button
+            asChild
+            size="lg"
+            variant="brand"
+            className="h-14 gap-3 px-10 text-base font-medium uppercase tracking-widest"
+          >
+            <Link href="/join">
+              <span>Join the List</span>
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </Button>
         </div>
-      </section>
+      </PromoSection>
 
       {/* ── SHOP CTA ──────────────────────────────────────────────────────── */}
       <section className="bg-[#f6f4f0] px-6 py-20 sm:py-28">

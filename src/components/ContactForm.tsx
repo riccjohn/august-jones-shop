@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
+import { HoneypotField } from "@/components/HoneypotField";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -14,8 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-
-type FormState = "idle" | "submitting" | "success" | "error";
+import { useFormSubmit } from "@/hooks/use-form-submit";
 
 type FormOption = { value: string; label: string };
 
@@ -76,9 +76,10 @@ function optionLabel(options: FormOption[], value: string) {
 }
 
 export function ContactForm() {
-  const [state, setState] = useState<FormState>("idle");
+  const { state, setState, submit } = useFormSubmit("/api/contact");
   const [pieceType, setPieceType] = useState("");
   const [size, setSize] = useState("");
+  const honeypotId = useId();
 
   const sizeOptions = visibleSizeOptions(pieceType);
   const disabled = state === "submitting";
@@ -106,11 +107,12 @@ export function ContactForm() {
     const formData = new FormData(form);
     const honeypot = formData.get("website") as string;
     if (honeypot) {
+      // Honeypot filled: silently show success without calling the API.
+      // The server validates the honeypot anyway, but we don't want to
+      // send unnecessary requests if we detect bot behavior on the client.
       setState("success");
       return;
     }
-
-    setState("submitting");
 
     const data = {
       firstName: formData.get("firstName") as string,
@@ -126,26 +128,10 @@ export function ContactForm() {
       ),
       message: formData.get("message") as string,
       policyAgreed: formData.get("policyAgreed") === "on",
+      website: honeypot,
     };
 
-    try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (res.ok) {
-        setState("success");
-      } else {
-        setState("error");
-      }
-    } catch {
-      setState("error");
-    }
+    await submit(data);
   }
 
   if (state === "success") {
@@ -165,19 +151,7 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      <div
-        aria-hidden="true"
-        className="absolute left-[-9999px] top-[-9999px] overflow-hidden"
-      >
-        <label htmlFor="website">Website</label>
-        <input
-          id="website"
-          name="website"
-          type="text"
-          tabIndex={-1}
-          autoComplete="off"
-        />
-      </div>
+      <HoneypotField id={honeypotId} />
 
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="flex flex-col gap-2">

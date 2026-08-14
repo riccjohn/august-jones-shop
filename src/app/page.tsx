@@ -8,6 +8,7 @@ import InstagramIcon from "@/components/InstagramIcon";
 import { InstagramLink } from "@/components/InstagramLink";
 import { ProductGalleryLink } from "@/components/ProductGalleryLink";
 import { ProductGallerySchema } from "@/components/ProductGallerySchema";
+import { PromoSection } from "@/components/PromoSection";
 import { ShopCtaButton } from "@/components/ShopCtaButton";
 import { buttonVariants } from "@/components/ui/button";
 import { allEvents } from "@/data/event-source";
@@ -220,41 +221,22 @@ export default function Home() {
       </section>
 
       {/* ── EMAIL SIGNUP ──────────────────────────────────────────────────── */}
-      <section
-        aria-labelledby="signup-heading"
-        className="relative overflow-hidden bg-background px-6 py-20 sm:py-28"
+      <PromoSection
+        headingId="signup-heading"
+        eyebrow="Never miss a drop"
+        eyebrowClassName="text-foreground/65"
+        heading="Get First Dibs"
+        headingClampSize="clamp(2.5rem, 6vw, 5rem)"
+        body="New pieces sell in hours, not days. Join the list for drop alerts and market dates near you."
+        bodyClassName="max-w-sm text-sm/relaxed text-foreground/70"
+        layoutClassName="flex flex-col items-start gap-8 sm:flex-row sm:items-end sm:justify-between"
       >
-        <GrainOverlay />
-        <div className="relative z-10 mx-auto max-w-6xl">
-          <div className="flex flex-col items-start gap-8 sm:flex-row sm:items-end sm:justify-between">
-            <div className="flex flex-col gap-4">
-              <p className="text-eyebrow text-foreground/65">
-                Never miss a drop
-              </p>
-              <h2
-                id="signup-heading"
-                className="text-display text-foreground"
-                style={{
-                  fontSize: "clamp(2.5rem, 6vw, 5rem)",
-                  textWrap: "balance",
-                }}
-              >
-                Get First Dibs
-              </h2>
-              <p className="max-w-sm text-sm/relaxed text-foreground/70">
-                New pieces sell in hours, not days. Join the list for drop
-                alerts and market dates near you.
-              </p>
-            </div>
-
-            <EmailSignupForm
-              source="home"
-              aria-labelledby="signup-heading"
-              className="w-full sm:w-auto sm:shrink-0"
-            />
-          </div>
-        </div>
-      </section>
+        <EmailSignupForm
+          source="home"
+          aria-labelledby="signup-heading"
+          className="w-full sm:w-auto sm:shrink-0"
+        />
+      </PromoSection>
 
       {/* ── EVENTS TEASER ─────────────────────────────────────────────────── */}
       <EventsTeaser events={allEvents} />

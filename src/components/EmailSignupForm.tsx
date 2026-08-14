@@ -1,13 +1,13 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId } from "react";
+import { HoneypotField } from "@/components/HoneypotField";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useFormSubmit } from "@/hooks/use-form-submit";
 import { type EmailSignupSource, trackEmailSignup } from "@/lib/analytics";
 import { CONTACT_EMAIL } from "@/lib/constants";
-
-type FormState = "idle" | "submitting" | "success" | "error";
 
 export function EmailSignupForm({
   source,
@@ -18,7 +18,7 @@ export function EmailSignupForm({
   className?: string;
   "aria-labelledby"?: string;
 }) {
-  const [state, setState] = useState<FormState>("idle");
+  const { state, setState, submit } = useFormSubmit("/api/subscribe");
   const disabled = state === "submitting";
   const honeypotId = useId();
   const emailId = useId();
@@ -30,32 +30,18 @@ export function EmailSignupForm({
     const formData = new FormData(form);
     const honeypot = formData.get("website") as string;
     if (honeypot) {
+      // Honeypot filled: silently show success without calling the API.
+      // The server validates the honeypot anyway, but we don't want to
+      // send unnecessary requests if we detect bot behavior on the client.
       setState("success");
       return;
     }
 
-    setState("submitting");
-
     const email = formData.get("email") as string;
 
-    try {
-      const res = await fetch("/api/subscribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({ email, source }),
-      });
-
-      if (res.ok) {
-        setState("success");
-        trackEmailSignup(source);
-      } else {
-        setState("error");
-      }
-    } catch {
-      setState("error");
+    const succeeded = await submit({ email, source, website: honeypot });
+    if (succeeded) {
+      trackEmailSignup(source);
     }
   }
 
@@ -69,19 +55,7 @@ export function EmailSignupForm({
       className={className}
       aria-labelledby={ariaLabelledBy}
     >
-      <div
-        aria-hidden="true"
-        className="absolute left-[-9999px] top-[-9999px] overflow-hidden"
-      >
-        <label htmlFor={honeypotId}>Website</label>
-        <input
-          id={honeypotId}
-          name="website"
-          type="text"
-          tabIndex={-1}
-          autoComplete="off"
-        />
-      </div>
+      <HoneypotField id={honeypotId} />
 
       <div className="flex items-center gap-2">
         <Label htmlFor={emailId} className="sr-only">
