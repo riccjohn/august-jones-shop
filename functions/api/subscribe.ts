@@ -44,6 +44,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   const resend = new Resend(context.env.RESEND_API_KEY);
 
+  const { data: existingContact } = await resend.contacts.get({ email });
+  const alreadySubscribed = existingContact !== null;
+
   const { error } = await resend.contacts.create({
     email,
     segments: [{ id: context.env.RESEND_SEGMENT_ID }],
@@ -51,6 +54,22 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
   if (error) {
     return jsonResponse({ error: error.message }, 500);
+  }
+
+  if (!alreadySubscribed) {
+    const { source } = raw;
+    const { error: eventError } = await resend.events.send({
+      event: "newsletter.subscribed",
+      email,
+      payload: { source },
+    });
+
+    if (eventError) {
+      console.error(
+        "Failed to send newsletter.subscribed event:",
+        eventError.message,
+      );
+    }
   }
 
   return jsonResponse({ ok: true }, 200);
