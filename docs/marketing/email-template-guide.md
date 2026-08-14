@@ -2,20 +2,22 @@
 
 This is a step-by-step guide for sending a branded email to the "Website Signups" list — no code or technical knowledge needed. It uses a template that's already been set up to match the August Jones look (charcoal, eggshell, yellow, bold headlines).
 
+**Important: use the Templates section, not Broadcasts, to set this up.** Templates is where Resend gives you the fill-in-the-blank "Variables" panel. If you paste this HTML directly into a Broadcast instead, you'll just see the raw `{{{...}}}` text with no way to edit it.
+
 ## One-time setup: create the template
 
 You only need to do this once. If the template already exists in Resend, skip to **Sending an email** below.
 
-1. Log in to [resend.com](https://resend.com) and go to **Templates** in the left sidebar.
+1. Log in to [resend.com](https://resend.com) and go to **Templates** in the left sidebar (not Broadcasts).
 2. Click **Create template**.
 3. Open the file `docs/marketing/email-template.html` from this project (ask your developer for it if you don't have access), select all the text, and copy it.
-4. Paste it into the Resend template editor.
-5. Set up the four fill-in fields (Resend calls these "variables"). In the editor, each `{{{...}}}` placeholder should already be recognized as a variable. For each one, set a name and a default value:
-   - `HEADLINE` — no default needed, you'll fill this in each time.
-   - `BODY_TEXT` — no default needed, you'll fill this in each time.
-   - `CTA_TEXT` — default value: `Shop Now`
-   - `CTA_URL` — default value: `https://store.augustjones.shop`
-   - You do **not** need to set up `RESEND_UNSUBSCRIBE_URL` — Resend fills that in automatically for every recipient.
+4. Paste it into the Resend template editor (the HTML code editor view).
+5. Open the **Variables** panel (top right). Set up four variables so they match the placeholder names already in the HTML — if they aren't auto-detected, click **+ Create variable** for each and type the name exactly as shown:
+   - `HEADLINE` — text, no default needed, you'll fill this in each time.
+   - `BODY_TEXT` — text, no default needed, you'll fill this in each time.
+   - `CTA_TEXT` — text, default value: `Shop Now`
+   - `CTA_URL` — text, default value: `https://store.augustjones.shop`
+   - You do **not** need to create `RESEND_UNSUBSCRIBE_URL` as a variable — Resend recognizes that one automatically and fills it in per recipient.
 6. Name the template something like **"August Jones — Standard Email"**.
 7. Click **Publish**. (If you edit it later, you must publish again for changes to take effect on future sends.)
 
@@ -37,3 +39,4 @@ You only need to do this once. If the template already exists in Resend, skip to
 
 - The footer's physical address and unsubscribe link are required by law and are already built into the template — don't remove them.
 - If something looks broken after editing, it's safest to re-paste the original `email-template.html` and start the variable setup over rather than trying to fix HTML by hand.
+- If, when creating a broadcast from this template, you don't see fields to fill in HEADLINE/BODY_TEXT/etc., look for a "Preview" or "Edit variables" option in the broadcast composer — the fill-in step happens there, separate from editing the template itself.
