@@ -104,6 +104,13 @@ describe("ContactForm", () => {
   });
 
   describe("idle state", () => {
+    it("renders the Send a Message heading", () => {
+      render(<ContactForm />);
+      expect(
+        screen.getByRole("heading", { name: /send a message/i }),
+      ).toBeInTheDocument();
+    });
+
     it("renders all form fields enabled with the submit button", () => {
       render(<ContactForm />);
       expect(
@@ -329,6 +336,37 @@ describe("ContactForm", () => {
       expect(
         screen.queryByRole("combobox", { name: /what type of piece/i }),
       ).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("heading", { name: /send a message/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it("scrolls the success message into view", async () => {
+      const user = userEvent.setup();
+      vi.stubGlobal(
+        "fetch",
+        vi
+          .fn()
+          .mockResolvedValue(new Response(JSON.stringify({}), { status: 200 })),
+      );
+      const scrollIntoViewSpy = vi.spyOn(
+        window.HTMLElement.prototype,
+        "scrollIntoView",
+      );
+
+      render(<ContactForm />);
+      await fillForm(user);
+      await user.click(
+        screen.getByRole("button", { name: /request a custom/i }),
+      );
+
+      await waitFor(() =>
+        expect(screen.getByText(/request received/i)).toBeInTheDocument(),
+      );
+      expect(scrollIntoViewSpy).toHaveBeenCalledWith({
+        behavior: "smooth",
+        block: "start",
+      });
     });
   });
 

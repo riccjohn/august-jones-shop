@@ -1,5 +1,7 @@
 import type { PagesFunction } from "@cloudflare/workers-types";
 import { Resend } from "resend";
+import { jsonResponse } from "./_lib/json-response";
+import { getStringField, isObject, isValidEmail } from "./_lib/validate";
 
 interface Env {
   RESEND_API_KEY: string;
@@ -16,54 +18,50 @@ interface ContactPayload {
   materialsSource: string;
   message: string;
   policyAgreed: boolean;
+  website?: string;
 }
 
 function isContactPayload(value: unknown): value is ContactPayload {
-  if (typeof value !== "object" || value === null) {
+  if (!isObject(value)) {
     return false;
   }
-  const firstName = Reflect.get(value, "firstName");
-  const lastName = Reflect.get(value, "lastName");
-  const email = Reflect.get(value, "email");
+
+  const firstName = getStringField(value, "firstName");
+  const lastName = getStringField(value, "lastName");
+  const email = getStringField(value, "email");
   const instagram = Reflect.get(value, "instagram");
-  const team = Reflect.get(value, "team");
-  const pieceType = Reflect.get(value, "pieceType");
-  const size = Reflect.get(value, "size");
-  const materialsSource = Reflect.get(value, "materialsSource");
+  const team = getStringField(value, "team");
+  const pieceType = getStringField(value, "pieceType");
+  const size = getStringField(value, "size");
+  const materialsSource = getStringField(value, "materialsSource");
   const message = Reflect.get(value, "message");
   const policyAgreed = Reflect.get(value, "policyAgreed");
 
+  // Reject if honeypot is filled (non-empty website field)
+  const website = Reflect.get(value, "website");
+  if (typeof website === "string" && website.length > 0) {
+    return false;
+  }
+
   return (
-    typeof firstName === "string" &&
-    typeof lastName === "string" &&
-    typeof email === "string" &&
+    firstName &&
+    lastName &&
+    email &&
+    isValidEmail(email) &&
     typeof instagram === "string" &&
-    typeof team === "string" &&
-    typeof pieceType === "string" &&
-    typeof size === "string" &&
-    typeof materialsSource === "string" &&
+    team &&
+    pieceType &&
+    size &&
+    materialsSource &&
     typeof message === "string" &&
-    typeof policyAgreed === "boolean" &&
-    Boolean(
-      firstName &&
-        lastName &&
-        email &&
-        team &&
-        pieceType &&
-        size &&
-        materialsSource &&
-        policyAgreed,
-    )
+    policyAgreed === true
   );
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const raw = await context.request.json<unknown>();
   if (!isContactPayload(raw)) {
-    return new Response(JSON.stringify({ error: "All fields are required" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: "All fields are required" }, 400);
   }
   const {
     firstName,
@@ -101,14 +99,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   });
 
   if (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return jsonResponse({ error: error.message }, 500);
   }
 
-  return new Response(JSON.stringify({ ok: true }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  return jsonResponse({ ok: true }, 200);
 };

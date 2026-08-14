@@ -12,6 +12,7 @@ const NAV_LINKS = [
   { label: "About", href: "/about", key: "about" },
   { label: "Events", href: "/events", key: "events" },
   { label: "Customs & Contact", href: "/contact", key: "contact" },
+  { label: "Join", href: "/join", key: "join" },
 ] as const;
 
 export function SiteNav() {
