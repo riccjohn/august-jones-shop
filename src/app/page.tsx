@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { EmailSignupForm } from "@/components/EmailSignupForm";
 import { EventsTeaser } from "@/components/EventsTeaser";
 import { Footer } from "@/components/Footer";
 import { GrainOverlay } from "@/components/GrainOverlay";
@@ -7,6 +8,7 @@ import InstagramIcon from "@/components/InstagramIcon";
 import { InstagramLink } from "@/components/InstagramLink";
 import { ProductGalleryLink } from "@/components/ProductGalleryLink";
 import { ProductGallerySchema } from "@/components/ProductGallerySchema";
+import { PromoSection } from "@/components/PromoSection";
 import { ShopCtaButton } from "@/components/ShopCtaButton";
 import { buttonVariants } from "@/components/ui/button";
 import { allEvents } from "@/data/event-source";
@@ -217,6 +219,24 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── EMAIL SIGNUP ──────────────────────────────────────────────────── */}
+      <PromoSection
+        headingId="signup-heading"
+        eyebrow="Never miss a drop"
+        eyebrowClassName="text-foreground/65"
+        heading="Get First Dibs"
+        headingClampSize="clamp(2.5rem, 6vw, 5rem)"
+        body="New pieces sell in hours, not days. Join the list for drop alerts and market dates near you."
+        bodyClassName="max-w-sm text-sm/relaxed text-foreground/70"
+        layoutClassName="flex flex-col items-start gap-8 sm:flex-row sm:items-end sm:justify-between"
+      >
+        <EmailSignupForm
+          source="home"
+          aria-labelledby="signup-heading"
+          className="w-full sm:w-auto sm:shrink-0"
+        />
+      </PromoSection>
 
       {/* ── EVENTS TEASER ─────────────────────────────────────────────────── */}
       <EventsTeaser events={allEvents} />

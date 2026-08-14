@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { EmailSignupForm } from "@/components/EmailSignupForm";
 import { FooterShopLink } from "@/components/FooterShopLink";
 import InstagramIcon from "@/components/InstagramIcon";
 import { InstagramLink } from "@/components/InstagramLink";
@@ -9,7 +10,7 @@ export const Footer = () => {
   return (
     <footer className="border-t border-border bg-background px-6 pt-14 pb-[calc(3.5rem+env(safe-area-inset-bottom))] sm:pt-16 sm:pb-[calc(4rem+env(safe-area-inset-bottom))]">
       <div className="mx-auto max-w-6xl">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-[1fr_auto_auto] sm:gap-16 lg:gap-24">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-[1fr_auto_auto_auto] sm:gap-16 lg:gap-24">
           {/* Brand column */}
           <div className="flex flex-col gap-4">
             <Link
@@ -29,6 +30,20 @@ export const Footer = () => {
               Hand-made, one-of-a-kind upcycled sports fashion. Made in Madison,
               WI.
             </p>
+          </div>
+
+          {/* Email signup */}
+          <div className="flex flex-col gap-3">
+            <p
+              id="footer-email-heading"
+              className="text-eyebrow text-foreground/65"
+            >
+              Stay Updated
+            </p>
+            <EmailSignupForm
+              source="footer"
+              aria-labelledby="footer-email-heading"
+            />
           </div>
 
           {/* Navigate */}

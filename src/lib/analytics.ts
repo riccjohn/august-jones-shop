@@ -26,3 +26,9 @@ export function trackNavClick(destination: string) {
 export function trackEmailClick() {
   track("email_click");
 }
+
+export type EmailSignupSource = "footer" | "join" | "home";
+
+export function trackEmailSignup(source: EmailSignupSource) {
+  track("email_signup", { source });
+}

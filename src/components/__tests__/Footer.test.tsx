@@ -46,6 +46,12 @@ vi.mock("@/components/TrackedEmailLink", () => ({
   ),
 }));
 
+vi.mock("@/components/EmailSignupForm", () => ({
+  EmailSignupForm: ({ source }: { source: string }) => (
+    <div data-testid="email-signup-form" data-source={source} />
+  ),
+}));
+
 describe("Footer", () => {
   it("contains a link to /events in the footer navigation", () => {
     render(<Footer />);
@@ -75,5 +81,12 @@ describe("Footer", () => {
     const contactLink = within(nav).getByRole("link", { name: /contact/i });
     expect(contactLink).toBeInTheDocument();
     expect(contactLink).toHaveAttribute("href", "/contact");
+  });
+
+  it("renders the EmailSignupForm with source='footer'", () => {
+    render(<Footer />);
+    const emailSignupForm = screen.getByTestId("email-signup-form");
+    expect(emailSignupForm).toBeInTheDocument();
+    expect(emailSignupForm).toHaveAttribute("data-source", "footer");
   });
 });
