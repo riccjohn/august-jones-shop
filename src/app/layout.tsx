@@ -95,10 +95,10 @@ export const metadata: Metadata = {
     url: "https://www.augustjones.shop",
     images: [
       {
-        url: "/images/social_02-1200.webp",
+        url: "/images/social_03-1200.webp",
         width: 1200,
         height: 628,
-        alt: "Upcycled sports jersey streetwear by August Jones",
+        alt: "Upcycled Buffalo Bills vests handmade by August Jones",
       },
     ],
   },
@@ -107,7 +107,7 @@ export const metadata: Metadata = {
     title: TITLE,
     description: DESCRIPTION,
     creator: "@augustjonesshop",
-    images: ["/images/social_02-1200.webp"],
+    images: ["/images/social_03-1200.webp"],
   },
 };
 
@@ -155,7 +155,7 @@ export default function RootLayout({
               longitude: "-89.4012",
             },
             logo: "https://www.augustjones.shop/logos/August_Jones-Horitontal_Logo-transparent_black.svg",
-            image: "https://www.augustjones.shop/images/social_02-1200.webp",
+            image: "https://www.augustjones.shop/images/social_03-1200.webp",
             sameAs: ["https://www.instagram.com/augustjonesshop", SHOP_URL],
             priceRange: "$$",
           })}
