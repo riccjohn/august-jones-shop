@@ -19,7 +19,9 @@ export default function JoinPage() {
       <section className="relative overflow-hidden bg-background px-6 pb-16 pt-16 sm:pb-20 sm:pt-24">
         <GrainOverlay />
         <div className="relative z-10 mx-auto max-w-6xl">
-          <p className="text-eyebrow mb-6 text-accent/80">Stay in the loop</p>
+          <p className="text-eyebrow mb-6 text-accent/80">
+            Before it&rsquo;s in the shop
+          </p>
           <h1
             className="text-hero text-foreground"
             style={{ fontSize: "clamp(4rem, 12vw, 11rem)" }}
@@ -34,12 +36,13 @@ export default function JoinPage() {
         <div className="mx-auto max-w-6xl">
           <div className="border-l-2 border-accent bg-accent/5 py-6 pl-6 pr-6 sm:py-8 sm:pl-8">
             <h2 className="text-display text-2xl text-foreground sm:text-3xl">
-              Be First to Know
+              Get the First Look
             </h2>
             <p className="mt-2 max-w-xl text-sm/relaxed text-foreground/55 sm:text-base">
-              Get early access to new one-of-a-kind drops before they go live,
-              plus announcements about upcoming markets and events where you can
-              shop in person.
+              Every piece is one-of-one — once it&rsquo;s gone, it&rsquo;s gone.
+              Get first access to new drops before they&rsquo;re posted
+              publicly, plus market and event dates so you can shop in person
+              too.
             </p>
           </div>
         </div>

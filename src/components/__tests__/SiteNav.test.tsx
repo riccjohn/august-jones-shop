@@ -75,6 +75,15 @@ describe("SiteNav", () => {
       const links = mainNav.querySelectorAll("a[href='/contact']");
       expect(links.length).toBeGreaterThan(0);
     });
+
+    it("contains a link to /join", () => {
+      render(<SiteNav />);
+      const mainNav = screen.getByRole("navigation", {
+        name: "Main navigation",
+      });
+      const links = mainNav.querySelectorAll("a[href='/join']");
+      expect(links.length).toBeGreaterThan(0);
+    });
   });
 
   describe("Mobile nav", () => {
@@ -123,6 +132,16 @@ describe("SiteNav", () => {
         name: "Mobile navigation",
       });
       expect(mobileNav.querySelector("a[href='/contact']")).toBeInTheDocument();
+    });
+
+    it("contains a link to /join in mobile navigation", async () => {
+      const user = userEvent.setup();
+      render(<SiteNav />);
+      await user.click(screen.getByRole("button", { name: "Open menu" }));
+      const mobileNav = screen.getByRole("navigation", {
+        name: "Mobile navigation",
+      });
+      expect(mobileNav.querySelector("a[href='/join']")).toBeInTheDocument();
     });
   });
 });
