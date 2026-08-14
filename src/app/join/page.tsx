@@ -39,7 +39,7 @@ export default function JoinPage() {
               Get the First Look
             </h2>
             <p className="mt-2 max-w-xl text-sm/relaxed text-foreground/55 sm:text-base">
-              Every piece is one-of-one — once it&rsquo;s gone, it&rsquo;s gone.
+              Every piece is one-of-one. Once it&rsquo;s gone, it&rsquo;s gone.
               Get first access to new drops before they&rsquo;re posted
               publicly, plus market and event dates so you can shop in person
               too.
