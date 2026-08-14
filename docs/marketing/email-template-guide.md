@@ -24,7 +24,7 @@ You only need to do this once. If the template already exists in Resend, skip to
 ## Sending an email
 
 1. In Resend, go to **Broadcasts** and click **Create broadcast**.
-2. Choose the **audience/segment** you want to email — for a general announcement, that's **Website Signups**.
+2. Choose the **audience/segment** you want to email — for a general announcement, that's **Website Signups**. This step matters beyond just picking recipients: the unsubscribe link in the footer only resolves correctly when a broadcast has an audience attached — skipping it can leave the unsubscribe link broken.
 3. Select **August Jones — Standard Email** as the template.
 4. Fill in the four fields:
    - **HEADLINE** — short, punchy, all caps reads best (e.g. `NEW DROP: BEARS RESTORATION HOODIES`)
