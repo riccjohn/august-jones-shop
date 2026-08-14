@@ -22,9 +22,9 @@ You only need to do this once. If the template already exists in Resend, skip to
 3. Select **August Jones — Standard Email** as the template.
 4. Set the **From** address to `August Jones <hello@augustjones.shop>`. Don't reuse `customs@augustjones.shop` — that's the contact-form inbox for custom order inquiries, and mixing it with bulk marketing sends can hurt its deliverability if a broadcast ever gets spam complaints. Make sure `hello@augustjones.shop` is an inbox you actually check (or forward to your main email) — people do reply to these.
 5. In the email preview area, click directly on each piece of text you need to change and type over it — this edits in place, no side panel:
-   - The headline (shows as `REPLACE ME — SHORT, PUNCHY HEADLINE`) — short, punchy, all caps reads best (e.g. `NEW DROP: BEARS RESTORATION HOODIES`). It's forced to display in caps regardless of how you type it.
+   - The headline (shows as `REPLACE THIS HEADLINE WITH SOMETHING SHORT AND PUNCHY`) — short, punchy, all caps reads best (e.g. `NEW DROP: BEARS RESTORATION HOODIES`). It's forced to display in caps regardless of how you type it.
    - The body text (shows as `REPLACE THIS BODY TEXT WITH A SENTENCE OR TWO ABOUT WHAT'S NEW.`) — a sentence or two about what's new or happening. Keep it short — this is a nudge to click through, not the full story.
-   - If this particular email should link somewhere other than the shop homepage, or the button should say something other than "Shop Now" (e.g. "See the Drop"), click directly on the button text in the preview and type over it too.
+   - The button label ("Shop Now") can be changed the same way — click it in the preview and type over it (e.g. "See the Drop"). This only changes the label. If this particular email needs to **link** somewhere other than the shop homepage, that's a separate change: the link is a `href` attribute in the raw HTML (`docs/marketing/email-template.html`, the `<a href="https://store.augustjones.shop">` around the button), not something the preview lets you edit. Ask your developer to update it, or edit that HTML directly in Resend's HTML code editor (not the preview) before publishing.
 6. Set the subject line (this is separate from the headline inside the email — keep it short, this is what shows in the inbox).
 7. Use Resend's **Send test email** feature to send a copy to yourself first. Check it on your phone if you can — most people read email on mobile.
 8. Once it looks right, click **Send** (or schedule it).
@@ -32,5 +32,5 @@ You only need to do this once. If the template already exists in Resend, skip to
 ## Notes
 
 - The footer's physical address and unsubscribe link are required by law and are already built into the template — don't remove them.
-- Before sending, double-check the preview doesn't still show the placeholder headline (`REPLACE ME...`) or placeholder body text (`REPLACE THIS BODY TEXT...`) — it's easy to miss since there's no warning triangle like Resend's Variables feature normally shows.
+- Before sending, double-check the preview doesn't still show the placeholder headline (`REPLACE THIS HEADLINE...`) or placeholder body text (`REPLACE THIS BODY TEXT...`) — it's easy to miss since there's no warning triangle like Resend's Variables feature normally shows.
 - If something looks broken after editing, it's safest to re-paste the original `email-template.html` and start over rather than trying to fix HTML by hand.
