@@ -225,7 +225,7 @@ export function ContactForm() {
 
         <div className="flex flex-col gap-2">
           <Label htmlFor="team">
-            What Team or University are you celebrating?
+            What Team or University are we celebrating?
           </Label>
           <Input
             id="team"
@@ -238,9 +238,7 @@ export function ContactForm() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="pieceType">
-            What type of piece are you creating?
-          </Label>
+          <Label htmlFor="pieceType">What type of piece are we creating?</Label>
           <Select
             name="pieceType"
             required
@@ -263,7 +261,7 @@ export function ContactForm() {
 
         <fieldset className="flex flex-col gap-3">
           <legend className="mb-1 text-sm font-medium text-foreground">
-            What size are you aiming for?
+            What size are we aiming for?
           </legend>
           <RadioGroup
             name="size"
