@@ -40,14 +40,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   if (!isSubscribePayload(raw)) {
     return jsonResponse({ error: "A valid email is required" }, 400);
   }
-  const { email, source } = raw;
+  const { email } = raw;
 
   const resend = new Resend(context.env.RESEND_API_KEY);
 
   const { error } = await resend.contacts.create({
     email,
     segments: [{ id: context.env.RESEND_SEGMENT_ID }],
-    properties: { source },
   });
 
   if (error) {
