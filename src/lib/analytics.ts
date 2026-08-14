@@ -27,6 +27,8 @@ export function trackEmailClick() {
   track("email_click");
 }
 
-export function trackEmailSignup(source: "footer" | "join") {
+export type EmailSignupSource = "footer" | "join";
+
+export function trackEmailSignup(source: EmailSignupSource) {
   track("email_signup", { source });
 }

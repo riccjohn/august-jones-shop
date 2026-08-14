@@ -34,8 +34,16 @@ export const Footer = () => {
 
           {/* Email signup */}
           <div className="flex flex-col gap-3">
-            <p className="text-eyebrow text-foreground/65">Stay Updated</p>
-            <EmailSignupForm source="footer" />
+            <p
+              id="footer-email-heading"
+              className="text-eyebrow text-foreground/65"
+            >
+              Stay Updated
+            </p>
+            <EmailSignupForm
+              source="footer"
+              aria-labelledby="footer-email-heading"
+            />
           </div>
 
           {/* Navigate */}

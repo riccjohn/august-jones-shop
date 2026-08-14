@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { trackEmailSignup } from "@/lib/analytics";
+import { type EmailSignupSource, trackEmailSignup } from "@/lib/analytics";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 type FormState = "idle" | "submitting" | "success" | "error";
@@ -12,12 +12,16 @@ type FormState = "idle" | "submitting" | "success" | "error";
 export function EmailSignupForm({
   source,
   className,
+  "aria-labelledby": ariaLabelledBy,
 }: {
-  source: "footer" | "join";
+  source: EmailSignupSource;
   className?: string;
+  "aria-labelledby"?: string;
 }) {
   const [state, setState] = useState<FormState>("idle");
   const disabled = state === "submitting";
+  const honeypotId = useId();
+  const emailId = useId();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -60,14 +64,18 @@ export function EmailSignupForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className={className}>
+    <form
+      onSubmit={handleSubmit}
+      className={className}
+      aria-labelledby={ariaLabelledBy}
+    >
       <div
         aria-hidden="true"
         className="absolute left-[-9999px] top-[-9999px] overflow-hidden"
       >
-        <label htmlFor={`website-${source}`}>Website</label>
+        <label htmlFor={honeypotId}>Website</label>
         <input
-          id={`website-${source}`}
+          id={honeypotId}
           name="website"
           type="text"
           tabIndex={-1}
@@ -76,11 +84,11 @@ export function EmailSignupForm({
       </div>
 
       <div className="flex items-center gap-2">
-        <Label htmlFor={`email-${source}`} className="sr-only">
+        <Label htmlFor={emailId} className="sr-only">
           Email
         </Label>
         <Input
-          id={`email-${source}`}
+          id={emailId}
           name="email"
           type="email"
           placeholder="you@example.com"

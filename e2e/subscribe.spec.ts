@@ -33,36 +33,41 @@ async function fillHoneypot(scope: Page | Locator) {
   });
 }
 
-test.describe("Footer email signup form", () => {
+/** Runs the shared success/honeypot assertions for a signup form at `path`, scoped by `locateForm`. */
+function testSignupForm(path: string, locateForm: (page: Page) => Locator) {
   test("successful submission shows a success message and removes the form", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto(path);
     const calls = await mockSubscribe(page);
 
-    const footer = page.locator("footer");
-    await footer.getByLabel("Email").fill("fan@example.com");
-    await footer.getByRole("button", { name: "Sign Up" }).click();
+    const form = locateForm(page);
+    await form.getByLabel("Email").fill("fan@example.com");
+    await form.getByRole("button", { name: "Sign Up" }).click();
 
-    await expect(footer.getByText(SUCCESS_MESSAGE)).toBeVisible();
-    await expect(footer.getByLabel("Email")).toHaveCount(0);
+    await expect(form.getByText(SUCCESS_MESSAGE)).toBeVisible();
+    await expect(form.getByLabel("Email")).toHaveCount(0);
     expect(calls.count).toBe(1);
   });
 
   test("honeypot submission shows the success message without calling the API", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto(path);
     const calls = await mockSubscribe(page);
 
-    const footer = page.locator("footer");
-    await footer.getByLabel("Email").fill("fan@example.com");
-    await fillHoneypot(footer);
-    await footer.getByRole("button", { name: "Sign Up" }).click();
+    const form = locateForm(page);
+    await form.getByLabel("Email").fill("fan@example.com");
+    await fillHoneypot(form);
+    await form.getByRole("button", { name: "Sign Up" }).click();
 
-    await expect(footer.getByText(SUCCESS_MESSAGE)).toBeVisible();
+    await expect(form.getByText(SUCCESS_MESSAGE)).toBeVisible();
     expect(calls.count).toBe(0);
   });
+}
+
+test.describe("Footer email signup form", () => {
+  testSignupForm("/", (page) => page.locator("footer"));
 });
 
 test.describe("/join page", () => {
@@ -76,33 +81,7 @@ test.describe("/join page", () => {
     );
   });
 
-  test("successful submission shows a success message and removes the form", async ({
-    page,
-  }) => {
-    await page.goto("/join");
-    const calls = await mockSubscribe(page);
-
-    const formSection = page.locator('section[aria-labelledby="form-heading"]');
-    await formSection.getByLabel("Email").fill("fan@example.com");
-    await formSection.getByRole("button", { name: "Sign Up" }).click();
-
-    await expect(formSection.getByText(SUCCESS_MESSAGE)).toBeVisible();
-    await expect(formSection.getByLabel("Email")).toHaveCount(0);
-    expect(calls.count).toBe(1);
-  });
-
-  test("honeypot submission shows the success message without calling the API", async ({
-    page,
-  }) => {
-    await page.goto("/join");
-    const calls = await mockSubscribe(page);
-
-    const formSection = page.locator('section[aria-labelledby="form-heading"]');
-    await formSection.getByLabel("Email").fill("fan@example.com");
-    await fillHoneypot(formSection);
-    await formSection.getByRole("button", { name: "Sign Up" }).click();
-
-    await expect(formSection.getByText(SUCCESS_MESSAGE)).toBeVisible();
-    expect(calls.count).toBe(0);
-  });
+  testSignupForm("/join", (page) =>
+    page.locator('section[aria-labelledby="form-heading"]'),
+  );
 });

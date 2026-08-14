@@ -7,10 +7,6 @@ import * as analytics from "@/lib/analytics";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 vi.mock("@/lib/analytics", () => ({
-  trackShopClick: vi.fn(),
-  trackInstagramClick: vi.fn(),
-  trackNavClick: vi.fn(),
-  trackEmailClick: vi.fn(),
   trackEmailSignup: vi.fn(),
 }));
 
@@ -19,7 +15,7 @@ async function fillAndSubmit(
   email = "jane@example.com",
 ) {
   await user.type(screen.getByRole("textbox", { name: /email/i }), email);
-  await user.click(screen.getByRole("button", { name: /sign up|join/i }));
+  await user.click(screen.getByRole("button", { name: "Sign Up" }));
 }
 
 const sources = ["footer", "join"] as const;
@@ -39,7 +35,7 @@ describe("EmailSignupForm", () => {
         expect(emailInput).toHaveAttribute("type", "email");
         expect(emailInput).toBeRequired();
 
-        const button = screen.getByRole("button", { name: /sign up|join/i });
+        const button = screen.getByRole("button", { name: "Sign Up" });
         expect(button).toBeEnabled();
       });
 
@@ -72,11 +68,11 @@ describe("EmailSignupForm", () => {
         ) as HTMLInputElement;
         await user.type(honeypot, "http://spam.example.com");
 
-        await user.click(screen.getByRole("button", { name: /sign up|join/i }));
+        await user.click(screen.getByRole("button", { name: "Sign Up" }));
 
         await waitFor(() =>
           expect(
-            screen.getByText(/thanks|subscribed|you're in|success/i),
+            screen.getByText("Thanks for subscribing! You're in."),
           ).toBeInTheDocument(),
         );
         expect(mockFetch).not.toHaveBeenCalled();
@@ -103,13 +99,11 @@ describe("EmailSignupForm", () => {
           screen.getByRole("textbox", { name: /email/i }),
           "jane@example.com",
         );
-        await user.click(screen.getByRole("button", { name: /sign up|join/i }));
+        await user.click(screen.getByRole("button", { name: "Sign Up" }));
 
         expect(screen.getByRole("textbox", { name: /email/i })).toBeDisabled();
         expect(
-          screen.getByRole("button", {
-            name: /signing up|submitting|joining/i,
-          }),
+          screen.getByRole("button", { name: "Signing up..." }),
         ).toBeInTheDocument();
 
         resolveFetch(new Response(JSON.stringify({}), { status: 200 }));
@@ -161,7 +155,7 @@ describe("EmailSignupForm", () => {
 
         await waitFor(() =>
           expect(
-            screen.getByText(/thanks|subscribed|you're in|success/i),
+            screen.getByText("Thanks for subscribing! You're in."),
           ).toBeInTheDocument(),
         );
         expect(
@@ -173,40 +167,24 @@ describe("EmailSignupForm", () => {
       });
     });
 
-    describe("error state — bad response (ok: false)", () => {
-      it("shows an error message with a mailto fallback link when fetch returns non-ok", async () => {
-        const user = userEvent.setup();
-        vi.stubGlobal(
-          "fetch",
+    describe.each([
+      [
+        "a non-ok response",
+        () =>
           vi
             .fn()
             .mockResolvedValue(
               new Response(JSON.stringify({}), { status: 500 }),
             ),
-        );
-
-        render(<EmailSignupForm source={source} />);
-        await fillAndSubmit(user, "jane@example.com");
-
-        await waitFor(() =>
-          expect(screen.getByText(/something went wrong/i)).toBeInTheDocument(),
-        );
-        const link = screen.getByRole("link", {
-          name: new RegExp(CONTACT_EMAIL.replace(".", "\\."), "i"),
-        });
-        expect(link).toBeInTheDocument();
-        expect(link).toHaveAttribute("href", `mailto:${CONTACT_EMAIL}`);
-        expect(analytics.trackEmailSignup).not.toHaveBeenCalled();
-      });
-    });
-
-    describe("error state — fetch throws exception", () => {
-      it("shows an error message with a mailto fallback link when fetch throws", async () => {
+      ],
+      [
+        "a thrown network error",
+        () => vi.fn().mockRejectedValue(new Error("Network error")),
+      ],
+    ] as const)("error state — %s", (_label, mockFetchFactory) => {
+      it("shows an error message with a mailto fallback link", async () => {
         const user = userEvent.setup();
-        vi.stubGlobal(
-          "fetch",
-          vi.fn().mockRejectedValue(new Error("Network error")),
-        );
+        vi.stubGlobal("fetch", mockFetchFactory());
 
         render(<EmailSignupForm source={source} />);
         await fillAndSubmit(user, "jane@example.com");

@@ -60,7 +60,7 @@ export default function JoinPage() {
           >
             Sign Up
           </h2>
-          <EmailSignupForm source="join" />
+          <EmailSignupForm source="join" aria-labelledby="form-heading" />
         </div>
       </section>
 
