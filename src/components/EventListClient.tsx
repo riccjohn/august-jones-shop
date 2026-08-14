@@ -44,8 +44,8 @@ export function EventListClient({ events }: EventListClientProps) {
           Check back soon
         </h2>
         <p className="mb-8 text-base text-[#f6f4f0]/60">
-          No events scheduled right now. Follow us on Instagram for
-          announcements, or shop our current pieces in our{" "}
+          No events scheduled right now. Follow me on Instagram for
+          announcements, or shop my current pieces in my{" "}
           <a
             href={SHOP_URL}
             target="_blank"

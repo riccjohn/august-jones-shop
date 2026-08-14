@@ -32,7 +32,7 @@ export function EventsTeaser({ events }: { events: AugustJonesEvent[] }) {
       className="bg-[#f6f4f0] px-6 py-20 sm:py-28"
     >
       <div className="mx-auto w-full max-w-6xl">
-        <p className="text-eyebrow mb-4 text-[#222]/60">Catch Us Live</p>
+        <p className="text-eyebrow mb-4 text-[#222]/60">Catch Me Live</p>
         <div className="mb-10 flex items-end justify-between gap-6">
           <h2
             id="events-teaser-heading"
