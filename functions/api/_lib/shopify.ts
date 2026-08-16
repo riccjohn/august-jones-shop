@@ -20,6 +20,22 @@ interface AccessTokenResponse {
 }
 
 /**
+ * Parses a fetch Response as JSON, surfacing a readable error (status code +
+ * body snippet) instead of a cryptic "Unexpected token '<'" if Shopify
+ * returns an HTML error page instead of JSON.
+ */
+async function parseJsonResponse<T>(response: Response): Promise<T> {
+  const text = await response.text();
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new ShopifyApiError(
+      `Shopify returned a non-JSON response (status ${response.status}): ${text.slice(0, 200)}`,
+    );
+  }
+}
+
+/**
  * Exchanges the custom app's client credentials for an Admin API access
  * token. As of Shopify's January 2026 Dev Dashboard app model, custom apps
  * no longer expose a static token — this grant must be requested fresh
@@ -31,16 +47,16 @@ async function fetchAccessToken(env: ShopifyEnv): Promise<string> {
     `https://${env.SHOPIFY_STORE_DOMAIN}/admin/oauth/access_token`,
     {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
         grant_type: "client_credentials",
         client_id: env.SHOPIFY_CLIENT_ID,
         client_secret: env.SHOPIFY_CLIENT_SECRET,
-      }),
+      }).toString(),
     },
   );
 
-  const json = (await response.json()) as AccessTokenResponse;
+  const json = await parseJsonResponse<AccessTokenResponse>(response);
 
   if (!json.access_token) {
     throw new ShopifyApiError(
@@ -113,7 +129,7 @@ export async function createShopifyClient(
       },
     );
 
-    const json = (await response.json()) as GraphQLResponse<T>;
+    const json = await parseJsonResponse<GraphQLResponse<T>>(response);
 
     if (json.errors && json.errors.length > 0) {
       throw new ShopifyApiError(json.errors.map((e) => e.message).join("; "));
