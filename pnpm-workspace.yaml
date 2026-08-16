@@ -5,8 +5,6 @@ packages:
 overrides:
   # GHSA advisories fixed in 8.5.18; next pins 8.4.31
   postcss: ">=8.5.18"
-  # Vite 8.0.9 (via vitest/@vitejs-plugin-react) has high-severity advisories
-  vite: ">=8.0.16"
   # libvips CVEs (GHSA-f88m-g3jw-g9cj) fixed in 0.35.0; next pins 0.34.5
   sharp: ">=0.35.0"
 allowBuilds:
