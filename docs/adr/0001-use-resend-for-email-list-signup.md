@@ -1,7 +1,7 @@
 # ADR-0001: Use Resend Contacts/Segments for Email List Signup
 
 **Date:** 2026-08-13
-**Status:** Proposed
+**Status:** Superseded by [ADR-0002](0002-use-shopify-admin-api-for-contact-form-and-signup.md)
 **Author:** John Riccardi
 
 ## Context

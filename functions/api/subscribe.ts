@@ -1,12 +1,16 @@
 import type { PagesFunction } from "@cloudflare/workers-types";
-import { Resend } from "resend";
 import { jsonResponse } from "./_lib/json-response";
+import {
+  appendNote,
+  findCustomerByEmail,
+  joinUserErrors,
+  mergeTags,
+  type ShopifyEnv,
+  shopifyAdminRequest,
+} from "./_lib/shopify";
 import { getStringField, isObject, isValidEmail } from "./_lib/validate";
 
-interface Env {
-  RESEND_API_KEY: string;
-  RESEND_SEGMENT_ID: string;
-}
+type Env = ShopifyEnv;
 
 interface SubscribePayload {
   email: string;
@@ -35,42 +39,83 @@ function isSubscribePayload(value: unknown): value is SubscribePayload {
   return true;
 }
 
+const NEWSLETTER_TAG = "newsletter";
+
+interface UserErrorResult {
+  userErrors: { field: string[] | null; message: string }[];
+}
+
+const CUSTOMER_CREATE_MUTATION = `
+  mutation CustomerCreate($input: CustomerInput!) {
+    customerCreate(input: $input) {
+      customer { id }
+      userErrors { field message }
+    }
+  }
+`;
+
+const CUSTOMER_UPDATE_MUTATION = `
+  mutation CustomerUpdate($input: CustomerInput!) {
+    customerUpdate(input: $input) {
+      customer { id }
+      userErrors { field message }
+    }
+  }
+`;
+
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const raw = await context.request.json<unknown>();
   if (!isSubscribePayload(raw)) {
     return jsonResponse({ error: "A valid email is required" }, 400);
   }
-  const { email } = raw;
+  const { email, source } = raw;
 
-  const resend = new Resend(context.env.RESEND_API_KEY);
+  const emailMarketingConsent = {
+    marketingState: "SUBSCRIBED",
+    marketingOptInLevel: "SINGLE_OPT_IN",
+  };
+  const note = `Newsletter signup source: ${source}`;
 
-  const { data: existingContact } = await resend.contacts.get({ email });
-  const alreadySubscribed = existingContact !== null;
+  try {
+    const existing = await findCustomerByEmail(context.env, email);
 
-  const { error } = await resend.contacts.create({
-    email,
-    segments: [{ id: context.env.RESEND_SEGMENT_ID }],
-  });
-
-  if (error) {
-    return jsonResponse({ error: error.message }, 500);
-  }
-
-  if (!alreadySubscribed) {
-    const { source } = raw;
-    const { error: eventError } = await resend.events.send({
-      event: "newsletter.subscribed",
-      email,
-      payload: { source },
-    });
-
-    if (eventError) {
-      console.error(
-        "Failed to send newsletter.subscribed event:",
-        eventError.message,
-      );
+    if (existing) {
+      const data = await shopifyAdminRequest<{
+        customerUpdate: UserErrorResult & { customer: { id: string } | null };
+      }>(context.env, CUSTOMER_UPDATE_MUTATION, {
+        input: {
+          id: existing.id,
+          email,
+          emailMarketingConsent,
+          note: appendNote(existing.note, note),
+          tags: mergeTags(existing.tags, [NEWSLETTER_TAG]),
+        },
+      });
+      const error = joinUserErrors(data.customerUpdate.userErrors);
+      if (error) {
+        return jsonResponse({ error }, 500);
+      }
+    } else {
+      const data = await shopifyAdminRequest<{
+        customerCreate: UserErrorResult & { customer: { id: string } | null };
+      }>(context.env, CUSTOMER_CREATE_MUTATION, {
+        input: {
+          email,
+          emailMarketingConsent,
+          note,
+          tags: [NEWSLETTER_TAG],
+        },
+      });
+      const error = joinUserErrors(data.customerCreate.userErrors);
+      if (error) {
+        return jsonResponse({ error }, 500);
+      }
     }
-  }
 
-  return jsonResponse({ ok: true }, 200);
+    return jsonResponse({ ok: true }, 200);
+  } catch (err) {
+    const message =
+      err instanceof Error ? err.message : "Shopify request failed";
+    return jsonResponse({ error: message }, 500);
+  }
 };
