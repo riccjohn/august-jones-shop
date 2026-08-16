@@ -1,36 +1,42 @@
-# Sending an email to subscribers (Resend)
+# Sending an email to subscribers (Shopify Email)
 
-This is a step-by-step guide for sending a branded email to the "Website Signups" list — no code or technical knowledge needed. It uses a template that's already been set up to match the August Jones look (charcoal, eggshell, yellow, bold headlines).
+This is a step-by-step guide for sending a branded email to your newsletter subscribers — no code or technical knowledge needed. It uses a template that's already set up to match the August Jones look (charcoal, eggshell, yellow, bold headlines) via Shopify Email's "Code your own" option.
 
-**Note:** this template does not use Resend's "Variables" feature. It was tried and doesn't work reliably in the dashboard — the Fallback value field doesn't actually control what gets sent, and the output can still show raw `{{ VARIABLE }}` text. Instead, the headline and body text are plain placeholder text you edit directly in the preview, the same way the "Shop Now" button text already works.
+## Finding your subscribers
 
-## One-time setup: create the template
+Newsletter signups from the site (`functions/api/subscribe.ts`) create/update a Shopify Customer tagged `newsletter` with email marketing consent set to Subscribed — there's no separate "list" page. To target them:
 
-You only need to do this once. If the template already exists in Resend, skip to **Sending an email** below.
+1. Shopify admin → **Customers** → **Segments** → **Create segment**.
+2. Filter: **Subscription status** → **Subscribed** (or use the filter `email_subscription_status = 'SUBSCRIBED'` directly in the segment editor).
+3. Save it with a name like **"Website Signups"**. You only need to do this once — it's a live filter, so new subscribers are automatically included going forward.
 
-1. Log in to [resend.com](https://resend.com) and go to **Templates** in the left sidebar (not Broadcasts). Using a saved Template just saves you from re-pasting the whole HTML file every time you send — it's not required for the editing steps below to work.
-2. Click **Create template**.
-3. Open the file `docs/marketing/email-template.html` from this project (ask your developer for it if you don't have access), select all the text, and copy it.
-4. Paste it into the Resend template editor (the HTML code editor view).
-5. Name the template something like **"August Jones — Standard Email"**.
-6. Click **Publish**. (If you edit it later, you must publish again for changes to take effect on future sends.)
+## One-time setup: save the template
+
+You don't strictly need to save a reusable template — you can paste the HTML fresh each time — but saving one means you don't have to re-copy the file every send.
+
+1. Shopify admin → **Apps** → **Messaging** (this is Shopify Email's current home).
+2. Click **Create campaign**.
+3. Choose **Code your own** instead of a pre-built template.
+4. Open the file `docs/marketing/email-template.html` from this project, select all the text, and copy it.
+5. Paste it into the custom code editor.
+6. Save this as a draft campaign named something like **"August Jones — Standard Email (template)"** and don't send it — treat it as your master copy to duplicate from, since Shopify Email doesn't have a separate "Templates" library.
 
 ## Sending an email
 
-1. In Resend, go to **Broadcasts** and click **Create broadcast**.
-2. Choose the **audience/segment** you want to email — for a general announcement, that's **Website Signups**. This step matters beyond just picking recipients: the unsubscribe link in the footer only resolves correctly when a broadcast has an audience attached — skipping it can leave the unsubscribe link broken.
-3. Select **August Jones — Standard Email** as the template.
-4. Set the **From** address to `August Jones <hello@augustjones.shop>`. Don't reuse `customs@augustjones.shop` — that's the contact-form inbox for custom order inquiries, and mixing it with bulk marketing sends can hurt its deliverability if a broadcast ever gets spam complaints. Make sure `hello@augustjones.shop` is an inbox you actually check (or forward to your main email) — people do reply to these.
-5. In the email preview area, click directly on each piece of text you need to change and type over it — this edits in place, no side panel:
-   - The headline (shows as `REPLACE THIS HEADLINE WITH SOMETHING SHORT AND PUNCHY`) — short, punchy, all caps reads best (e.g. `NEW DROP: BEARS RESTORATION HOODIES`). It's forced to display in caps regardless of how you type it.
-   - The body text (shows as `REPLACE THIS BODY TEXT WITH A SENTENCE OR TWO ABOUT WHAT'S NEW.`) — a sentence or two about what's new or happening. Keep it short — this is a nudge to click through, not the full story.
-   - The button label ("Shop Now") can be changed the same way — click it in the preview and type over it (e.g. "See the Drop"). This only changes the label. If this particular email needs to **link** somewhere other than the shop homepage, that's a separate change: the link is a `href` attribute in the raw HTML (`docs/marketing/email-template.html`, the `<a href="https://store.augustjones.shop">` around the button), not something the preview lets you edit. Ask your developer to update it, or edit that HTML directly in Resend's HTML code editor (not the preview) before publishing.
-6. Set the subject line (this is separate from the headline inside the email — keep it short, this is what shows in the inbox).
-7. Use Resend's **Send test email** feature to send a copy to yourself first. Check it on your phone if you can — most people read email on mobile.
-8. Once it looks right, click **Send** (or schedule it).
+1. In **Apps → Messaging**, click **Create campaign** (or duplicate the saved template draft from above).
+2. If starting fresh, choose **Code your own**, open `docs/marketing/email-template.html`, select all, copy, and paste it into the code editor.
+3. Edit the HTML directly for this send:
+   - Replace `REPLACE THIS HEADLINE WITH SOMETHING SHORT AND PUNCHY` with a short, punchy headline (e.g. `NEW DROP: BEARS RESTORATION HOODIES`). It's styled to display in caps regardless of how you type it.
+   - Replace `REPLACE THIS BODY TEXT WITH A SENTENCE OR TWO ABOUT WHAT'S NEW.` with a sentence or two about what's new. Keep it short — this is a nudge to click through, not the full story.
+   - The button label ("Shop Now") and its link (`<a href="https://store.augustjones.shop">`) are both in the same block of HTML — change the visible text and/or the `href` if this send needs to point somewhere other than the shop homepage.
+4. Add a **Subject line** (separate field from the headline inside the email — keep it short, this is what shows in the inbox).
+5. Under **Recipients**, select the **"Website Signups"** segment you created above (not "All subscribers", unless that's genuinely who you mean to reach).
+6. Send yourself a **test email** first. Check it on your phone if you can — most people read email on mobile.
+7. Once it looks right, review and send (or schedule).
 
 ## Notes
 
-- The footer's physical address and unsubscribe link are required by law and are already built into the template — don't remove them.
-- Before sending, double-check the preview doesn't still show the placeholder headline (`REPLACE THIS HEADLINE...`) or placeholder body text (`REPLACE THIS BODY TEXT...`) — it's easy to miss since there's no warning triangle like Resend's Variables feature normally shows.
+- The unsubscribe link is wired to Shopify's own `{{ unsubscribe_link }}` Liquid variable, which Shopify Email requires and auto-populates.
+- Before sending, double-check the code editor doesn't still show the placeholder headline (`REPLACE THIS HEADLINE...`) or placeholder body text (`REPLACE THIS BODY TEXT...`).
 - If something looks broken after editing, it's safest to re-paste the original `email-template.html` and start over rather than trying to fix HTML by hand.
+- Custom-coded Shopify Email campaigns have a 500 KB size limit — this template is a few KB, so there's plenty of headroom even with edits.

@@ -72,6 +72,10 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const emailMarketingConsent = {
     marketingState: "SUBSCRIBED",
     marketingOptInLevel: "SINGLE_OPT_IN",
+    // Required for Shopify's "Customer subscribed to email marketing" Flow
+    // trigger (and built-in Welcome Series automations) to fire for
+    // API-driven consent changes — it only fires when this is within 24h.
+    consentUpdatedAt: new Date().toISOString(),
   };
   const note = `Newsletter signup source: ${source}`;
 

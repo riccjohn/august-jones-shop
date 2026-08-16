@@ -1,32 +1,23 @@
-# Welcome email automation (Resend)
+# Welcome email automation (Shopify Marketing Automations)
 
-This is a one-time setup for an automatic email that goes out the moment someone joins the "Website Signups" list — no per-send work required afterward, unlike the broadcast email.
+This is a one-time setup for an automatic email that goes out the moment someone joins the newsletter — no per-send work required afterward, unlike the broadcast email (see `email-template-guide.md`).
 
-**Trigger mechanism:** Resend's Automations only offer a "Custom Event" trigger — there's no built-in "contact added to audience" trigger. So the site's signup code (`functions/api/subscribe.ts`) fires a custom event named `newsletter.subscribed` right after adding someone to the list. The Automation you set up below listens for that exact event name.
+**Trigger mechanism:** newsletter signups (`functions/api/subscribe.ts`) set the customer's email marketing consent to Subscribed via the Admin API, including a `consentUpdatedAt` timestamp — that's what makes Shopify's built-in **Customer subscribed to email marketing** trigger fire for signups coming from our own code, not just an on-site form embed. That unlocks Shopify's native Welcome Series automation templates directly — no custom Flow workflow needed.
 
 ## One-time setup
 
-1. Log in to [resend.com](https://resend.com) and go to **Templates** in the left sidebar.
-2. Click **Create template**.
-3. Open the file `docs/marketing/welcome-email.html` from this project, select all the text, and copy it.
-4. Paste it into the Resend template editor (the HTML code editor view).
-5. Name the template **"August Jones — Welcome Email"**.
-6. Click **Publish**. Automations can only use published templates — if you edit the template later, you must publish again.
-7. Go to **Automations** in the left sidebar and click **Create automation**.
-8. Add a **trigger** step, choose **Custom Event**, and enter the event name exactly as:
-   ```
-   newsletter.subscribed
-   ```
-9. Add a **Send Email** step after the trigger, and select the **"August Jones — Welcome Email"** template.
-10. (Optional) Add a short delay before the send step — a few minutes feels less like an auto-responder than an instant send.
-11. Publish the automation.
+1. Shopify admin → **Apps** → **Messaging** → **Automations**.
+2. Find a **Welcome** template — Shopify offers prebuilt options like "Welcome new subscriber" (single email) or a multi-email "Welcome series" (with or without a discount code). Pick whichever matches how you want to greet new subscribers.
+3. Click to customize it. This uses the same block-based editor as campaigns (see `email-template-guide.md`) — you can either use the visual blocks with your brand colors/logo, or choose **Code your own** and paste in `docs/marketing/welcome-email.html` for pixel-matched branding.
+4. If the template includes a discount step and you don't want to offer one yet, remove or disable that email in the series.
+5. Turn the automation **On**.
 
 ## Testing it
 
-Submit the signup form on the live site (or on a preview deploy pointed at the same Resend account) with an email you control, and confirm the welcome email arrives. There's no "send test" button for automations the way there is for broadcasts — the only way to see it fire is to actually trigger the event.
+Submit the newsletter signup form (footer or `/join`) on the live site or a preview deploy pointed at the same Shopify store, using an email you control, and confirm the welcome email arrives. It may take a few minutes — this isn't instant the way the contact-form Flow alert is.
 
 ## Notes
 
-- Don't rename the event without updating both places: the string literal in `functions/api/subscribe.ts` and the trigger config in the Automation. They won't warn you if they drift apart — the automation will just silently stop firing.
-- If the automation doesn't fire, check the **Events** log in the Resend dashboard first (under Automations) — it shows every event received, which narrows down whether the problem is the code not sending the event, or the automation trigger not matching it.
-- The footer's physical address and unsubscribe link are required by law and are already built into the template — don't remove them.
+- If nothing arrives, check the automation's **Activity** tab in Shopify admin — it shows every time the trigger fired, which narrows down whether the problem is the trigger not firing (check that `functions/api/subscribe.ts` is actually setting `consentUpdatedAt`) versus the email step itself failing.
+- The footer's physical address and unsubscribe link are required by law — if you use `welcome-email.html` via "Code your own," they're already built in; if you use the visual block editor instead, Shopify adds them automatically.
+- This trigger only fires when `consentUpdatedAt` is within the last 24 hours of the request — our code always sets it to "now," so this should never be an issue in practice, but it's why this wouldn't work if someone tried to backfill historical subscribers through the same code path.
