@@ -64,6 +64,12 @@ export const Footer = () => {
                 About
               </Link>
               <Link
+                href="/sizing"
+                className="text-sm text-foreground/75 transition-colors duration-200 hover:text-accent"
+              >
+                Sizing
+              </Link>
+              <Link
                 href="/contact"
                 className="text-sm text-foreground/75 transition-colors duration-200 hover:text-accent"
               >

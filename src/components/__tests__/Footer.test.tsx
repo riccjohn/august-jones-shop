@@ -63,6 +63,16 @@ describe("Footer", () => {
     expect(eventsLink).toHaveAttribute("href", "/events");
   });
 
+  it("contains a link to /sizing in the footer navigation", () => {
+    render(<Footer />);
+    const nav = screen.getByRole("navigation", {
+      name: "Footer navigation",
+    });
+    const sizingLink = within(nav).getByRole("link", { name: /sizing/i });
+    expect(sizingLink).toBeInTheDocument();
+    expect(sizingLink).toHaveAttribute("href", "/sizing");
+  });
+
   it("contains a link to /about in the footer navigation", () => {
     render(<Footer />);
     const nav = screen.getByRole("navigation", {
