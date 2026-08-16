@@ -2,7 +2,8 @@ const API_VERSION = "2026-07";
 
 export interface ShopifyEnv {
   SHOPIFY_STORE_DOMAIN: string;
-  SHOPIFY_ADMIN_API_TOKEN: string;
+  SHOPIFY_CLIENT_ID: string;
+  SHOPIFY_CLIENT_SECRET: string;
 }
 
 interface GraphQLResponse<T> {
@@ -12,39 +13,44 @@ interface GraphQLResponse<T> {
 
 export class ShopifyApiError extends Error {}
 
+interface AccessTokenResponse {
+  access_token?: string;
+  error?: string;
+  error_description?: string;
+}
+
 /**
- * Sends a query/mutation to the Shopify Admin GraphQL API and returns its
- * data payload. Throws ShopifyApiError on transport-level GraphQL errors —
- * callers still need to check each mutation's own userErrors array.
+ * Exchanges the custom app's client credentials for an Admin API access
+ * token. As of Shopify's January 2026 Dev Dashboard app model, custom apps
+ * no longer expose a static token — this grant must be requested fresh
+ * (tokens expire after 24h, so we just fetch one per request instead of
+ * caching across stateless edge invocations).
  */
-export async function shopifyAdminRequest<T>(
-  env: ShopifyEnv,
-  query: string,
-  variables?: Record<string, unknown>,
-): Promise<T> {
+async function fetchAccessToken(env: ShopifyEnv): Promise<string> {
   const response = await fetch(
-    `https://${env.SHOPIFY_STORE_DOMAIN}/admin/api/${API_VERSION}/graphql.json`,
+    `https://${env.SHOPIFY_STORE_DOMAIN}/admin/oauth/access_token`,
     {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Shopify-Access-Token": env.SHOPIFY_ADMIN_API_TOKEN,
-      },
-      body: JSON.stringify({ query, variables }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        grant_type: "client_credentials",
+        client_id: env.SHOPIFY_CLIENT_ID,
+        client_secret: env.SHOPIFY_CLIENT_SECRET,
+      }),
     },
   );
 
-  const json = (await response.json()) as GraphQLResponse<T>;
+  const json = (await response.json()) as AccessTokenResponse;
 
-  if (json.errors && json.errors.length > 0) {
-    throw new ShopifyApiError(json.errors.map((e) => e.message).join("; "));
+  if (!json.access_token) {
+    throw new ShopifyApiError(
+      json.error_description ??
+        json.error ??
+        "Failed to obtain a Shopify access token",
+    );
   }
 
-  if (!json.data) {
-    throw new ShopifyApiError("Shopify API returned no data");
-  }
-
-  return json.data;
+  return json.access_token;
 }
 
 interface UserError {
@@ -80,16 +86,57 @@ const FIND_CUSTOMER_QUERY = `
   }
 `;
 
-/** Looks up a customer by exact email match, returning null if none exists. */
-export async function findCustomerByEmail(
-  env: ShopifyEnv,
-  email: string,
-): Promise<CustomerLookup | null> {
-  const data = await shopifyAdminRequest<{
-    customers: { edges: { node: CustomerLookup }[] };
-  }>(env, FIND_CUSTOMER_QUERY, { query: `email:${JSON.stringify(email)}` });
+export interface ShopifyClient {
+  request<T>(query: string, variables?: Record<string, unknown>): Promise<T>;
+  findCustomerByEmail(email: string): Promise<CustomerLookup | null>;
+}
 
-  return data.customers.edges[0]?.node ?? null;
+/** Fetches a fresh access token and returns a client bound to it for this request. */
+export async function createShopifyClient(
+  env: ShopifyEnv,
+): Promise<ShopifyClient> {
+  const accessToken = await fetchAccessToken(env);
+
+  async function request<T>(
+    query: string,
+    variables?: Record<string, unknown>,
+  ): Promise<T> {
+    const response = await fetch(
+      `https://${env.SHOPIFY_STORE_DOMAIN}/admin/api/${API_VERSION}/graphql.json`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Access-Token": accessToken,
+        },
+        body: JSON.stringify({ query, variables }),
+      },
+    );
+
+    const json = (await response.json()) as GraphQLResponse<T>;
+
+    if (json.errors && json.errors.length > 0) {
+      throw new ShopifyApiError(json.errors.map((e) => e.message).join("; "));
+    }
+
+    if (!json.data) {
+      throw new ShopifyApiError("Shopify API returned no data");
+    }
+
+    return json.data;
+  }
+
+  async function findCustomerByEmail(
+    email: string,
+  ): Promise<CustomerLookup | null> {
+    const data = await request<{
+      customers: { edges: { node: CustomerLookup }[] };
+    }>(FIND_CUSTOMER_QUERY, { query: `email:${JSON.stringify(email)}` });
+
+    return data.customers.edges[0]?.node ?? null;
+  }
+
+  return { request, findCustomerByEmail };
 }
 
 /** Merges new tags into an existing tag list without duplicates. */

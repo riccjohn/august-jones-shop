@@ -15,7 +15,7 @@ August Jones runs all product sales through a separate Shopify store (https://st
 - **Contact form** (commission inquiries): find-or-create a Shopify Customer (tagged `contact-form`, form details in the note), then create a linked Draft Order with a custom line item (titled by piece type, $0.00 placeholder price) so each inquiry lands as a workable item under Orders → Drafts — Shopify's standard mechanism for made-to-order/quote workflows.
 - **Newsletter signup**: find-or-create a Shopify Customer, set `emailMarketingConsent` to `SUBSCRIBED`, tag `newsletter`.
 
-Auth is a Shopify custom app (Settings → Apps → Develop apps) with `write_customers`/`read_customers`/`write_draft_orders` scopes, stored as `SHOPIFY_STORE_DOMAIN` + `SHOPIFY_ADMIN_API_TOKEN`.
+Auth is a Shopify custom app (Settings → Apps → Develop apps) with `write_customers`/`read_customers`/`write_draft_orders` scopes. As of Shopify's January 2026 Dev Dashboard app model, custom apps no longer expose a static Admin API token — instead the app gets a Client ID + Secret and exchanges them for a short-lived (24h) access token via the client-credentials grant. `createShopifyClient()` in `functions/api/_lib/shopify.ts` fetches a fresh token at the start of each request rather than caching one, since Cloudflare Pages Functions are stateless per-invocation anyway. Credentials are stored as `SHOPIFY_STORE_DOMAIN` + `SHOPIFY_CLIENT_ID` + `SHOPIFY_CLIENT_SECRET`.
 
 This supersedes ADR-0001. The `resend` npm dependency and `RESEND_API_KEY`/`RESEND_SEGMENT_ID` env vars are removed entirely — no code path sends email on submission anymore.
 

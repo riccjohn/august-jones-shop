@@ -2,11 +2,11 @@ import type { PagesFunction } from "@cloudflare/workers-types";
 import { jsonResponse } from "./_lib/json-response";
 import {
   appendNote,
-  findCustomerByEmail,
+  createShopifyClient,
   joinUserErrors,
   mergeTags,
+  type ShopifyClient,
   type ShopifyEnv,
-  shopifyAdminRequest,
 } from "./_lib/shopify";
 import { getStringField, isObject, isValidEmail } from "./_lib/validate";
 
@@ -113,16 +113,16 @@ const DRAFT_ORDER_CREATE_MUTATION = `
 `;
 
 async function upsertContactCustomer(
-  env: Env,
+  client: ShopifyClient,
   payload: ContactPayload,
   note: string,
 ): Promise<{ customerId: string } | { error: string }> {
-  const existing = await findCustomerByEmail(env, payload.email);
+  const existing = await client.findCustomerByEmail(payload.email);
 
   if (existing) {
-    const data = await shopifyAdminRequest<{
+    const data = await client.request<{
       customerUpdate: UserErrorResult & { customer: { id: string } | null };
-    }>(env, CUSTOMER_UPDATE_MUTATION, {
+    }>(CUSTOMER_UPDATE_MUTATION, {
       input: {
         id: existing.id,
         note: appendNote(existing.note, note),
@@ -134,9 +134,9 @@ async function upsertContactCustomer(
     return { customerId: existing.id };
   }
 
-  const data = await shopifyAdminRequest<{
+  const data = await client.request<{
     customerCreate: UserErrorResult & { customer: { id: string } | null };
-  }>(env, CUSTOMER_CREATE_MUTATION, {
+  }>(CUSTOMER_CREATE_MUTATION, {
     input: {
       email: payload.email,
       firstName: payload.firstName,
@@ -162,16 +162,18 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const note = buildContactNote(raw);
 
   try {
-    const customerResult = await upsertContactCustomer(context.env, raw, note);
+    const client = await createShopifyClient(context.env);
+
+    const customerResult = await upsertContactCustomer(client, raw, note);
     if ("error" in customerResult) {
       return jsonResponse({ error: customerResult.error }, 500);
     }
 
-    const data = await shopifyAdminRequest<{
+    const data = await client.request<{
       draftOrderCreate: UserErrorResult & {
         draftOrder: { id: string } | null;
       };
-    }>(context.env, DRAFT_ORDER_CREATE_MUTATION, {
+    }>(DRAFT_ORDER_CREATE_MUTATION, {
       input: {
         purchasingEntity: { customerId: customerResult.customerId },
         lineItems: [

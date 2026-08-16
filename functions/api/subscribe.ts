@@ -2,11 +2,10 @@ import type { PagesFunction } from "@cloudflare/workers-types";
 import { jsonResponse } from "./_lib/json-response";
 import {
   appendNote,
-  findCustomerByEmail,
+  createShopifyClient,
   joinUserErrors,
   mergeTags,
   type ShopifyEnv,
-  shopifyAdminRequest,
 } from "./_lib/shopify";
 import { getStringField, isObject, isValidEmail } from "./_lib/validate";
 
@@ -77,12 +76,13 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
   const note = `Newsletter signup source: ${source}`;
 
   try {
-    const existing = await findCustomerByEmail(context.env, email);
+    const client = await createShopifyClient(context.env);
+    const existing = await client.findCustomerByEmail(email);
 
     if (existing) {
-      const data = await shopifyAdminRequest<{
+      const data = await client.request<{
         customerUpdate: UserErrorResult & { customer: { id: string } | null };
-      }>(context.env, CUSTOMER_UPDATE_MUTATION, {
+      }>(CUSTOMER_UPDATE_MUTATION, {
         input: {
           id: existing.id,
           email,
@@ -96,9 +96,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
         return jsonResponse({ error }, 500);
       }
     } else {
-      const data = await shopifyAdminRequest<{
+      const data = await client.request<{
         customerCreate: UserErrorResult & { customer: { id: string } | null };
-      }>(context.env, CUSTOMER_CREATE_MUTATION, {
+      }>(CUSTOMER_CREATE_MUTATION, {
         input: {
           email,
           emailMarketingConsent,
