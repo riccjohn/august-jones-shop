@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export function TermsAndConditions() {
   return (
     <section
@@ -36,9 +38,15 @@ export function TermsAndConditions() {
             <strong className="text-foreground">
               Phase 1: Consultation & Concept
             </strong>{" "}
-            — We map out your vision, team preferences, sizing, and style
-            direction. You can provide your own pieces to be reinvented or I can
-            source for you.
+            — We map out your vision, team preferences,{" "}
+            <Link
+              href="/sizing"
+              className="text-foreground underline underline-offset-4 hover:text-accent transition-colors duration-200"
+            >
+              sizing
+            </Link>
+            , and style direction. You can provide your own pieces to be
+            reinvented or I can source for you.
           </li>
           <li>
             <strong className="text-foreground">

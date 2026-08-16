@@ -28,4 +28,10 @@ describe("TermsAndConditions", () => {
     ).toBeInTheDocument();
     expect(screen.getByText(/all sales final/i)).toBeInTheDocument();
   });
+
+  it("links 'sizing' in Phase 1 to the sizing page", () => {
+    render(<TermsAndConditions />);
+    const sizingLink = screen.getByRole("link", { name: /sizing/i });
+    expect(sizingLink).toHaveAttribute("href", "/sizing");
+  });
 });
