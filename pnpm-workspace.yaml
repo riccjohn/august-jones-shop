@@ -5,18 +5,8 @@ packages:
 overrides:
   # GHSA advisories fixed in 8.5.18; next pins 8.4.31
   postcss: ">=8.5.18"
-  # Vite 8.0.9 (via vitest/@vitejs-plugin-react) has high-severity advisories
-  vite: ">=8.0.16"
   # libvips CVEs (GHSA-f88m-g3jw-g9cj) fixed in 0.35.0; next pins 0.34.5
   sharp: ">=0.35.0"
-  # GHSA-7p8r-x3mc-p8w7 host confusion, fixed in 3.1.5; ajv pins 3.1.1
-  fast-uri: ">=3.1.5"
-  # CVE-2026-59870 quadratic CPU in !!omap, fixed in 4.3.1; cosmiconfig pins 4.1.0
-  js-yaml: ">=4.3.1"
-  # GHSA-2v37-7h3g-55p8 infinite loop on size:0, fixed in 3.3.18; postcss pins 3.3.11
-  nanoid: ">=3.3.18"
-  # GHSA-8j4g-w8fx-2239 and related CVEs fixed in 4.12.34; MCP SDK pins older hono
-  hono: ">=4.12.34"
 allowBuilds:
   msw: false
   sharp: false
