@@ -3,6 +3,8 @@
 **Date:** 2026-08-12
 **Status:** Approved, not yet implemented
 
+> **Note (2026-08-16):** the backend details below (Resend) predate [ADR-0002](../../adr/0002-use-shopify-admin-api-for-contact-form-and-signup.md), which moved `functions/api/contact.ts` to the Shopify Admin API. Left as-is as a historical record of this feature's original design — the field/form design itself is still accurate.
+
 ## Goal
 
 Replace the current minimal contact form (Name, Email, Message) with a structured custom-commission intake form that captures everything needed to scope and quote a commission, without adding a form library or client-side validation dependency.

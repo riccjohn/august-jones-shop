@@ -1,5 +1,7 @@
 # Contact Form Commission Fields Implementation Plan
 
+> **Note (2026-08-16):** the Resend backend code in this plan predates [ADR-0002](../../adr/0002-use-shopify-admin-api-for-contact-form-and-signup.md), which moved `functions/api/contact.ts` to the Shopify Admin API. Left as-is as a historical record — the frontend/field design is still accurate, but don't copy the backend snippets below.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the 3-field contact form (Name, Email, Message) with a 10-field custom-commission intake form, including two new shadcn primitives, a piece-type → size dependent select/radio filter, and a matching backend contract update.
