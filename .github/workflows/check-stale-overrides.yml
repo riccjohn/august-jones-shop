@@ -1,0 +1,55 @@
+name: Check Stale Dependency Overrides
+
+on:
+  schedule:
+    - cron: '0 13 1 * *' # 1st of each month
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check for stale overrides
+        id: check
+        run: node scripts/check-stale-overrides.mjs
+
+      - name: Open or update issue if overrides are stale
+        if: steps.check.outputs.stale != ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          STALE: ${{ steps.check.outputs.stale }}
+        run: |
+          TITLE="Stale pnpm overrides can be removed"
+          LIST=$(echo "$STALE" | tr ',' '\n' | sed 's/^/- `/;s/$/`/')
+          BODY="These entries in \`pnpm-workspace.yaml\`'s \`overrides\` block are no longer necessary — \`pnpm audit\` stays clean without them, meaning the parent package now ships the patched version on its own:
+
+          $LIST
+
+          Remove the corresponding entries (and their comments) from \`pnpm-workspace.yaml\`, then run \`pnpm install\` to update the lockfile."
+
+          EXISTING=$(gh issue list --search "$TITLE in:title" --state open --json number --jq '.[0].number')
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$BODY"
+          else
+            gh issue create --title "$TITLE" --body "$BODY" --label dependencies
+          fi
