@@ -85,26 +85,6 @@ export const allEvents: AugustJonesEvent[] = [
     ],
     venueName: "The Rusty Bee Lounge",
   },
-
-  {
-    id: "rusty-bee-2026-08-27",
-    address: {
-      street: "5134 E Cheryl Pkwy",
-      city: "Fitchburg",
-      state: "WI",
-      zip: "53711",
-    },
-    eventWebsiteUrl: "https://www.instagram.com/therustybeelounge/",
-    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
-    marketName: "Rusty Bee Night Market",
-    sessions: [
-      {
-        startDate: "2026-08-27T17:00:00-05:00",
-        endDate: "2026-08-27T21:00:00-05:00",
-      },
-    ],
-    venueName: "The Rusty Bee Lounge",
-  },
   {
     id: "marina-fest-door-county-2026-09-05",
     marketName: "Marina Fest - Door County",
