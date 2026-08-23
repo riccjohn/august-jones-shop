@@ -13,10 +13,26 @@ interface GraphQLResponse<T> {
 
 export class ShopifyApiError extends Error {}
 
+/**
+ * A non-JSON response from Shopify. Shopify's edge intermittently challenges
+ * the first request from an unfamiliar origin (e.g. a Cloudflare Pages
+ * Function invocation) with an HTML bot-check page instead of a real API
+ * response; retrying almost always succeeds since the challenge doesn't
+ * reproduce on the next attempt.
+ */
+export class NonJsonShopifyResponseError extends ShopifyApiError {}
+
 interface AccessTokenResponse {
   access_token?: string;
   error?: string;
   error_description?: string;
+}
+
+const RETRY_ATTEMPTS = 3;
+const RETRY_DELAY_MS = 300;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -29,10 +45,28 @@ async function parseJsonResponse<T>(response: Response): Promise<T> {
   try {
     return JSON.parse(text) as T;
   } catch {
-    throw new ShopifyApiError(
+    throw new NonJsonShopifyResponseError(
       `Shopify returned a non-JSON response (status ${response.status}): ${text.slice(0, 200)}`,
     );
   }
+}
+
+/**
+ * Fetches from Shopify and parses the response as JSON, retrying if Shopify
+ * responds with a non-JSON bot-challenge page (see NonJsonShopifyResponseError).
+ */
+async function fetchShopifyJson<T>(url: string, init: RequestInit): Promise<T> {
+  for (let attempt = 1; attempt <= RETRY_ATTEMPTS; attempt++) {
+    const response = await fetch(url, init);
+    try {
+      return await parseJsonResponse<T>(response);
+    } catch (err) {
+      if (!(err instanceof NonJsonShopifyResponseError)) throw err;
+      if (attempt === RETRY_ATTEMPTS) throw err;
+      await sleep(RETRY_DELAY_MS);
+    }
+  }
+  throw new ShopifyApiError("unreachable");
 }
 
 /**
@@ -43,7 +77,7 @@ async function parseJsonResponse<T>(response: Response): Promise<T> {
  * caching across stateless edge invocations).
  */
 async function fetchAccessToken(env: ShopifyEnv): Promise<string> {
-  const response = await fetch(
+  const json = await fetchShopifyJson<AccessTokenResponse>(
     `https://${env.SHOPIFY_STORE_DOMAIN}/admin/oauth/access_token`,
     {
       method: "POST",
@@ -55,8 +89,6 @@ async function fetchAccessToken(env: ShopifyEnv): Promise<string> {
       }).toString(),
     },
   );
-
-  const json = await parseJsonResponse<AccessTokenResponse>(response);
 
   if (!json.access_token) {
     throw new ShopifyApiError(
@@ -117,7 +149,7 @@ export async function createShopifyClient(
     query: string,
     variables?: Record<string, unknown>,
   ): Promise<T> {
-    const response = await fetch(
+    const json = await fetchShopifyJson<GraphQLResponse<T>>(
       `https://${env.SHOPIFY_STORE_DOMAIN}/admin/api/${API_VERSION}/graphql.json`,
       {
         method: "POST",
@@ -128,8 +160,6 @@ export async function createShopifyClient(
         body: JSON.stringify({ query, variables }),
       },
     );
-
-    const json = await parseJsonResponse<GraphQLResponse<T>>(response);
 
     if (json.errors && json.errors.length > 0) {
       throw new ShopifyApiError(json.errors.map((e) => e.message).join("; "));
