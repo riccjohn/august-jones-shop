@@ -3,6 +3,11 @@ import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ContactForm } from "@/components/ContactForm";
+import * as analytics from "@/lib/analytics";
+
+vi.mock("@/lib/analytics", () => ({
+  trackContactFormError: vi.fn(),
+}));
 
 async function selectPieceType(
   user: ReturnType<typeof userEvent.setup>,
@@ -66,6 +71,7 @@ async function fillForm(
 describe("ContactForm", () => {
   beforeEach(() => {
     vi.restoreAllMocks();
+    vi.mocked(analytics.trackContactFormError).mockClear();
   });
 
   describe("honeypot anti-spam", () => {
@@ -368,6 +374,27 @@ describe("ContactForm", () => {
         block: "start",
       });
     });
+
+    it("does not call trackContactFormError on a successful submission", async () => {
+      const user = userEvent.setup();
+      vi.stubGlobal(
+        "fetch",
+        vi
+          .fn()
+          .mockResolvedValue(new Response(JSON.stringify({}), { status: 200 })),
+      );
+
+      render(<ContactForm />);
+      await fillForm(user);
+      await user.click(
+        screen.getByRole("button", { name: /request a custom/i }),
+      );
+
+      await waitFor(() =>
+        expect(screen.getByText(/request received/i)).toBeInTheDocument(),
+      );
+      expect(analytics.trackContactFormError).not.toHaveBeenCalled();
+    });
   });
 
   describe("error state — bad response (ok: false)", () => {
@@ -395,6 +422,26 @@ describe("ContactForm", () => {
       expect(link).toBeInTheDocument();
       expect(link).toHaveAttribute("href", "mailto:customs@augustjones.shop");
     });
+
+    it("calls trackContactFormError when fetch returns non-ok", async () => {
+      const user = userEvent.setup();
+      vi.stubGlobal(
+        "fetch",
+        vi
+          .fn()
+          .mockResolvedValue(new Response(JSON.stringify({}), { status: 500 })),
+      );
+
+      render(<ContactForm />);
+      await fillForm(user);
+      await user.click(
+        screen.getByRole("button", { name: /request a custom/i }),
+      );
+
+      await waitFor(() =>
+        expect(analytics.trackContactFormError).toHaveBeenCalledOnce(),
+      );
+    });
   });
 
   describe("error state — fetch throws exception", () => {
@@ -419,6 +466,24 @@ describe("ContactForm", () => {
       });
       expect(link).toBeInTheDocument();
       expect(link).toHaveAttribute("href", "mailto:customs@augustjones.shop");
+    });
+
+    it("calls trackContactFormError when fetch throws", async () => {
+      const user = userEvent.setup();
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockRejectedValue(new Error("Network error")),
+      );
+
+      render(<ContactForm />);
+      await fillForm(user);
+      await user.click(
+        screen.getByRole("button", { name: /request a custom/i }),
+      );
+
+      await waitFor(() =>
+        expect(analytics.trackContactFormError).toHaveBeenCalledOnce(),
+      );
     });
   });
 });

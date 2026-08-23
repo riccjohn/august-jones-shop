@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useFormSubmit } from "@/hooks/use-form-submit";
+import { trackContactFormError } from "@/lib/analytics";
 
 type FormOption = { value: string; label: string };
 
@@ -141,7 +142,10 @@ export function ContactForm() {
       website: honeypot,
     };
 
-    await submit(data);
+    const ok = await submit(data);
+    if (!ok) {
+      trackContactFormError();
+    }
   }
 
   if (state === "success") {
