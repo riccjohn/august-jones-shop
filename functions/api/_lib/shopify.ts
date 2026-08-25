@@ -28,11 +28,23 @@ interface AccessTokenResponse {
   error_description?: string;
 }
 
-const RETRY_ATTEMPTS = 3;
-const RETRY_DELAY_MS = 300;
+const RETRY_ATTEMPTS = 5;
+const RETRY_BASE_DELAY_MS = 300;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/**
+ * Delay before the given retry attempt, doubling each time (300ms, 600ms,
+ * 1200ms, 2400ms). Widened from a flat 300ms/3-attempt window per Shopify
+ * support's guidance: the bot-challenge on Cloudflare Workers' shared egress
+ * IPs doesn't always clear within ~600ms, so later attempts get a longer
+ * runway while the worst case (~4.5s total) stays well under a user's
+ * patience for a contact-form submission.
+ */
+function retryDelayMs(attempt: number): number {
+  return RETRY_BASE_DELAY_MS * 2 ** (attempt - 1);
 }
 
 /**
@@ -63,7 +75,7 @@ async function fetchShopifyJson<T>(url: string, init: RequestInit): Promise<T> {
     } catch (err) {
       if (!(err instanceof NonJsonShopifyResponseError)) throw err;
       if (attempt === RETRY_ATTEMPTS) throw err;
-      await sleep(RETRY_DELAY_MS);
+      await sleep(retryDelayMs(attempt));
     }
   }
   throw new ShopifyApiError("unreachable");
