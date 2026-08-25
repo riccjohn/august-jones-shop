@@ -17,6 +17,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@sentry/cloudflare": "^10.71.0",
     "add-to-calendar-button-react": "^2.15.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
