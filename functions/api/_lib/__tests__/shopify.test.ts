@@ -20,10 +20,12 @@ function htmlChallengeResponse(): Response {
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.useRealTimers();
 });
 
 describe("createShopifyClient — token exchange retry", () => {
   it("retries the token exchange once after a non-JSON (bot-challenge) response, then succeeds", async () => {
+    vi.useFakeTimers();
     let tokenCallCount = 0;
     const fetchMock = vi.fn(async (url: string | URL) => {
       if (url.toString().includes("/admin/oauth/access_token")) {
@@ -36,7 +38,10 @@ describe("createShopifyClient — token exchange retry", () => {
     });
     vi.stubGlobal("fetch", fetchMock);
 
-    await expect(createShopifyClient(env)).resolves.toBeDefined();
+    const resultPromise = createShopifyClient(env);
+    await vi.runAllTimersAsync();
+
+    await expect(resultPromise).resolves.toBeDefined();
     expect(tokenCallCount).toBe(2);
   });
 });
@@ -60,7 +65,12 @@ describe("ShopifyClient.request — GraphQL request retry", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const client = await createShopifyClient(env);
-    await expect(client.request("query { ok }")).resolves.toEqual({
+
+    vi.useFakeTimers();
+    const requestPromise = client.request("query { ok }");
+    await vi.runAllTimersAsync();
+
+    await expect(requestPromise).resolves.toEqual({
       ok: true,
     });
     expect(graphqlCallCount).toBe(2);
@@ -82,10 +92,17 @@ describe("ShopifyClient.request — GraphQL request retry", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const client = await createShopifyClient(env);
-    await expect(client.request("query { ok }")).rejects.toThrow(
-      /non-JSON response/,
-    );
-    expect(graphqlCallCount).toBe(3);
+
+    vi.useFakeTimers();
+    const requestPromise = client.request("query { ok }");
+    // Attach the rejection assertion before advancing timers so the
+    // rejection is handled the instant it occurs, not after.
+    const assertion =
+      expect(requestPromise).rejects.toThrow(/non-JSON response/);
+    await vi.runAllTimersAsync();
+
+    await assertion;
+    expect(graphqlCallCount).toBe(5);
   });
 
   it("does not retry when Shopify returns a valid JSON error response", async () => {
