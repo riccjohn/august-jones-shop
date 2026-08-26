@@ -7,6 +7,7 @@ import { GrainOverlay } from "@/components/GrainOverlay";
 import { PromoSection } from "@/components/PromoSection";
 import { ShopCtaButton } from "@/components/ShopCtaButton";
 import { Button } from "@/components/ui/button";
+import { CUSTOM_ORDERS_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "About | August Jones",
@@ -207,10 +208,14 @@ export default function AboutPage() {
                 variant="brand"
                 className="h-14 gap-3 px-10 text-base font-medium uppercase tracking-widest"
               >
-                <Link href="/contact">
+                <a
+                  href={CUSTOM_ORDERS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <span>Get in Touch</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </Link>
+                </a>
               </Button>
             </div>
           </div>

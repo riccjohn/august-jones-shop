@@ -6,13 +6,18 @@ import Link from "next/link";
 import { useLayoutEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { trackNavClick, trackShopClick } from "@/lib/analytics";
-import { SHOP_URL } from "@/lib/constants";
+import { CUSTOM_ORDERS_URL, SHOP_URL } from "@/lib/constants";
 
 const NAV_LINKS = [
-  { label: "About", href: "/about", key: "about" },
-  { label: "Events", href: "/events", key: "events" },
-  { label: "Customs & Contact", href: "/contact", key: "contact" },
-  { label: "Join", href: "/join", key: "join" },
+  { label: "About", href: "/about", key: "about", external: false },
+  { label: "Events", href: "/events", key: "events", external: false },
+  {
+    label: "Customs & Contact",
+    href: CUSTOM_ORDERS_URL,
+    key: "contact",
+    external: true,
+  },
+  { label: "Join", href: "/join", key: "join", external: false },
 ] as const;
 
 export function SiteNav() {
@@ -87,13 +92,11 @@ export function SiteNav() {
         {/* ── RIGHT SIDE: desktop nav links + shop CTA (always) ── */}
         <ul className="flex items-center gap-1">
           {/* Desktop nav links — hidden on mobile */}
-          {NAV_LINKS.map(({ label, href, key }) => (
-            <li key={key} className="hidden sm:block">
-              <Link
-                href={href}
-                onClick={() => trackNavClick(key)}
-                className="group relative flex items-center rounded-sm px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-              >
+          {NAV_LINKS.map(({ label, href, key, external }) => {
+            const linkClassName =
+              "group relative flex items-center rounded-sm px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background";
+            const linkContent = (
+              <>
                 <span className="font-bebas-neue text-[15px] tracking-[0.12em] text-foreground/85 transition-colors duration-200 group-hover:text-foreground">
                   {label}
                 </span>
@@ -105,9 +108,32 @@ export function SiteNav() {
                     transitionTimingFunction: "cubic-bezier(0.77, 0, 0.175, 1)",
                   }}
                 />
-              </Link>
-            </li>
-          ))}
+              </>
+            );
+            return (
+              <li key={key} className="hidden sm:block">
+                {external ? (
+                  <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => trackShopClick(key)}
+                    className={linkClassName}
+                  >
+                    {linkContent}
+                  </a>
+                ) : (
+                  <Link
+                    href={href}
+                    onClick={() => trackNavClick(key)}
+                    className={linkClassName}
+                  >
+                    {linkContent}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
 
           {/* Shop CTA — always visible */}
           <li className="sm:ml-3">
@@ -166,20 +192,39 @@ export function SiteNav() {
                 Home
               </Link>
             </li>
-            {NAV_LINKS.map(({ label, href, key }) => (
-              <li key={key}>
-                <Link
-                  href={href}
-                  onClick={() => {
-                    trackNavClick(key);
-                    setMenuOpen(false);
-                  }}
-                  className="flex items-center py-3 font-bebas-neue text-2xl tracking-[0.12em] text-foreground/85 transition-colors duration-200 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                >
-                  {label}
-                </Link>
-              </li>
-            ))}
+            {NAV_LINKS.map(({ label, href, key, external }) => {
+              const linkClassName =
+                "flex items-center py-3 font-bebas-neue text-2xl tracking-[0.12em] text-foreground/85 transition-colors duration-200 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent";
+              return (
+                <li key={key}>
+                  {external ? (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => {
+                        trackShopClick(key);
+                        setMenuOpen(false);
+                      }}
+                      className={linkClassName}
+                    >
+                      {label}
+                    </a>
+                  ) : (
+                    <Link
+                      href={href}
+                      onClick={() => {
+                        trackNavClick(key);
+                        setMenuOpen(false);
+                      }}
+                      className={linkClassName}
+                    >
+                      {label}
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
           </ul>
         </nav>
       )}
