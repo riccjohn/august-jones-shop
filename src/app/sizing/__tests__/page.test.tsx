@@ -57,9 +57,25 @@ describe("Sizing Page", () => {
     );
   });
 
-  it("links back to the contact page for sizing questions", () => {
+  it("links 'Get in Touch' to the Shopify custom-orders page, opened in a new tab", () => {
     render(<SizingPage />);
     const contactLink = screen.getByRole("link", { name: /get in touch/i });
-    expect(contactLink).toHaveAttribute("href", "/contact");
+    expect(contactLink).toHaveAttribute(
+      "href",
+      "https://store.augustjones.shop/pages/custom-orders",
+    );
+    expect(contactLink).toHaveAttribute("target", "_blank");
+    expect(contactLink).toHaveAttribute("rel", "noopener noreferrer");
+  });
+
+  it("links 'Reach out' to the Shopify custom-orders page, opened in a new tab", () => {
+    render(<SizingPage />);
+    const reachOutLink = screen.getByRole("link", { name: /reach out/i });
+    expect(reachOutLink).toHaveAttribute(
+      "href",
+      "https://store.augustjones.shop/pages/custom-orders",
+    );
+    expect(reachOutLink).toHaveAttribute("target", "_blank");
+    expect(reachOutLink).toHaveAttribute("rel", "noopener noreferrer");
   });
 });

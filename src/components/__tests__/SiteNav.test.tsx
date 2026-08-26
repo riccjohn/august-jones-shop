@@ -1,7 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import { SiteNav } from "@/components/SiteNav";
+import * as analytics from "@/lib/analytics";
 
 vi.mock("@/lib/analytics", () => ({
   trackShopClick: vi.fn(),
@@ -67,13 +68,32 @@ describe("SiteNav", () => {
       expect(links.length).toBeGreaterThan(0);
     });
 
-    it("contains a link to /contact", () => {
+    it("links 'Customs & Contact' to the Shopify custom-orders page, opened in a new tab", () => {
       render(<SiteNav />);
       const mainNav = screen.getByRole("navigation", {
         name: "Main navigation",
       });
-      const links = mainNav.querySelectorAll("a[href='/contact']");
-      expect(links.length).toBeGreaterThan(0);
+      const link = within(mainNav).getByRole("link", {
+        name: /customs & contact/i,
+      });
+      expect(link).toHaveAttribute(
+        "href",
+        "https://store.augustjones.shop/pages/custom-orders",
+      );
+      expect(link).toHaveAttribute("target", "_blank");
+      expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    });
+
+    it("tracks a shop click when 'Customs & Contact' is clicked", async () => {
+      const user = userEvent.setup();
+      render(<SiteNav />);
+      const mainNav = screen.getByRole("navigation", {
+        name: "Main navigation",
+      });
+      await user.click(
+        within(mainNav).getByRole("link", { name: /customs & contact/i }),
+      );
+      expect(analytics.trackShopClick).toHaveBeenCalledWith("contact");
     });
 
     it("contains a link to /join", () => {
@@ -124,14 +144,22 @@ describe("SiteNav", () => {
       expect(mobileNav.querySelector("a[href='/events']")).toBeInTheDocument();
     });
 
-    it("contains a link to /contact in mobile navigation", async () => {
+    it("links 'Customs & Contact' to the Shopify custom-orders page in mobile navigation", async () => {
       const user = userEvent.setup();
       render(<SiteNav />);
       await user.click(screen.getByRole("button", { name: "Open menu" }));
       const mobileNav = screen.getByRole("navigation", {
         name: "Mobile navigation",
       });
-      expect(mobileNav.querySelector("a[href='/contact']")).toBeInTheDocument();
+      const link = within(mobileNav).getByRole("link", {
+        name: /customs & contact/i,
+      });
+      expect(link).toHaveAttribute(
+        "href",
+        "https://store.augustjones.shop/pages/custom-orders",
+      );
+      expect(link).toHaveAttribute("target", "_blank");
+      expect(link).toHaveAttribute("rel", "noopener noreferrer");
     });
 
     it("contains a link to /join in mobile navigation", async () => {
