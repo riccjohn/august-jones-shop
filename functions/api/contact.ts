@@ -1,4 +1,5 @@
 import type { PagesFunction } from "@cloudflare/workers-types";
+import { caughtErrorResponse, errorResponse } from "./_lib/error-response";
 import { jsonResponse } from "./_lib/json-response";
 import {
   appendNote,
@@ -166,7 +167,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
 
     const customerResult = await upsertContactCustomer(client, raw, note);
     if ("error" in customerResult) {
-      return jsonResponse({ error: customerResult.error }, 500);
+      return errorResponse(customerResult.error);
     }
 
     const data = await client.request<{
@@ -192,13 +193,11 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     });
     const error = joinUserErrors(data.draftOrderCreate.userErrors);
     if (error) {
-      return jsonResponse({ error }, 500);
+      return errorResponse(error);
     }
 
     return jsonResponse({ ok: true }, 200);
   } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Shopify request failed";
-    return jsonResponse({ error: message }, 500);
+    return caughtErrorResponse(err);
   }
 };
