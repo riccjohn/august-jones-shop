@@ -8,12 +8,19 @@
  * to the hardcoded constant. To toggle in production, commit a code change + push.
  */
 
+function parseBooleanFlag(
+  envValue: string | undefined,
+  defaultValue: boolean,
+): boolean {
+  return envValue === undefined ? defaultValue : envValue === "true";
+}
+
 const DEFAULT_CUSTOMS_OPEN = true;
 
-export const CUSTOMS_OPEN =
-  process.env.NEXT_PUBLIC_CUSTOMS_OPEN === undefined
-    ? DEFAULT_CUSTOMS_OPEN
-    : process.env.NEXT_PUBLIC_CUSTOMS_OPEN === "true";
+export const CUSTOMS_OPEN = parseBooleanFlag(
+  process.env.NEXT_PUBLIC_CUSTOMS_OPEN,
+  DEFAULT_CUSTOMS_OPEN,
+);
 
 /**
  * Email Signup Configuration
@@ -32,7 +39,7 @@ export const CUSTOMS_OPEN =
 
 const DEFAULT_EMAIL_SIGNUP_ENABLED = false;
 
-export const EMAIL_SIGNUP_ENABLED =
-  process.env.NEXT_PUBLIC_EMAIL_SIGNUP_ENABLED === undefined
-    ? DEFAULT_EMAIL_SIGNUP_ENABLED
-    : process.env.NEXT_PUBLIC_EMAIL_SIGNUP_ENABLED === "true";
+export const EMAIL_SIGNUP_ENABLED = parseBooleanFlag(
+  process.env.NEXT_PUBLIC_EMAIL_SIGNUP_ENABLED,
+  DEFAULT_EMAIL_SIGNUP_ENABLED,
+);

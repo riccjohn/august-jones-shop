@@ -7,12 +7,20 @@ import { InstagramLink } from "@/components/InstagramLink";
 import { TrackedEmailLink } from "@/components/TrackedEmailLink";
 import { EMAIL_SIGNUP_ENABLED } from "@/lib/config";
 import { CUSTOM_ORDERS_URL } from "@/lib/constants";
+import { cn } from "@/lib/utils";
 
 export const Footer = () => {
   return (
     <footer className="border-t border-border bg-background px-6 pt-14 pb-[calc(3.5rem+env(safe-area-inset-bottom))] sm:pt-16 sm:pb-[calc(4rem+env(safe-area-inset-bottom))]">
       <div className="mx-auto max-w-6xl">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-[1fr_auto_auto_auto] sm:gap-16 lg:gap-24">
+        <div
+          className={cn(
+            "grid grid-cols-1 gap-10 sm:gap-16 lg:gap-24",
+            EMAIL_SIGNUP_ENABLED
+              ? "sm:grid-cols-[1fr_auto_auto_auto]"
+              : "sm:grid-cols-[1fr_auto_auto]",
+          )}
+        >
           {/* Brand column */}
           <div className="flex flex-col gap-4">
             <Link

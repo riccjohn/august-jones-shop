@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { EMAIL_SIGNUP_ENABLED } from "@/lib/config";
 
 export const dynamic = "force-static";
 
@@ -37,11 +38,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.8,
     },
-    {
-      url: `${baseUrl}/join`,
-      lastModified: currentDate,
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
+    ...(EMAIL_SIGNUP_ENABLED
+      ? [
+          {
+            url: `${baseUrl}/join`,
+            lastModified: currentDate,
+            changeFrequency: "monthly" as const,
+            priority: 0.6,
+          },
+        ]
+      : []),
   ];
 }

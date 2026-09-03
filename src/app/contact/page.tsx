@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ContactForm } from "@/components/ContactForm";
+import { EmailFallbackNote } from "@/components/EmailFallbackNote";
 import { Footer } from "@/components/Footer";
 import { GrainOverlay } from "@/components/GrainOverlay";
 import { TermsAndConditions } from "@/components/TermsAndConditions";
-import { CUSTOMS_OPEN } from "@/lib/config";
-import { CONTACT_EMAIL } from "@/lib/constants";
+import { CUSTOMS_OPEN, EMAIL_SIGNUP_ENABLED } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Contact | August Jones",
@@ -48,7 +48,7 @@ export default function ContactPage() {
                   Looking for a custom piece? Send a message and I'll get back
                   to you within 2 - 3 days.
                 </>
-              ) : (
+              ) : EMAIL_SIGNUP_ENABLED ? (
                 <>
                   I'm temporarily closed for custom commissions while I focus on
                   existing orders. Join my{" "}
@@ -60,18 +60,14 @@ export default function ContactPage() {
                   </Link>{" "}
                   to get notified when they reopen.
                 </>
+              ) : (
+                "I'm temporarily closed for custom commissions while I focus on existing orders."
               )}
             </p>
             {!CUSTOMS_OPEN && (
-              <p className="mt-4 max-w-xl text-sm text-foreground/55">
-                Prefer email or have other questions? Email{" "}
-                <a
-                  href={`mailto:${CONTACT_EMAIL}`}
-                  className="text-foreground/55 underline underline-offset-2 hover:text-accent transition-colors duration-200"
-                >
-                  {CONTACT_EMAIL}
-                </a>
-              </p>
+              <EmailFallbackNote className="mt-4 max-w-xl">
+                Prefer email or have other questions? Email
+              </EmailFallbackNote>
             )}
           </div>
         </div>
@@ -87,15 +83,9 @@ export default function ContactPage() {
           <div className="relative z-10 mx-auto max-w-2xl">
             <div className="h-px bg-border mb-12" aria-hidden="true" />
             <ContactForm />
-            <p className="mt-8 text-sm text-foreground/60">
-              Prefer email or have other questions? Email{" "}
-              <a
-                href={`mailto:${CONTACT_EMAIL}`}
-                className="text-foreground/60 underline underline-offset-4 hover:text-accent hover:no-underline transition-colors duration-200"
-              >
-                {CONTACT_EMAIL}
-              </a>
-            </p>
+            <EmailFallbackNote className="mt-8">
+              Prefer email or have other questions? Email
+            </EmailFallbackNote>
           </div>
         </section>
       )}
