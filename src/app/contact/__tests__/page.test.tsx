@@ -124,20 +124,6 @@ describe("Contact Page", () => {
       expect(screen.queryByTestId("contact-form")).not.toBeInTheDocument();
     });
 
-    it("shows the closed message in the callout with email list link", async () => {
-      vi.resetModules();
-      const ContactPage = (await import("../page")).default;
-      render(<ContactPage />);
-
-      expect(
-        screen.getByText(
-          /i'm temporarily closed for custom commissions while i focus on existing orders/i,
-        ),
-      ).toBeInTheDocument();
-      const joinLink = screen.getByRole("link", { name: /email list/i });
-      expect(joinLink).toHaveAttribute("href", "/join");
-    });
-
     it("shows the email fallback line", async () => {
       vi.resetModules();
       const ContactPage = (await import("../page")).default;
@@ -153,6 +139,43 @@ describe("Contact Page", () => {
         "href",
         "mailto:contact@augustjones.shop",
       );
+    });
+
+    describe("and EMAIL_SIGNUP_ENABLED is false (default)", () => {
+      it("shows the closed message with no /join link", async () => {
+        vi.resetModules();
+        const ContactPage = (await import("../page")).default;
+        render(<ContactPage />);
+
+        expect(
+          screen.getByText(
+            "I'm temporarily closed for custom commissions while I focus on existing orders.",
+          ),
+        ).toBeInTheDocument();
+        expect(
+          screen.queryByRole("link", { name: /email list/i }),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    describe("and EMAIL_SIGNUP_ENABLED is true", () => {
+      beforeEach(() => {
+        vi.stubEnv("NEXT_PUBLIC_EMAIL_SIGNUP_ENABLED", "true");
+      });
+
+      it("shows the closed message in the callout with email list link", async () => {
+        vi.resetModules();
+        const ContactPage = (await import("../page")).default;
+        render(<ContactPage />);
+
+        expect(
+          screen.getByText(
+            /i'm temporarily closed for custom commissions while i focus on existing orders/i,
+          ),
+        ).toBeInTheDocument();
+        const joinLink = screen.getByRole("link", { name: /email list/i });
+        expect(joinLink).toHaveAttribute("href", "/join");
+      });
     });
   });
 });

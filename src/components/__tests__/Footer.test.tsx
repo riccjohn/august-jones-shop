@@ -1,5 +1,5 @@
 import { render, screen, within } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Footer } from "@/components/Footer";
 
 vi.mock("next/link", () => ({
@@ -98,10 +98,26 @@ describe("Footer", () => {
     expect(contactLink).toHaveAttribute("rel", "noopener noreferrer");
   });
 
-  it("renders the EmailSignupForm with source='footer'", () => {
-    render(<Footer />);
-    const emailSignupForm = screen.getByTestId("email-signup-form");
-    expect(emailSignupForm).toBeInTheDocument();
-    expect(emailSignupForm).toHaveAttribute("data-source", "footer");
+  describe("email signup", () => {
+    beforeEach(() => {
+      vi.resetModules();
+      vi.unstubAllEnvs();
+    });
+
+    it("does not render the EmailSignupForm when EMAIL_SIGNUP_ENABLED is false (default)", async () => {
+      const { Footer: FooterDefault } = await import("@/components/Footer");
+      render(<FooterDefault />);
+      expect(screen.queryByTestId("email-signup-form")).not.toBeInTheDocument();
+      expect(screen.queryByText("Stay Updated")).not.toBeInTheDocument();
+    });
+
+    it("renders the EmailSignupForm with source='footer' when EMAIL_SIGNUP_ENABLED is true", async () => {
+      vi.stubEnv("NEXT_PUBLIC_EMAIL_SIGNUP_ENABLED", "true");
+      const { Footer: FooterEnabled } = await import("@/components/Footer");
+      render(<FooterEnabled />);
+      const emailSignupForm = screen.getByTestId("email-signup-form");
+      expect(emailSignupForm).toBeInTheDocument();
+      expect(emailSignupForm).toHaveAttribute("data-source", "footer");
+    });
   });
 });

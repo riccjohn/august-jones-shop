@@ -7,6 +7,7 @@ import { GrainOverlay } from "@/components/GrainOverlay";
 import { PromoSection } from "@/components/PromoSection";
 import { ShopCtaButton } from "@/components/ShopCtaButton";
 import { Button } from "@/components/ui/button";
+import { EMAIL_SIGNUP_ENABLED } from "@/lib/config";
 import { CUSTOM_ORDERS_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -223,31 +224,33 @@ export default function AboutPage() {
       </section>
 
       {/* ── JOIN THE LIST ─────────────────────────────────────────────────── */}
-      <PromoSection
-        headingId="join-heading"
-        eyebrow="Get first dibs"
-        eyebrowClassName="text-accent/80"
-        heading="Join the list"
-        headingClampSize="clamp(3rem, 7vw, 6rem)"
-        body="Early access to new drops, plus market and event dates near you."
-        bodyClassName="max-w-xl text-base/relaxed text-foreground/60 sm:text-lg"
-        layoutClassName="grid grid-cols-1 gap-8 lg:grid-cols-[3fr_2fr] lg:items-end"
-        textWrapperClassName="flex flex-col gap-6"
-      >
-        <div className="flex items-end">
-          <Button
-            asChild
-            size="lg"
-            variant="brand"
-            className="h-14 gap-3 px-10 text-base font-medium uppercase tracking-widest"
-          >
-            <Link href="/join">
-              <span>Join the List</span>
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </Button>
-        </div>
-      </PromoSection>
+      {EMAIL_SIGNUP_ENABLED && (
+        <PromoSection
+          headingId="join-heading"
+          eyebrow="Get first dibs"
+          eyebrowClassName="text-accent/80"
+          heading="Join the list"
+          headingClampSize="clamp(3rem, 7vw, 6rem)"
+          body="Early access to new drops, plus market and event dates near you."
+          bodyClassName="max-w-xl text-base/relaxed text-foreground/60 sm:text-lg"
+          layoutClassName="grid grid-cols-1 gap-8 lg:grid-cols-[3fr_2fr] lg:items-end"
+          textWrapperClassName="flex flex-col gap-6"
+        >
+          <div className="flex items-end">
+            <Button
+              asChild
+              size="lg"
+              variant="brand"
+              className="h-14 gap-3 px-10 text-base font-medium uppercase tracking-widest"
+            >
+              <Link href="/join">
+                <span>Join the List</span>
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </Button>
+          </div>
+        </PromoSection>
+      )}
 
       {/* ── SHOP CTA ──────────────────────────────────────────────────────── */}
       <section className="bg-[#f6f4f0] px-6 py-20 sm:py-28">

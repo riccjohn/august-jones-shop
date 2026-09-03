@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useLayoutEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { trackNavClick, trackShopClick } from "@/lib/analytics";
+import { EMAIL_SIGNUP_ENABLED } from "@/lib/config";
 import { CUSTOM_ORDERS_URL, SHOP_URL } from "@/lib/constants";
 
 const NAV_LINKS = [
@@ -23,6 +24,10 @@ const NAV_LINKS = [
 export function SiteNav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const navLinks = EMAIL_SIGNUP_ENABLED
+    ? NAV_LINKS
+    : NAV_LINKS.filter((link) => link.key !== "join");
 
   useLayoutEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 32);
@@ -92,7 +97,7 @@ export function SiteNav() {
         {/* ── RIGHT SIDE: desktop nav links + shop CTA (always) ── */}
         <ul className="flex items-center gap-1">
           {/* Desktop nav links — hidden on mobile */}
-          {NAV_LINKS.map(({ label, href, key, external }) => {
+          {navLinks.map(({ label, href, key, external }) => {
             const linkClassName =
               "group relative flex items-center rounded-sm px-3 py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background";
             const linkContent = (
@@ -192,7 +197,7 @@ export function SiteNav() {
                 Home
               </Link>
             </li>
-            {NAV_LINKS.map(({ label, href, key, external }) => {
+            {navLinks.map(({ label, href, key, external }) => {
               const linkClassName =
                 "flex items-center py-3 font-bebas-neue text-2xl tracking-[0.12em] text-foreground/85 transition-colors duration-200 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent";
               return (

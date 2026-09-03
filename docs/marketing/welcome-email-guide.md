@@ -14,7 +14,14 @@ This is a one-time setup for an automatic email that goes out the moment someone
 
 ## Testing it
 
-Submit the newsletter signup form (footer or `/join`) on the live site or a preview deploy pointed at the same Shopify store, using an email you control, and confirm the welcome email arrives. It may take a few minutes — this isn't instant the way the contact-form Flow alert is.
+The newsletter signup forms (footer and `/join`) are currently hidden in production — signups are paused while we sort out an issue with Shopify occasionally rejecting them, so you won't find the form just by browsing the live site right now.
+
+To test the welcome email, you need an environment where signups are turned back on:
+
+- Locally, or on a preview deploy, set the environment variable `NEXT_PUBLIC_EMAIL_SIGNUP_ENABLED=true`. That re-enables the forms so you can submit one.
+- Then submit the newsletter signup form (footer or `/join`) using an email you control, pointed at the same Shopify store, and confirm the welcome email arrives. It may take a few minutes — this isn't instant the way the contact-form Flow alert is.
+
+This flow can't currently be tested against production itself, since the forms are switched off there.
 
 ## Notes
 

@@ -1,7 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
-import { SiteNav } from "@/components/SiteNav";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import * as analytics from "@/lib/analytics";
 
 vi.mock("@/lib/analytics", () => ({
@@ -42,15 +41,22 @@ vi.mock("next/image", () => ({
 }));
 
 describe("SiteNav", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    vi.unstubAllEnvs();
+  });
+
   describe("Desktop nav", () => {
-    it("renders a nav with aria-label 'Main navigation'", () => {
+    it("renders a nav with aria-label 'Main navigation'", async () => {
+      const { SiteNav } = await import("@/components/SiteNav");
       render(<SiteNav />);
       expect(
         screen.getByRole("navigation", { name: "Main navigation" }),
       ).toBeInTheDocument();
     });
 
-    it("contains a link to /about", () => {
+    it("contains a link to /about", async () => {
+      const { SiteNav } = await import("@/components/SiteNav");
       render(<SiteNav />);
       const mainNav = screen.getByRole("navigation", {
         name: "Main navigation",
@@ -59,7 +65,8 @@ describe("SiteNav", () => {
       expect(links.length).toBeGreaterThan(0);
     });
 
-    it("contains a link to /events", () => {
+    it("contains a link to /events", async () => {
+      const { SiteNav } = await import("@/components/SiteNav");
       render(<SiteNav />);
       const mainNav = screen.getByRole("navigation", {
         name: "Main navigation",
@@ -68,7 +75,8 @@ describe("SiteNav", () => {
       expect(links.length).toBeGreaterThan(0);
     });
 
-    it("links 'Customs & Contact' to the Shopify custom-orders page, opened in a new tab", () => {
+    it("links 'Customs & Contact' to the Shopify custom-orders page, opened in a new tab", async () => {
+      const { SiteNav } = await import("@/components/SiteNav");
       render(<SiteNav />);
       const mainNav = screen.getByRole("navigation", {
         name: "Main navigation",
@@ -86,6 +94,7 @@ describe("SiteNav", () => {
 
     it("tracks a shop click when 'Customs & Contact' is clicked", async () => {
       const user = userEvent.setup();
+      const { SiteNav } = await import("@/components/SiteNav");
       render(<SiteNav />);
       const mainNav = screen.getByRole("navigation", {
         name: "Main navigation",
@@ -96,18 +105,38 @@ describe("SiteNav", () => {
       expect(analytics.trackShopClick).toHaveBeenCalledWith("contact");
     });
 
-    it("contains a link to /join", () => {
-      render(<SiteNav />);
-      const mainNav = screen.getByRole("navigation", {
-        name: "Main navigation",
+    describe("when EMAIL_SIGNUP_ENABLED is false (default)", () => {
+      it("does not contain a link to /join", async () => {
+        const { SiteNav } = await import("@/components/SiteNav");
+        render(<SiteNav />);
+        const mainNav = screen.getByRole("navigation", {
+          name: "Main navigation",
+        });
+        const links = mainNav.querySelectorAll("a[href='/join']");
+        expect(links.length).toBe(0);
       });
-      const links = mainNav.querySelectorAll("a[href='/join']");
-      expect(links.length).toBeGreaterThan(0);
+    });
+
+    describe("when EMAIL_SIGNUP_ENABLED is true", () => {
+      beforeEach(() => {
+        vi.stubEnv("NEXT_PUBLIC_EMAIL_SIGNUP_ENABLED", "true");
+      });
+
+      it("contains a link to /join", async () => {
+        const { SiteNav } = await import("@/components/SiteNav");
+        render(<SiteNav />);
+        const mainNav = screen.getByRole("navigation", {
+          name: "Main navigation",
+        });
+        const links = mainNav.querySelectorAll("a[href='/join']");
+        expect(links.length).toBeGreaterThan(0);
+      });
     });
   });
 
   describe("Mobile nav", () => {
-    it("does not show mobile navigation before menu is opened", () => {
+    it("does not show mobile navigation before menu is opened", async () => {
+      const { SiteNav } = await import("@/components/SiteNav");
       render(<SiteNav />);
       expect(
         screen.queryByRole("navigation", { name: "Mobile navigation" }),
@@ -116,6 +145,7 @@ describe("SiteNav", () => {
 
     it("shows mobile navigation after clicking the Open menu button", async () => {
       const user = userEvent.setup();
+      const { SiteNav } = await import("@/components/SiteNav");
       render(<SiteNav />);
       const openButton = screen.getByRole("button", { name: "Open menu" });
       await user.click(openButton);
@@ -126,6 +156,7 @@ describe("SiteNav", () => {
 
     it("contains a link to /about in mobile navigation", async () => {
       const user = userEvent.setup();
+      const { SiteNav } = await import("@/components/SiteNav");
       render(<SiteNav />);
       await user.click(screen.getByRole("button", { name: "Open menu" }));
       const mobileNav = screen.getByRole("navigation", {
@@ -136,6 +167,7 @@ describe("SiteNav", () => {
 
     it("contains a link to /events in mobile navigation", async () => {
       const user = userEvent.setup();
+      const { SiteNav } = await import("@/components/SiteNav");
       render(<SiteNav />);
       await user.click(screen.getByRole("button", { name: "Open menu" }));
       const mobileNav = screen.getByRole("navigation", {
@@ -146,6 +178,7 @@ describe("SiteNav", () => {
 
     it("links 'Customs & Contact' to the Shopify custom-orders page in mobile navigation", async () => {
       const user = userEvent.setup();
+      const { SiteNav } = await import("@/components/SiteNav");
       render(<SiteNav />);
       await user.click(screen.getByRole("button", { name: "Open menu" }));
       const mobileNav = screen.getByRole("navigation", {
@@ -162,14 +195,36 @@ describe("SiteNav", () => {
       expect(link).toHaveAttribute("rel", "noopener noreferrer");
     });
 
-    it("contains a link to /join in mobile navigation", async () => {
-      const user = userEvent.setup();
-      render(<SiteNav />);
-      await user.click(screen.getByRole("button", { name: "Open menu" }));
-      const mobileNav = screen.getByRole("navigation", {
-        name: "Mobile navigation",
+    describe("when EMAIL_SIGNUP_ENABLED is false (default)", () => {
+      it("does not contain a link to /join in mobile navigation", async () => {
+        const user = userEvent.setup();
+        const { SiteNav } = await import("@/components/SiteNav");
+        render(<SiteNav />);
+        await user.click(screen.getByRole("button", { name: "Open menu" }));
+        const mobileNav = screen.getByRole("navigation", {
+          name: "Mobile navigation",
+        });
+        expect(
+          mobileNav.querySelector("a[href='/join']"),
+        ).not.toBeInTheDocument();
       });
-      expect(mobileNav.querySelector("a[href='/join']")).toBeInTheDocument();
+    });
+
+    describe("when EMAIL_SIGNUP_ENABLED is true", () => {
+      beforeEach(() => {
+        vi.stubEnv("NEXT_PUBLIC_EMAIL_SIGNUP_ENABLED", "true");
+      });
+
+      it("contains a link to /join in mobile navigation", async () => {
+        const user = userEvent.setup();
+        const { SiteNav } = await import("@/components/SiteNav");
+        render(<SiteNav />);
+        await user.click(screen.getByRole("button", { name: "Open menu" }));
+        const mobileNav = screen.getByRole("navigation", {
+          name: "Mobile navigation",
+        });
+        expect(mobileNav.querySelector("a[href='/join']")).toBeInTheDocument();
+      });
     });
   });
 });

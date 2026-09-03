@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import { EmailFallbackNote } from "@/components/EmailFallbackNote";
 import { EmailSignupForm } from "@/components/EmailSignupForm";
 import { Footer } from "@/components/Footer";
 import { GrainOverlay } from "@/components/GrainOverlay";
+import { EMAIL_SIGNUP_ENABLED } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "Join the List | August Jones",
@@ -63,7 +65,14 @@ export default function JoinPage() {
           >
             Sign Up
           </h2>
-          <EmailSignupForm source="join" aria-labelledby="form-heading" />
+          {EMAIL_SIGNUP_ENABLED ? (
+            <EmailSignupForm source="join" aria-labelledby="form-heading" />
+          ) : (
+            <EmailFallbackNote>
+              Sign-ups are temporarily paused. To get on the list in the
+              meantime, email
+            </EmailFallbackNote>
+          )}
         </div>
       </section>
 

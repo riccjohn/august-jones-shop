@@ -11,7 +11,14 @@ export default function nextConfig(phase: string): NextConfig {
     // `serve out`. `next dev` writes its own manifests into `<distDir>/dev`
     // — nesting that inside `out/` meant an e2e run's build clobbered a
     // live dev server's build state. Keep dev on Next's own default instead.
-    distDir: phase === PHASE_DEVELOPMENT_SERVER ? ".next" : "out",
+    // `E2E_OUT_DIR` lets a second e2e build (e.g. the flag-off/default-config
+    // build in playwright.config.ts) write to its own directory instead of
+    // clobbering the primary `out/` while its `serve` process is still
+    // reading from it — unset, it falls back to `out` as before.
+    distDir:
+      phase === PHASE_DEVELOPMENT_SERVER
+        ? ".next"
+        : (process.env.E2E_OUT_DIR ?? "out"),
     reactCompiler: true,
     images: {
       unoptimized: true,
