@@ -51,7 +51,8 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: "E2E_TEST=true pnpm build && serve out --listen 3001",
+    command:
+      "E2E_TEST=true NEXT_PUBLIC_EMAIL_SIGNUP_ENABLED=true pnpm build && serve out --listen 3001",
     url: "http://localhost:3001",
     // Kill the port-3001 process to force a rebuild after fixture or page changes.
     reuseExistingServer: !process.env.CI,
