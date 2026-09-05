@@ -58,6 +58,9 @@ jobs:
       - name: Typecheck relay
         run: pnpm exec tsc -p relay --noEmit
 
+      - name: Typecheck functions
+        run: pnpm exec tsc -p functions --noEmit
+
       - name: Build
         run: pnpm build
 
