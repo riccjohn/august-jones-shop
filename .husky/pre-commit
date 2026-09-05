@@ -1,5 +1,6 @@
 pnpm exec lint-staged
 pnpm exec tsc --noEmit
+pnpm exec tsc -p relay --noEmit
 
 if command -v gitleaks &> /dev/null; then
   gitleaks protect --staged --redact

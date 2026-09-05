@@ -55,6 +55,9 @@ jobs:
       - name: Unit tests
         run: pnpm test:unit
 
+      - name: Typecheck relay
+        run: pnpm exec tsc -p relay --noEmit
+
       - name: Build
         run: pnpm build
 
