@@ -4,6 +4,8 @@ export interface ShopifyEnv {
   SHOPIFY_STORE_DOMAIN: string;
   SHOPIFY_CLIENT_ID: string;
   SHOPIFY_CLIENT_SECRET: string;
+  SHOPIFY_RELAY_URL?: string;
+  SHOPIFY_RELAY_SECRET?: string;
 }
 
 interface GraphQLResponse<T> {
@@ -151,27 +153,50 @@ export interface ShopifyClient {
   findCustomerByEmail(email: string): Promise<CustomerLookup | null>;
 }
 
-/** Fetches a fresh access token and returns a client bound to it for this request. */
+/**
+ * Fetches a fresh access token (unless relay mode is configured) and returns
+ * a client bound to it for this request.
+ *
+ * When `SHOPIFY_RELAY_URL` is set, GraphQL requests are sent to the relay
+ * instead of directly to Shopify, authenticated with `X-Relay-Secret` rather
+ * than a Shopify access token — no OAuth call is made from this environment
+ * at all. `SHOPIFY_RELAY_URL` without `SHOPIFY_RELAY_SECRET` is treated as a
+ * misconfiguration, not a fallback to direct calls.
+ */
 export async function createShopifyClient(
   env: ShopifyEnv,
 ): Promise<ShopifyClient> {
-  const accessToken = await fetchAccessToken(env);
+  const relayUrl = env.SHOPIFY_RELAY_URL;
+
+  let graphqlUrl: string;
+  let authHeaders: Record<string, string>;
+
+  if (relayUrl) {
+    if (!env.SHOPIFY_RELAY_SECRET) {
+      throw new ShopifyApiError(
+        "SHOPIFY_RELAY_URL is set but SHOPIFY_RELAY_SECRET is missing",
+      );
+    }
+    graphqlUrl = `${relayUrl}/graphql`;
+    authHeaders = { "X-Relay-Secret": env.SHOPIFY_RELAY_SECRET };
+  } else {
+    const accessToken = await fetchAccessToken(env);
+    graphqlUrl = `https://${env.SHOPIFY_STORE_DOMAIN}/admin/api/${API_VERSION}/graphql.json`;
+    authHeaders = { "X-Shopify-Access-Token": accessToken };
+  }
 
   async function request<T>(
     query: string,
     variables?: Record<string, unknown>,
   ): Promise<T> {
-    const json = await fetchShopifyJson<GraphQLResponse<T>>(
-      `https://${env.SHOPIFY_STORE_DOMAIN}/admin/api/${API_VERSION}/graphql.json`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Shopify-Access-Token": accessToken,
-        },
-        body: JSON.stringify({ query, variables }),
+    const json = await fetchShopifyJson<GraphQLResponse<T>>(graphqlUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders,
       },
-    );
+      body: JSON.stringify({ query, variables }),
+    });
 
     if (json.errors && json.errors.length > 0) {
       throw new ShopifyApiError(json.errors.map((e) => e.message).join("; "));

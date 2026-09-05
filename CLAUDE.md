@@ -70,6 +70,22 @@ Design should convey **sports-centered custom streetwear** that feels high-quali
 
 Key files: `src/lib/analytics.ts` (client tracking functions), `src/app/layout.tsx` (script tag).
 
+## Shopify egress relay
+
+Contact form and email signup write to the Shopify Admin API from Cloudflare Pages
+Functions (`functions/api/`). Those calls can be routed through a small always-on service
+on Fly.io (`relay/`) that holds a **static egress IP**, because Shopify's WAF scores
+Cloudflare's shared egress addresses — see
+`docs/adr/0003-move-shopify-api-calls-to-fly-io-for-a-static-egress-ip.md`.
+
+It is opt-in: with `SHOPIFY_RELAY_URL` unset, `createShopifyClient` calls Shopify directly
+exactly as before. Unsetting it is the rollback, no code change needed.
+
+`relay/README.md` is the runbook — deploying, the Fly/Cloudflare env var split, verifying,
+rolling back, and rotating `SHOPIFY_RELAY_SECRET` (which cannot be rotated in place without
+an outage). The relay has its own tsconfig and is excluded from the root one:
+`pnpm exec tsc -p relay --noEmit`, `pnpm exec vitest run relay`.
+
 ## Commands
 
 - `pnpm dev` — Start dev server (http://localhost:3000)
@@ -78,6 +94,8 @@ Key files: `src/lib/analytics.ts` (client tracking functions), `src/app/layout.t
 - `pnpm format` — Auto-format with Biome (`biome format --write`)
 - `pnpm test:e2e` — Run Playwright e2e tests
 - `pnpm test:e2e:ui` — Run Playwright tests in UI mode
+- `pnpm exec tsc -p relay --noEmit` — Typecheck the Fly.io relay (also in CI + pre-commit)
+- `pnpm exec tsc -p functions --noEmit` — Typecheck Cloudflare Pages Functions (ditto)
 
 ## Tech Stack
 

@@ -6,7 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useFormSubmit } from "@/hooks/use-form-submit";
-import { type EmailSignupSource, trackEmailSignup } from "@/lib/analytics";
+import {
+  type EmailSignupSource,
+  trackEmailSignup,
+  trackEmailSignupError,
+} from "@/lib/analytics";
 import { CONTACT_EMAIL } from "@/lib/constants";
 
 export function EmailSignupForm({
@@ -42,6 +46,8 @@ export function EmailSignupForm({
     const succeeded = await submit({ email, source, website: honeypot });
     if (succeeded) {
       trackEmailSignup(source);
+    } else {
+      trackEmailSignupError(source);
     }
   }
 
