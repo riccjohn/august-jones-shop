@@ -166,6 +166,20 @@ them are visible in `fly.toml` or recoverable from the code:
   verified from inside each. So the HA spare was a cost question, never a
   correctness one; there was no risk of half the traffic leaving from a shared
   NAT.
+- **The app needs an INBOUND public IP as well as the egress one — they are opposite
+  directions and allocating one does not give you the other.** `fly apps create` +
+  `fly deploy` (unlike `fly launch`) allocated no public IP, so
+  `august-jones-relay.fly.dev` resolved to nothing and the relay was unreachable from the
+  internet while being perfectly healthy internally. **Fly's own health check showed 1/1
+  the whole time**, because it runs over the private network — so "healthy" and
+  "reachable" are genuinely independent here, and only an external curl distinguishes
+  them. Cutting over in that state would have failed every Cloudflare call and taken both
+  forms down completely, which is strictly worse than the intermittent failure this ADR
+  exists to fix. Fixed with `fly ips allocate-v4 --shared` (`66.241.124.197`, free) and
+  `fly ips allocate-v6` (`2a09:8280:1::184:54e7:0`, free). Use `--shared`: a *dedicated*
+  IPv4 is $2/mo and buys nothing for a plain HTTPS service. This is the inbound product
+  the Options section warns not to confuse with `allocate-egress` — it turns out both are
+  needed, for opposite directions.
 - **The egress IP survives machine destruction and redeploys.** It is released
   only by an explicit `fly ips release-egress`. The IP allocated here is
   `209.71.89.37` (plus `2a09:8280:e626:1:0:184:54e7:0`) — note this is a *new*
