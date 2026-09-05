@@ -115,7 +115,7 @@ The existing retry/backoff logic in `shopify.ts` is untouched and stays in place
 - **Good:** Rollback is an environment variable, not a revert. Unsetting `SHOPIFY_RELAY_URL` in Cloudflare Pages restores today's flaky-but-functional direct calls without a code change or redeploy of the relay.
 - **Good:** The migration surface is one function (`createShopifyClient`), one new service, and two new env vars (`SHOPIFY_RELAY_URL`, `SHOPIFY_RELAY_SECRET`) alongside the 3 existing Shopify ones. No handler moves, no frontend file changes, and the retry/backoff logic is untouched.
 - **Good:** Token caching on the relay removes one Shopify round trip per submission, which reduces WAF exposure independently of the IP change.
-- **Bad:** New operational dependency — a second hosted account, its own billing ($6.03/mo), and a new deploy step. This is a genuinely new category of ops for a project that has none beyond Cloudflare's managed pipeline. A GitHub Actions deploy pipeline (and its `FLY_API_TOKEN`) is deliberately deferred until the relay changes often enough to justify the added attack surface; until then `fly deploy` is run by hand.
+- **Bad:** New operational dependency — a second hosted account, its own billing ($6.03/mo), and a new deploy step. This is a genuinely new category of ops for a project that has none beyond Cloudflare's managed pipeline. **Revised 2026-09-05:** a GitHub Actions deploy pipeline now exists (`.github/workflows/deploy-relay.yml`), reversing the earlier deferral. That deferral assumed `FLY_API_TOKEN` would be an org-wide credential, weighing the added attack surface against how rarely the relay changes. It is instead an **app-scoped** token (`fly tokens create deploy -a august-jones-relay`), which can deploy `august-jones-relay` and nothing else in the org — a much narrower blast radius than the deferral assumed, and one that no longer needs "changes often enough" to justify. The workflow re-runs the relay's typecheck and unit tests before every deploy and passes `--ha=false`, so it cannot silently create the second always-on machine this ADR's one-machine decision rules out. Manual `fly deploy ./relay --ha=false` remains the fallback.
 - **Bad:** A second deploy surface sits permanently in the request path. Timeout and retry changes touch two systems, and a Cloudflare Pages Functions outage breaks the forms even when Fly and Shopify are both healthy.
 - **Bad:** The Shopify client secret is now stored at rest with two vendors rather than one — Cloudflare retains it to preserve the direct-call rollback path. Rotate the credential **only once the cutover is verified.** Cloudflare's copy stays live until the relay carries traffic, so rotating earlier invalidates a secret that is still in the request path — turning an intermittent failure into a total outage. Rotation is hygiene, not a requirement; skipping it breaks nothing.
 - **Bad, accepted deliberately:** the relay forwards **any** GraphQL document once
@@ -190,3 +190,15 @@ them are visible in `fly.toml` or recoverable from the code:
   organizations that were already on those plans. Whether this org qualifies is
   visible only in the Fly dashboard and has not been checked — if it does, the
   compute line is $0.
+- **Deploys now run in CI (2026-09-05).** `.github/workflows/deploy-relay.yml`
+  deploys on every push to `main` that touches `relay/**`, plus a manual
+  `workflow_dispatch`. It re-runs `pnpm exec tsc -p relay --noEmit` and the
+  relay's unit tests before deploying, then runs `fly deploy ./relay --ha=false
+  --remote-only` — `--ha=false` is non-negotiable there for the same reason
+  it's non-negotiable by hand: a deploy against a process group with zero
+  machines otherwise creates a second always-on machine. `FLY_API_TOKEN` must
+  be an **app-scoped** token, created with `fly tokens create deploy -a
+  august-jones-relay` and stored as a GitHub Actions repository secret — not
+  an org-wide token — so a leaked secret can only redeploy this one app.
+  Manual `fly deploy ./relay --ha=false` from a maintainer's machine remains
+  the fallback if CI or Fly's API is unavailable.

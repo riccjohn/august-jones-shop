@@ -1,0 +1,45 @@
+name: Deploy relay
+
+on:
+  push:
+    branches: [main]
+    paths: ['relay/**']
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-relay
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck relay
+        run: pnpm exec tsc -p relay --noEmit
+
+      - name: Relay unit tests
+        run: pnpm exec vitest run relay
+
+      - name: Setup flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@v1
+
+      - name: Deploy relay
+        run: fly deploy ./relay --ha=false --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
