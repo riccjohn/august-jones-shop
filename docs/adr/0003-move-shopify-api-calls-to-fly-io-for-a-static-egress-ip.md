@@ -49,7 +49,7 @@ Caveats, stated rather than buried:
 - **Preview, not production, egress.** Cloudflare preview deployments were assumed to share
   production's egress pool and reputation. Unverified.
 - **Power.** n=100 per vantage separates near-zero from ~10%; it cannot resolve 1% from 3%.
-  A true rate under ~1% would be invisible here — and arguably would not justify $5.62/mo.
+  A true rate under ~1% would be invisible here — and arguably would not justify $6.03/mo.
 - **Spacing.** The protocol called for vantages hours apart; laptop and Fly ran ~6 minutes
   apart. Accepted only because both were clean: contamination could inflate a challenge rate,
   not suppress one.
@@ -89,7 +89,7 @@ The existing retry/backoff logic in `shopify.ts` is untouched and stays in place
 
 ### Where the Shopify calls run
 
-- **Fly.io, always-on, dedicated static egress IP (chosen)** — $5.62/mo ($2.02 always-on `shared-cpu-1x`/256MB + $3.60 app-scoped egress IP), both figures verified against Fly's docs 2026-09-03. App-scoped rather than cross-tenant; `flyctl deploy` is the closest match to the project's existing git-push habit; no OS patching. Note the relevant product is `fly ips allocate-egress`, not the $2/mo dedicated IPv4, which is inbound-only and irrelevant here.
+- **Fly.io, always-on, dedicated static egress IP (chosen)** — $6.03/mo ($2.43 always-on `shared-cpu-1x`/256MB in `ord` + $3.60 app-scoped egress IP), verified against Fly's docs 2026-09-05. **Corrected 2026-09-05:** this was first recorded as $5.62/mo ($2.02 compute). $2.02 is the `ams` price — Fly's pricing page renders a separate table per region and the compute rate carries a regional markup. `ord`, the region actually chosen here, is $2.43/mo. Note also that Fly's "month" is 30 days, so a 31-day month runs ~3% higher. App-scoped rather than cross-tenant; `flyctl deploy` is the closest match to the project's existing git-push habit; no OS patching. Note the relevant product is `fly ips allocate-egress`, not the $2/mo dedicated IPv4, which is inbound-only and irrelevant here.
 - **Hetzner CX23 / DigitalOcean Basic Droplet VPS** — marginally cheaper (~$4–6/mo) with a static IP included by default, but shifts OS patching, uptime monitoring, and service management onto the solo maintainer. Rejected: ~$1/mo is not worth recurring toil.
 - **Railway Pro** — $20/mo including $20 usage credit; simpler all-in-one setup, but the included static outbound IP is *shared*. Verified 2026-09-03: Railway staff state it "does not guarantee a dedicated IP - it may be shared with other customers." Rejected as ~3.5x the cost for a weaker guarantee — a smaller version of the problem being fixed.
 - **Render** — native dedicated-IP product is $100/mo and requires a Pro/Scale/Enterprise plan (verified 2026-09-03). Rejected as far more expensive.
@@ -115,7 +115,7 @@ The existing retry/backoff logic in `shopify.ts` is untouched and stays in place
 - **Good:** Rollback is an environment variable, not a revert. Unsetting `SHOPIFY_RELAY_URL` in Cloudflare Pages restores today's flaky-but-functional direct calls without a code change or redeploy of the relay.
 - **Good:** The migration surface is one function (`createShopifyClient`), one new service, and two new env vars (`SHOPIFY_RELAY_URL`, `SHOPIFY_RELAY_SECRET`) alongside the 3 existing Shopify ones. No handler moves, no frontend file changes, and the retry/backoff logic is untouched.
 - **Good:** Token caching on the relay removes one Shopify round trip per submission, which reduces WAF exposure independently of the IP change.
-- **Bad:** New operational dependency — a second hosted account, its own billing ($5.62/mo), and a new deploy step. This is a genuinely new category of ops for a project that has none beyond Cloudflare's managed pipeline. A GitHub Actions deploy pipeline (and its `FLY_API_TOKEN`) is deliberately deferred until the relay changes often enough to justify the added attack surface; until then `fly deploy` is run by hand.
+- **Bad:** New operational dependency — a second hosted account, its own billing ($6.03/mo), and a new deploy step. This is a genuinely new category of ops for a project that has none beyond Cloudflare's managed pipeline. A GitHub Actions deploy pipeline (and its `FLY_API_TOKEN`) is deliberately deferred until the relay changes often enough to justify the added attack surface; until then `fly deploy` is run by hand.
 - **Bad:** A second deploy surface sits permanently in the request path. Timeout and retry changes touch two systems, and a Cloudflare Pages Functions outage breaks the forms even when Fly and Shopify are both healthy.
 - **Bad:** The Shopify client secret is now stored at rest with two vendors rather than one — Cloudflare retains it to preserve the direct-call rollback path. Rotate the credential **only once the cutover is verified.** Cloudflare's copy stays live until the relay carries traffic, so rotating earlier invalidates a secret that is still in the request path — turning an intermittent failure into a total outage. Rotation is hygiene, not a requirement; skipping it breaks nothing.
 - **Bad, accepted deliberately:** the relay forwards **any** GraphQL document once
@@ -135,3 +135,44 @@ The existing retry/backoff logic in `shopify.ts` is untouched and stays in place
 
 - **Bad:** No published timeline for how long Shopify's WAF takes to build trust in a new dedicated IP. The only datapoint is a "3–4 days" anecdote from a different incident on GCP IPs. This requires an observation period after cutover before concluding the fix worked, during which occasional bot-challenges absorbed by the retained retries do not indicate failure.
 - **Neutral:** Zero SEO impact. The static export, its routes, metadata, and sitemap are untouched.
+
+## Operating the relay
+
+Facts established while standing this up (2026-09-05), recorded because none of
+them are visible in `fly.toml` or recoverable from the code:
+
+- **Deploy with `fly deploy ./relay --ha=false`.** On an app whose process group
+  has **zero** machines, `fly deploy` creates **two** — an HA spare for
+  zero-downtime deploys. That is documented default behavior, not a billing
+  trick, and it prints a warning when it happens. It only triggers on a group
+  with no machines (first deploy, or a redeploy after scaling to zero); later
+  deploys preserve the existing count, so `fly scale count 1` sticks and
+  `--ha=false` is belt-and-braces rather than a per-deploy ritual.
+- **Machine count is not expressible in `fly.toml`.** It lives in Fly's state,
+  set by `fly scale count` / `fly machine clone` / `fly machine destroy`. This
+  app runs **one** machine on purpose: two always-on machines would be
+  $4.86/mo compute instead of $2.43, and the HA they buy is redundant here —
+  the relay is stateless, `shopify.ts` keeps its 5-attempt backoff in front of
+  it, and unsetting `SHOPIFY_RELAY_URL` is a working rollback.
+- **Ignore flyctl's own hint here.** On creating the spare it suggests setting
+  `min_machines_running = 0`. That would not have prevented the spare (it is
+  already the `fly launch` default), and for this app it would enable
+  scale-to-zero — the cold-start behavior deliberately disabled above.
+  `min_machines_running` has no effect at all unless `auto_stop_machines` is
+  `"stop"` or `"suspend"`. The flag that prevents the spare is `--ha=false`.
+- **Egress IPs are app-and-region scoped, not per-machine.** One allocation
+  covers up to 64 machines, and the IPv6 comes with the IPv4 for the single
+  $3.60/mo charge. Both machines shared `209.71.89.37` while two were running —
+  verified from inside each. So the HA spare was a cost question, never a
+  correctness one; there was no risk of half the traffic leaving from a shared
+  NAT.
+- **The egress IP survives machine destruction and redeploys.** It is released
+  only by an explicit `fly ips release-egress`. The IP allocated here is
+  `209.71.89.37` (plus `2a09:8280:e626:1:0:184:54e7:0`) — note this is a *new*
+  address, not the `209.71.89.82` from the Phase 0 probe, which was torn down.
+  Its WAF reputation therefore starts from zero.
+- **There is no free tier.** Fly discontinued the Hobby/Launch/Scale plans on
+  2024-10-07; the "3 free shared-cpu-1x 256MB VMs" allowance is honored only for
+  organizations that were already on those plans. Whether this org qualifies is
+  visible only in the Fly dashboard and has not been checked — if it does, the
+  compute line is $0.

@@ -8,10 +8,18 @@ primary_region = "ord"
   force_https = true
   # Always-on, per ADR-0003. Scale-to-zero is deliberately disabled: a cold
   # start risks emitting from an unstable source IP, which is the exact failure
-  # this relay exists to fix. The $2.02/mo always-on cost is budgeted in the ADR.
+  # this relay exists to fix. Fly documents "off" + auto_start false as the way
+  # to keep every machine running continuously.
+  #
+  # min_machines_running is deliberately absent: it has no effect unless
+  # auto_stop_machines is "stop" or "suspend", so setting it here would be
+  # inert and misleading. Machine COUNT is not expressible in fly.toml at all --
+  # it lives in Fly's state, set by `fly scale count`. On an app with zero
+  # machines, `fly deploy` creates TWO (an HA spare) unless you pass --ha=false;
+  # it preserves the existing count on every later deploy. This app is scaled to
+  # 1 on purpose, so deploy it with:  fly deploy ./relay --ha=false
   auto_stop_machines = "off"
-  auto_start_machines = true
-  min_machines_running = 1
+  auto_start_machines = false
 
   [[http_service.checks]]
     interval = "15s"
