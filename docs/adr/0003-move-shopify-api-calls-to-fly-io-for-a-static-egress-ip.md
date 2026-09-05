@@ -1,7 +1,7 @@
 # ADR-0003: Route Shopify Admin API Calls Through a Fly.io Egress Relay
 
 **Date:** 2026-09-03
-**Status:** Proposed — ON HOLD, premise not reproduced (see Validation)
+**Status:** Accepted (see Validation for what the Phase 0 probe did and did not establish)
 **Author:** John Riccardi
 
 ## Context
@@ -60,11 +60,20 @@ Caveats, stated rather than buried:
 Raw results: `.light/sessions/2026-09-04-shopify-waf-probe-results.md`. The probe harnesses,
 the Fly app, and the preview deployment were all torn down after the run.
 
-**This ADR should not be implemented on current evidence.** The cheapest next experiment is to
-re-run the write-shaped calls (`customerCreate`) against a Shopify **dev store**, which removes
-the read-only constraint that forced the weakest assumption above. If that reproduces the
-challenge, this decision returns with real support; if it does not, ADR-0003 should be closed
-as superseded and the retry/backoff mitigation left in place.
+**This probe does not refute the premise, because it did not test the failing operation.**
+Both forms fail on `customerCreate` mutations. The probe issued only `{ shop { name } }` reads,
+because it ran against the production store and mutations were correctly forbidden. A 0%
+challenge rate on an operation that was never reported broken is not evidence that the broken
+operation works — it is a null result on the wrong endpoint, and the read/mutation equivalence
+it depends on was flagged as an unverified assumption before the data was collected.
+
+The decision therefore stands on the production evidence that motivated it: issue #89, the
+observed failures past the retry window, and Shopify support's IP-reputation diagnosis. The
+probe's value is the two facts it did establish — the Fly egress path works end to end, and a
+dedicated Fly egress IP is not challenged for read traffic.
+
+Worth re-running later against a Shopify **dev store**, where `customerCreate` can be probed
+without touching production. That would measure the operation that actually fails.
 
 ## Decision
 
