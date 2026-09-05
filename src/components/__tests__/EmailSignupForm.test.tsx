@@ -8,6 +8,7 @@ import { CONTACT_EMAIL } from "@/lib/constants";
 
 vi.mock("@/lib/analytics", () => ({
   trackEmailSignup: vi.fn(),
+  trackEmailSignupError: vi.fn(),
 }));
 
 async function fillAndSubmit(
@@ -164,6 +165,7 @@ describe("EmailSignupForm", () => {
 
         expect(analytics.trackEmailSignup).toHaveBeenCalledTimes(1);
         expect(analytics.trackEmailSignup).toHaveBeenCalledWith(source);
+        expect(analytics.trackEmailSignupError).not.toHaveBeenCalled();
       });
     });
 
@@ -198,6 +200,19 @@ describe("EmailSignupForm", () => {
         expect(link).toBeInTheDocument();
         expect(link).toHaveAttribute("href", `mailto:${CONTACT_EMAIL}`);
         expect(analytics.trackEmailSignup).not.toHaveBeenCalled();
+      });
+
+      it("calls trackEmailSignupError with the source on failure", async () => {
+        const user = userEvent.setup();
+        vi.stubGlobal("fetch", mockFetchFactory());
+
+        render(<EmailSignupForm source={source} />);
+        await fillAndSubmit(user, "jane@example.com");
+
+        await waitFor(() =>
+          expect(analytics.trackEmailSignupError).toHaveBeenCalledOnce(),
+        );
+        expect(analytics.trackEmailSignupError).toHaveBeenCalledWith(source);
       });
     });
   });
