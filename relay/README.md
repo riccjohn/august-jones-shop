@@ -22,11 +22,19 @@ the Shopify credentials, mints and caches its own Shopify access token, and forw
 `{query, variables}` on to exactly one configured store — it accepts no caller-supplied
 target and cannot be pointed anywhere else.
 
-**It is opt-in.** With the Cloudflare Pages env var `RELAY_URL` unset,
-`createShopifyClient` (`functions/api/_lib/shopify.ts`) calls Shopify directly, as if the
-relay didn't exist. Setting `RELAY_URL` and `RELAY_SHARED_SECRET` (see Credentials) routes
-those calls through the relay instead. Unsetting `RELAY_URL` is the rollback (see Rolling
-back).
+**It is opt-in**, and the site runs in one of two modes depending on a single Cloudflare
+Pages environment variable:
+
+- **Direct mode** — `RELAY_URL` unset. `createShopifyClient`
+  (`functions/api/_lib/shopify.ts`) calls Shopify directly, as if the relay didn't exist.
+  This is the default, and what the site did before the relay existed.
+- **Relay mode** — `RELAY_URL` and `RELAY_SHARED_SECRET` both set (see Credentials). The
+  same calls go to the relay, which forwards them to Shopify from its dedicated IP.
+
+Switching between them is a Cloudflare environment-variable change plus a redeploy — no
+code change, and nothing to change on Fly. Turning relay mode on is the cutover (see
+Enabling the relay); turning it off again is the rollback (see Rolling back). These two
+terms are used throughout this document and in the code comments.
 
 - **Fly app name:** `august-jones-relay`
 - **Region:** `ord` (Fly's code for Chicago) — one always-on machine runs there
@@ -323,8 +331,9 @@ pnpm exec tsc -p relay --noEmit   # typecheck
 pnpm exec vitest run relay        # unit tests
 docker build -t aj-relay ./relay  # confirms the image builds
 
-# Run it locally against the real Shopify credentials (relay mode off in the browser --
-# this is just the relay). Without them it exits immediately, naming what's missing.
+# Run it locally against the real Shopify credentials. This starts the relay alone; it
+# does not put your local site into relay mode. Without the credentials the process
+# exits immediately, naming which ones are missing.
 docker run --rm -p 8080:8080 \
   -e SHOPIFY_STORE_DOMAIN=... -e SHOPIFY_CLIENT_ID=... -e SHOPIFY_CLIENT_SECRET=... \
   -e RELAY_SHARED_SECRET=local-dev-secret aj-relay
