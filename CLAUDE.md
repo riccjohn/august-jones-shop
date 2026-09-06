@@ -78,12 +78,12 @@ on Fly.io (`relay/`) that holds a **static egress IP**, because Shopify's WAF sc
 Cloudflare's shared egress addresses — see
 `docs/adr/0003-move-shopify-api-calls-to-fly-io-for-a-static-egress-ip.md`.
 
-It is opt-in: with `SHOPIFY_RELAY_URL` unset, `createShopifyClient` calls Shopify directly
-exactly as before. Unsetting it is the rollback, no code change needed.
+It is opt-in: with `RELAY_URL` unset, `createShopifyClient` calls Shopify directly.
+Unsetting it is the rollback, no code change needed.
 
-`relay/README.md` is the runbook — deploying, the Fly/Cloudflare env var split, verifying,
-rolling back, and rotating `SHOPIFY_RELAY_SECRET` (which cannot be rotated in place without
-an outage). The relay has its own tsconfig and is excluded from the root one:
+`relay/README.md` is the runbook — building and deploying the relay, the Fly/Cloudflare
+credential split, enabling it, verifying, rolling back, and rotating each credential. The
+relay has its own tsconfig and is excluded from the root one:
 `pnpm exec tsc -p relay --noEmit`, `pnpm exec vitest run relay`.
 
 ## Commands

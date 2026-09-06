@@ -143,13 +143,13 @@ Those Shopify calls can optionally be routed through a small always-on service o
 shared egress addresses and intermittently answers with a bot-challenge page instead of
 JSON.
 
-It is opt-in and off by default: with `SHOPIFY_RELAY_URL` unset, the Shopify calls go
-direct, exactly as before. Unsetting that one variable is also the rollback — no code
-change, no Fly change.
+It is opt-in and off by default: with `RELAY_URL` unset, the Shopify calls go direct.
+Unsetting that one variable is also the rollback — no code change, no Fly change.
 
 - **Why:** [ADR-0003](./docs/adr/0003-move-shopify-api-calls-to-fly-io-for-a-static-egress-ip.md)
-- **How to operate it** — deploying, the Fly/Cloudflare env var split, verifying,
-  rolling back, rotating secrets: **[relay/README.md](./relay/README.md)**
+- **How to operate it** — building it, deploying, the Fly/Cloudflare credential split,
+  enabling it, verifying, rolling back, rotating credentials:
+  **[relay/README.md](./relay/README.md)**
 
 ## Deployment
 

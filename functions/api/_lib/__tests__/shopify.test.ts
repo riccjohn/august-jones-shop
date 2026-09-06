@@ -133,7 +133,7 @@ describe("ShopifyClient.request — GraphQL request retry", () => {
   });
 });
 
-// --- Phase 2: relay mode (SHOPIFY_RELAY_URL / SHOPIFY_RELAY_SECRET) ---
+// --- Phase 2: relay mode (RELAY_URL / RELAY_SHARED_SECRET) ---
 //
 // These env objects are deliberately NOT annotated with `: ShopifyEnv` —
 // today's ShopifyEnv interface has no relay fields, so an explicit
@@ -147,8 +147,8 @@ describe("ShopifyClient.request — GraphQL request retry", () => {
 const relaySecret = "relay-secret-value";
 const relayEnv = {
   ...env,
-  SHOPIFY_RELAY_URL: "https://relay.example.com",
-  SHOPIFY_RELAY_SECRET: relaySecret,
+  RELAY_URL: "https://relay.example.com",
+  RELAY_SHARED_SECRET: relaySecret,
 };
 
 /**
@@ -286,7 +286,7 @@ describe("createShopifyClient — relay mode", () => {
     ]);
   });
 
-  it("tolerates a trailing slash on SHOPIFY_RELAY_URL instead of building //graphql", async () => {
+  it("tolerates a trailing slash on RELAY_URL instead of building //graphql", async () => {
     // `//graphql` matches no route on the relay and comes back as its 404
     // JSON, which surfaces to the user as a 500 reading "not found" — an
     // unreasonably opaque failure for a stray slash in a config value.
@@ -302,7 +302,7 @@ describe("createShopifyClient — relay mode", () => {
 
     const client = await createShopifyClient({
       ...relayEnv,
-      SHOPIFY_RELAY_URL: "https://relay.example.com/",
+      RELAY_URL: "https://relay.example.com/",
     });
     await expect(client.request("query { ok }")).resolves.toEqual({ ok: true });
 
@@ -343,10 +343,10 @@ describe("fetchShopifyJson — per-attempt timeout", () => {
 });
 
 describe("createShopifyClient — relay misconfiguration", () => {
-  it("throws a ShopifyApiError when SHOPIFY_RELAY_URL is set but SHOPIFY_RELAY_SECRET is missing, rather than silently falling back to direct calls", async () => {
+  it("throws a ShopifyApiError when RELAY_URL is set but RELAY_SHARED_SECRET is missing, rather than silently falling back to direct calls", async () => {
     const halfConfiguredEnv = {
       ...env,
-      SHOPIFY_RELAY_URL: "https://relay.example.com",
+      RELAY_URL: "https://relay.example.com",
     };
     const fetchMock = vi.fn(async (url: string | URL) => {
       throw new Error(`Unexpected fetch to ${url}`);

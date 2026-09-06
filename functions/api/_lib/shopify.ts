@@ -9,8 +9,8 @@ export interface ShopifyEnv {
   SHOPIFY_STORE_DOMAIN: string;
   SHOPIFY_CLIENT_ID: string;
   SHOPIFY_CLIENT_SECRET: string;
-  SHOPIFY_RELAY_URL?: string;
-  SHOPIFY_RELAY_SECRET?: string;
+  RELAY_URL?: string;
+  RELAY_SHARED_SECRET?: string;
 }
 
 interface GraphQLResponse<T> {
@@ -184,24 +184,24 @@ export interface ShopifyClient {
  * Fetches a fresh access token (unless relay mode is configured) and returns
  * a client bound to it for this request.
  *
- * When `SHOPIFY_RELAY_URL` is set, GraphQL requests are sent to the relay
+ * When `RELAY_URL` is set, GraphQL requests are sent to the relay
  * instead of directly to Shopify, authenticated with `X-Relay-Secret` rather
  * than a Shopify access token — no OAuth call is made from this environment
- * at all. `SHOPIFY_RELAY_URL` without `SHOPIFY_RELAY_SECRET` is treated as a
+ * at all. `RELAY_URL` without `RELAY_SHARED_SECRET` is treated as a
  * misconfiguration, not a fallback to direct calls.
  */
 export async function createShopifyClient(
   env: ShopifyEnv,
 ): Promise<ShopifyClient> {
-  const relayUrl = env.SHOPIFY_RELAY_URL;
+  const relayUrl = env.RELAY_URL;
 
   let graphqlUrl: string;
   let authHeaders: Record<string, string>;
 
   if (relayUrl) {
-    if (!env.SHOPIFY_RELAY_SECRET) {
+    if (!env.RELAY_SHARED_SECRET) {
       throw new ShopifyApiError(
-        "SHOPIFY_RELAY_URL is set but SHOPIFY_RELAY_SECRET is missing",
+        "RELAY_URL is set but RELAY_SHARED_SECRET is missing",
       );
     }
     // Tolerate a trailing slash on the configured URL. Without this,
@@ -210,7 +210,7 @@ export async function createShopifyClient(
     // user as a 500 whose message is the single word "not found". A silent
     // config typo should not be that hard to diagnose.
     graphqlUrl = `${relayUrl.replace(/\/+$/, "")}/graphql`;
-    authHeaders = { "X-Relay-Secret": env.SHOPIFY_RELAY_SECRET };
+    authHeaders = { "X-Relay-Secret": env.RELAY_SHARED_SECRET };
   } else {
     const accessToken = await fetchAccessToken(env);
     graphqlUrl = `https://${env.SHOPIFY_STORE_DOMAIN}/admin/api/${API_VERSION}/graphql.json`;

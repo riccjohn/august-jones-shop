@@ -12,7 +12,7 @@ import { describe, expect, it } from "vitest";
  *
  * Until now the only thing holding them together was a comment in each file
  * saying they must match. Letting them drift would mean unsetting
- * SHOPIFY_RELAY_URL silently changes which Shopify API version the app talks
+ * RELAY_URL silently changes which Shopify API version the app talks
  * to — a rollback that quietly alters behavior is worse than no rollback.
  * This test is what actually enforces it.
  *
