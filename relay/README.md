@@ -122,7 +122,15 @@ without `RELAY_SHARED_SECRET` makes `createShopifyClient` throw, it does not fal
 direct calls. Leaving both unset is the only way to get direct-call behavior.
 
 Cloudflare Pages bakes environment variables into a deployment at build time — a variable
-change does nothing until the next deploy.
+change does nothing until the next deploy. **To redeploy without a code change:** Cloudflare
+dashboard → Workers & Pages → `august-jones-shop` → Deployments → the most recent
+deployment → `⋯` → **Retry deployment**. That builds again against the current variables.
+(Do not push an empty commit for this — `main` is protected.) Referred to below as
+"redeploy Cloudflare".
+
+Because a missing variable silently means direct mode rather than an error, always confirm
+a redeploy actually took effect by checking `fly logs` after a form submission (see
+Enabling the relay, step 5) rather than assuming it did.
 
 ## Building the relay from scratch
 
@@ -219,7 +227,8 @@ How to turn the relay on for an app that's already deployed and healthy.
    credentials, and Shopify itself are all reachable, without writing any data.
 4. **Set `RELAY_URL` and `RELAY_SHARED_SECRET` on Cloudflare Pages** — the project's
    Settings → Environment Variables, on **both** the Production and Preview
-   environments — then trigger a redeploy. Nothing changes until that redeploy finishes.
+   environments — then redeploy Cloudflare (see Credentials for how). Nothing changes
+   until that redeploy finishes.
 5. **Submit one real email-list signup** (the `EmailSignupForm` component), then confirm
    all three:
    - the customer appears in the Shopify admin
