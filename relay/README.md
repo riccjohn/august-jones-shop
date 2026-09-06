@@ -223,8 +223,9 @@ How to turn the relay on for an app that's already deployed and healthy.
    ```
 2. **Confirm the relay is running current code:** `fly status -a august-jones-relay`
    shows the deployed image and when it last updated.
-3. **Run the `/verify` check** (see Verifying) to confirm the shared secret, the Shopify
-   credentials, and Shopify itself are all reachable, without writing any data.
+3. **Run the `/verify` check** (see Verifying, check 3) to confirm the shared secret, the
+   Shopify credentials, and Shopify itself are all reachable, without writing any data.
+   Expect `{"data":{"shop":{"name":"..."}}}`; do not continue past a `401` or `502`.
 4. **Set `RELAY_URL` and `RELAY_SHARED_SECRET` on Cloudflare Pages** — the project's
    Settings → Environment Variables, on **both** the Production and Preview
    environments — then redeploy Cloudflare (see Credentials for how). Nothing changes
@@ -263,11 +264,19 @@ curl -s -o /dev/null -w '%{http_code}\n' -X POST -d '{}' \
   https://august-jones-relay.fly.dev/graphql                              # -> 401
 
 # 3. Secret + credentials + Shopify itself, end to end, with no side effects.
-#    Replace <the-relay-secret> with the real RELAY_SHARED_SECRET value.
-curl -fsS -H 'X-Relay-Secret: <the-relay-secret>' \
+#    Export the real value first -- keeping it out of your shell history, and out of
+#    the command below so there is no placeholder to paste by accident. Note the
+#    double quotes: single quotes would send the variable name literally.
+export RELAY_SHARED_SECRET='...'
+curl -fsS -H "X-Relay-Secret: $RELAY_SHARED_SECRET" \
   https://august-jones-relay.fly.dev/verify
                                               # -> {"data":{"shop":{"name":"..."}}}
 ```
+
+A `401` from check 3 means the value sent didn't match Fly's copy — most often because a
+placeholder or an unset variable was sent rather than the secret itself. It looks identical
+to a genuine mismatch, so confirm what you actually sent before concluding the secret is
+wrong. A `502` means the secret matched but the relay couldn't reach Shopify.
 
 Check 1 passing is necessary but not sufficient. Fly's own health check runs over Fly's
 private network, so it can report the app healthy even when it has no public inbound IP
