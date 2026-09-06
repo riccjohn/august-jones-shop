@@ -124,7 +124,7 @@ The existing retry/backoff logic in `shopify.ts` is untouched and stays in place
 - **Good:** Token caching on the relay removes one Shopify round trip per submission, which reduces WAF exposure independently of the IP change.
 - **Bad:** New operational dependency — a second hosted account, its own billing ($6.03/mo), and a new deploy step. This is a genuinely new category of ops for a project that has none beyond Cloudflare's managed pipeline. **Revised 2026-09-05:** a GitHub Actions deploy pipeline now exists (`.github/workflows/deploy-relay.yml`), reversing the earlier deferral. That deferral assumed `FLY_API_TOKEN` would be an org-wide credential, weighing the added attack surface against how rarely the relay changes. It is instead an **app-scoped** token (`fly tokens create deploy -a august-jones-relay`), which can deploy `august-jones-relay` and nothing else in the org — a much narrower blast radius than the deferral assumed, and one that no longer needs "changes often enough" to justify. The workflow re-runs the relay's typecheck and unit tests before every deploy and passes `--ha=false`, so it cannot silently create the second always-on machine this ADR's one-machine decision rules out. Manual `fly deploy ./relay --ha=false` remains the fallback.
 - **Bad:** A second deploy surface sits permanently in the request path. Timeout and retry changes touch two systems, and a Cloudflare Pages Functions outage breaks the forms even when Fly and Shopify are both healthy.
-- **Bad:** The Shopify client secret is now stored at rest with two vendors rather than one — Cloudflare retains it to preserve the direct-call rollback path. Rotate the credential **only once the cutover is verified.** Cloudflare's copy stays live until the relay carries traffic, so rotating earlier invalidates a secret that is still in the request path — turning an intermittent failure into a total outage. Rotation is hygiene, not a requirement; skipping it breaks nothing. See `relay/README.md`'s "Rotating the Shopify client secret" section for the exact order.
+- **Bad:** The Shopify client secret is now stored at rest with two vendors rather than one — Cloudflare retains it to preserve the direct-call rollback path. Rotate the credential **only once the cutover is verified.** Cloudflare's copy stays live until the relay carries traffic, so rotating earlier invalidates a secret that is still in the request path — turning an intermittent failure into a total outage. Rotation is hygiene, not a requirement; skipping it breaks nothing. See `relay/README.md`'s "Rotating credentials" section (the Shopify client secret entry) for the exact order.
 - **Bad, accepted deliberately:** the relay forwards **any** GraphQL document once
   authenticated — there is no operation allowlist. Anyone holding `RELAY_SHARED_SECRET`
   therefore has the custom app's full scopes (`read_customers`, `write_customers`,
@@ -140,17 +140,17 @@ The existing retry/backoff logic in `shopify.ts` is untouched and stays in place
   against the relay. For a solo maintainer that footgun is a likelier harm than the threat it
   prevents. Revisit if the relay ever gains a second caller or the app's scopes widen.
 
-- **Bad:** No published timeline for how long Shopify's WAF takes to build trust in a new dedicated IP. The only datapoint is a "3–4 days" anecdote from a different incident on GCP IPs. This requires an observation period after cutover before concluding the fix worked, during which occasional bot-challenges absorbed by the retained retries do not indicate failure. See `relay/README.md`'s "Cutting over" section for what to watch during it.
+- **Bad:** No published timeline for how long Shopify's WAF takes to build trust in a new dedicated IP. The only datapoint is a "3–4 days" anecdote from a different incident on GCP IPs. This requires an observation period after cutover before concluding the fix worked, during which occasional bot-challenges absorbed by the retained retries do not indicate failure. See `relay/README.md`'s "Enabling the relay (cutover)" section for what to watch during it.
 - **Neutral:** Zero SEO impact. The static export, its routes, metadata, and sitemap are untouched.
 
 ## Operating the relay
 
-Facts discovered while standing this up (2026-09-05) that shaped the operational decisions
-below — recorded because none of them are visible in `fly.toml` or recoverable from the code.
-**For current runbook instructions — deploying, verifying, rotating secrets, first-time
-setup — see `relay/README.md`, which CLAUDE.md designates the single source of truth for how
-to operate the relay.** What stays here is the WHY: the discoveries and mistakes that produced
-those instructions, not the instructions themselves.
+Facts discovered while standing this up that shaped the operational decisions below —
+recorded because none of them are visible in `fly.toml` or recoverable from the code.
+**For current runbook instructions — building the relay, deploying, verifying, rotating
+credentials — see `relay/README.md`, which CLAUDE.md designates the single source of truth
+for how to operate the relay.** What stays here is the WHY: the discoveries and mistakes
+that produced those instructions, not the instructions themselves.
 
 - **`fly deploy` against a process group with zero machines creates an extra "HA spare"
   machine** by default — a standby Fly starts so a deploy can roll through one machine at a
@@ -183,10 +183,10 @@ those instructions, not the instructions themselves.
   genuinely independent here, and only an external curl distinguishes them. Cutting over in
   that state would have failed every Cloudflare call and taken both forms down completely,
   which is strictly worse than the intermittent failure this ADR exists to fix. See README's
-  First-time setup section for the fix and its Verifying section for the external-curl check
-  that actually catches this — Fly's own health check cannot. This is the inbound product the
-  Options section above warns not to confuse with `allocate-egress`; it turns out both are
-  needed, for opposite directions.
+  "Building the relay from scratch" section for the fix and its Verifying section for the
+  external-curl check that actually catches this — Fly's own health check cannot. This is the
+  inbound product the Options section above warns not to confuse with `allocate-egress`; it
+  turns out both are needed, for opposite directions.
 - **The egress IP survives machine destruction and redeploys.** It is released only by an
   explicit `fly ips release-egress`. The IP allocated here is `209.71.89.37` (plus
   `2a09:8280:e626:1:0:184:54e7:0`) — note this is a *new* address, not the `209.71.89.82` from
@@ -195,7 +195,6 @@ those instructions, not the instructions themselves.
   "3 free shared-cpu-1x 256MB VMs" allowance is honored only for organizations that were
   already on those plans. Whether this org qualifies is visible only in the Fly dashboard and
   has not been checked — if it does, the compute line is $0.
-- **Deploys run in CI (2026-09-05)** via `.github/workflows/deploy-relay.yml`, reversing this
-  ADR's earlier deferral of a deploy pipeline. The reasoning for that reversal lives with the
-  consequence it revises, above; it is not repeated here. See README's Deploying section for
-  what the workflow runs and the manual fallback.
+- **Deploys run in CI** via `.github/workflows/deploy-relay.yml` (reversing this ADR's earlier
+  deferral of a deploy pipeline — see the Consequences section above for why). See README's
+  Deploying section for what the workflow runs and the manual fallback.
