@@ -6,6 +6,13 @@ on:
     paths: ['relay/**']
   workflow_dispatch:
 
+# Deployment authenticates with FLY_API_TOKEN, so GITHUB_TOKEN needs nothing
+# beyond reading the repo to check it out. Without an explicit block the token
+# inherits whatever the repo default is, which may include write scopes this
+# workflow has no use for.
+permissions:
+  contents: read
+
 concurrency:
   group: deploy-relay
   cancel-in-progress: false
