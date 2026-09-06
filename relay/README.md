@@ -47,6 +47,30 @@ All four are required — the process checks for them at startup and exits with 
 naming exactly which are missing rather than starting up half-configured and 401ing every
 request while reporting a healthy `/healthz`.
 
+### Where each one comes from
+
+The shared `SHOPIFY_` prefix is misleading: only three of these are Shopify credentials.
+
+| Name | Origin | Shopify sees it? |
+|---|---|---|
+| `SHOPIFY_STORE_DOMAIN` | your store's `.myshopify.com` address | — |
+| `SHOPIFY_CLIENT_ID` | Shopify Dev Dashboard → your custom app | yes, to mint tokens |
+| `SHOPIFY_CLIENT_SECRET` | Shopify Dev Dashboard → your custom app | yes, to mint tokens |
+| `SHOPIFY_RELAY_SECRET` | **you invent it** — `openssl rand -hex 32` | **never** |
+
+`SHOPIFY_RELAY_SECRET` is not issued by Shopify or by Fly, and there is nowhere to look it
+up. It is a password you make up once so that the relay can tell a request from our
+Cloudflare Functions apart from any other request that reaches
+`august-jones-relay.fly.dev`, which is a public address anyone can hit. Cloudflare sends it
+as the `X-Relay-Secret` header; the relay compares it against its own copy and 401s on a
+mismatch. Both sides must hold the same string, and that is the only thing that makes them
+"match" — there is no registry, no issuer, and no way to recover it if lost (see Cutting
+over, step 0).
+
+The Shopify credentials never leave the relay in relay mode: Cloudflare talks only to the
+relay, and the relay alone exchanges `CLIENT_ID`/`CLIENT_SECRET` for an access token. That
+is the point of putting them there — see ADR-0003, "Where the Shopify credentials live".
+
 **On Cloudflare Pages (Production *and* Preview):**
 
 | Name | Value |
