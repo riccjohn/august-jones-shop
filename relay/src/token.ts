@@ -76,7 +76,12 @@ async function mintToken(
 
 export function createTokenManager(env: TokenEnv): TokenManager {
   let cached: { token: string; expiresAt: number } | null = null;
-  let pending: Promise<{ token: string; expiresAt: number }> | null = null;
+  // The in-flight mint, tagged with the generation it started under so a
+  // caller arriving after an invalidate() can tell it apart from a fresh one.
+  let pending: {
+    generation: number;
+    promise: Promise<{ token: string; expiresAt: number }>;
+  } | null = null;
   // Bumped by invalidate(). A mint captures the generation it started under;
   // if invalidate() runs before that mint resolves, the generation it
   // captured is now stale, so the resolved token is handed back to its
@@ -89,9 +94,14 @@ export function createTokenManager(env: TokenEnv): TokenManager {
       return cached.token;
     }
 
-    if (!pending) {
+    // Join an in-flight mint only if it started under the current
+    // generation. Without the generation check, the 401 path in
+    // forwardGraphqlRequest — invalidate(), then immediately getToken() —
+    // could attach to a mint that began before the 401 and be handed back
+    // the very token Shopify just rejected, so the retry fails identically.
+    if (!pending || pending.generation !== generation) {
       const mintGeneration = generation;
-      pending = mintToken(env)
+      const promise = mintToken(env)
         .then((result) => {
           if (generation === mintGeneration) {
             cached = result;
@@ -99,11 +109,15 @@ export function createTokenManager(env: TokenEnv): TokenManager {
           return result;
         })
         .finally(() => {
-          pending = null;
+          // Only clear if a newer mint hasn't already taken this slot.
+          if (pending?.generation === mintGeneration) {
+            pending = null;
+          }
         });
+      pending = { generation: mintGeneration, promise };
     }
 
-    const result = await pending;
+    const result = await pending.promise;
     return result.token;
   }
 

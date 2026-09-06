@@ -140,6 +140,62 @@ describe("createTokenManager — minting and caching", () => {
     expect(afterInvalidate).toBe("tok-2");
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
+
+  it("does not hand a caller arriving after invalidate() the token from a mint already in flight", async () => {
+    // This is the shape of forwardGraphqlRequest's 401 path: Shopify rejects
+    // a token, the relay invalidates and immediately asks for another. If
+    // that second getToken() joins a mint that started before the 401, it
+    // gets back the very token Shopify just rejected and the retry fails for
+    // exactly the same reason.
+    let resolveFirstMint: (response: Response) => void = () => {};
+    const firstMintPromise = new Promise<Response>((resolve) => {
+      resolveFirstMint = resolve;
+    });
+
+    const fetchMock = vi
+      .fn()
+      .mockImplementationOnce(() => firstMintPromise)
+      .mockImplementationOnce(async () =>
+        jsonResponse({ access_token: "tok-2", expires_in: 3600 }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const manager = createTokenManager(env);
+    const inFlight = manager.getToken();
+
+    manager.invalidate();
+    // Asked for while the first mint is still unresolved, unlike the test
+    // above which waits for it to settle first.
+    const afterInvalidate = manager.getToken();
+
+    resolveFirstMint(jsonResponse({ access_token: "tok-1", expires_in: 3600 }));
+
+    await expect(inFlight).resolves.toBe("tok-1");
+    await expect(afterInvalidate).resolves.toBe("tok-2");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("still shares one mint between concurrent callers within a generation", async () => {
+    let mintCount = 0;
+    const fetchMock = vi.fn(async () => {
+      mintCount++;
+      return jsonResponse({
+        access_token: `tok-${mintCount}`,
+        expires_in: 3600,
+      });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const manager = createTokenManager(env);
+    const tokens = await Promise.all([
+      manager.getToken(),
+      manager.getToken(),
+      manager.getToken(),
+    ]);
+
+    expect(tokens).toEqual(["tok-1", "tok-1", "tok-1"]);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("createTokenManager — non-JSON upstream responses", () => {
