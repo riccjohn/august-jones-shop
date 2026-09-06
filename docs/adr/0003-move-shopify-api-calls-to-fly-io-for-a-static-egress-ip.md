@@ -140,7 +140,7 @@ The existing retry/backoff logic in `shopify.ts` is untouched and stays in place
   against the relay. For a solo maintainer that footgun is a likelier harm than the threat it
   prevents. Revisit if the relay ever gains a second caller or the app's scopes widen.
 
-- **Bad:** No published timeline for how long Shopify's WAF takes to build trust in a new dedicated IP. The only datapoint is a "3–4 days" anecdote from a different incident on GCP IPs. This requires an observation period after cutover before concluding the fix worked, during which occasional bot-challenges absorbed by the retained retries do not indicate failure.
+- **Bad:** No published timeline for how long Shopify's WAF takes to build trust in a new dedicated IP. The only datapoint is a "3–4 days" anecdote from a different incident on GCP IPs. This requires an observation period after cutover before concluding the fix worked, during which occasional bot-challenges absorbed by the retained retries do not indicate failure. See `relay/README.md`'s "Cutting over" section for what to watch during it.
 - **Neutral:** Zero SEO impact. The static export, its routes, metadata, and sitemap are untouched.
 
 ## Operating the relay

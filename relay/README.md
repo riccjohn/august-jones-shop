@@ -128,6 +128,60 @@ and already has `shopify.ts`'s 5-attempt retry and the direct-call rollback in f
 Later deploys preserve the existing count, so this only bites on a fresh app or a redeploy
 after scaling to zero — but that is exactly when you would not notice.
 
+## Cutting over
+
+Pointing production traffic at the relay for the first time. First-time setup builds the
+app; this turns it on. Assumes a green deploy (above).
+
+**0. Confirm you still have the `SHOPIFY_RELAY_SECRET` value — before anything depends on
+it.** `fly secrets list` shows digests, never values: a Fly secret cannot be read back. If
+you generated it inline with `openssl rand -hex 32` and did not save it anywhere, it is
+gone, and Cloudflare needs it byte for byte. Set a new one now, while nothing is using it:
+
+```sh
+openssl rand -hex 32 | sed 's/^/SHOPIFY_RELAY_SECRET=/' | tee /tmp/relay-secret.txt \
+  | fly secrets import -a august-jones-relay
+```
+
+Rotating at this point costs nothing. Rotating after cutover is an outage — see Rotating
+`SHOPIFY_RELAY_SECRET` below.
+
+**1. Confirm the relay is running current code.** `fly status -a august-jones-relay` shows
+the deployed image and when it last updated. A merge touching `relay/**` redeploys it via
+CI; check that finished before relying on it.
+
+**2. Prove the whole path works without writing anything.** This is what `/verify` is for —
+it exercises secret, credentials, and Shopify reachability with a read-only query:
+
+```sh
+curl -fsS -H 'X-Relay-Secret: <the-relay-secret>' \
+  https://august-jones-relay.fly.dev/verify   # -> {"data":{"shop":{"name":"..."}}}
+```
+
+**3. Set both variables on Cloudflare Pages, Production *and* Preview, then redeploy.**
+This is the cutover. Nothing changes until the redeploy finishes — Cloudflare bakes
+environment variables into a deployment at build time.
+
+**4. Submit one real signup and confirm three places agree:**
+
+- the customer appears in Shopify
+- `email_signup` fires in Umami
+- `fly logs -a august-jones-relay` shows `{"method":"POST","path":"/graphql","status":200,"upstreamStatus":200}`
+
+The third is the one worth insisting on: it is the only evidence the request actually
+traversed the relay rather than quietly taking the direct path because a variable didn't
+apply.
+
+**5. Then watch for a few days.** The egress IP's reputation with Shopify's WAF starts at
+zero and there is no published timeline for building it. A challenge shows up in the log as
+`"upstreamStatus":403` and is absorbed by the 5-attempt retry in `shopify.ts`; occasional
+ones during this window do **not** mean the cutover failed. ADR-0003 has the reasoning.
+
+**6. Optional, once you are satisfied:** rotate the Shopify client secret (below), and add
+an external uptime monitor on `/healthz` — nothing currently alerts if the relay goes down.
+
+If anything looks wrong at any step, Rolling back is one deleted variable.
+
 ## Rotating `SHOPIFY_RELAY_SECRET`
 
 **Order: Cloudflare off → Fly rotate → Cloudflare on with the new value.** Rotating Fly first
