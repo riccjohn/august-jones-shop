@@ -1,3 +1,9 @@
+// Kept in lockstep with relay/src/graphql.ts's own API_VERSION constant.
+// This is the direct-call (rollback) path and that is the relay-mode path
+// (ADR-0003) — the two are separate tsconfig projects with no shared import
+// between them, so nothing but this comment enforces it. Letting them drift
+// would mean rolling back (unsetting SHOPIFY_RELAY_URL) silently switches
+// which Shopify API version the app talks to.
 const API_VERSION = "2026-07";
 
 export interface ShopifyEnv {

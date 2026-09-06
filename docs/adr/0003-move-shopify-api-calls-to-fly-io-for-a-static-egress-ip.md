@@ -26,6 +26,13 @@ two-dashboard split ADR-0002 exists to prevent. Evidence:
 
 ## Validation (2026-09-04)
 
+**Bottom line, read first:** the probe below is inconclusive — it measured a read query that
+was never reported broken, not the `customerCreate` mutation both forms actually fail on. The
+decision stands on the original production evidence (issue #89, failures past the retry
+window, Shopify support's IP-reputation diagnosis), not on this experiment. What follows is
+the record of why the probe couldn't settle the question, kept in full because a shorter
+version would hide exactly the reasoning that matters here.
+
 The premise above — that Cloudflare's shared egress is challenged and a dedicated Fly egress
 IP would not be — was tested before building anything. **It did not reproduce.**
 
@@ -79,7 +86,7 @@ without touching production. That would measure the operation that actually fail
 
 We will stand up a small, always-on **egress relay** on Fly.io holding a dedicated static egress IP (`fly ips allocate-egress`), and route Shopify Admin API traffic through it.
 
-The relay owns the Shopify credentials. It exposes exactly one authenticated route, `POST /graphql`, which attaches its own access token and forwards the query to the configured store's Admin API, returning the upstream status and body verbatim. It mints and caches that access token itself, refreshing on expiry or on an upstream 401. It accepts no caller-supplied target host, and no route reaches any origin other than the one store domain in its own configuration.
+The relay owns the Shopify credentials. It exposes two authenticated routes behind the same shared-secret check — `POST /graphql`, which attaches its own access token and forwards the query to the configured store's Admin API, returning the upstream status and body verbatim, and `GET /verify`, a read-only no-op probe added later (see `relay/README.md`) so a cutover can be checked end to end without writing a real customer record. It mints and caches that access token itself, refreshing on expiry or on an upstream 401. It accepts no caller-supplied target host, and no route reaches any origin other than the one store domain in its own configuration.
 
 All handlers and `_lib` modules stay on Cloudflare Pages exactly where they are. The only application change is `createShopifyClient` in `functions/api/_lib/shopify.ts`, which sends GraphQL to the relay when `SHOPIFY_RELAY_URL` is set and calls Shopify directly when it is not. Callers authenticate with a shared secret compared in constant time; the relay fails closed if that secret is unset.
 
@@ -112,12 +119,12 @@ The existing retry/backoff logic in `shopify.ts` is untouched and stays in place
 ## Consequences
 
 - **Good:** Contact form and newsletter signup submissions become reliable rather than probabilistic, once the dedicated IP builds WAF reputation.
-- **Good:** Rollback is an environment variable, not a revert. Unsetting `SHOPIFY_RELAY_URL` in Cloudflare Pages restores today's flaky-but-functional direct calls without a code change or redeploy of the relay.
+- **Good:** Rollback is an environment variable, not a revert. Unsetting `SHOPIFY_RELAY_URL` in Cloudflare Pages restores today's flaky-but-functional direct calls without a code change or redeploy of the relay. See `relay/README.md`'s "Rolling back" section for the exact steps.
 - **Good:** The migration surface is one function (`createShopifyClient`), one new service, and two new env vars (`SHOPIFY_RELAY_URL`, `SHOPIFY_RELAY_SECRET`) alongside the 3 existing Shopify ones. No handler moves, no frontend file changes, and the retry/backoff logic is untouched.
 - **Good:** Token caching on the relay removes one Shopify round trip per submission, which reduces WAF exposure independently of the IP change.
 - **Bad:** New operational dependency — a second hosted account, its own billing ($6.03/mo), and a new deploy step. This is a genuinely new category of ops for a project that has none beyond Cloudflare's managed pipeline. **Revised 2026-09-05:** a GitHub Actions deploy pipeline now exists (`.github/workflows/deploy-relay.yml`), reversing the earlier deferral. That deferral assumed `FLY_API_TOKEN` would be an org-wide credential, weighing the added attack surface against how rarely the relay changes. It is instead an **app-scoped** token (`fly tokens create deploy -a august-jones-relay`), which can deploy `august-jones-relay` and nothing else in the org — a much narrower blast radius than the deferral assumed, and one that no longer needs "changes often enough" to justify. The workflow re-runs the relay's typecheck and unit tests before every deploy and passes `--ha=false`, so it cannot silently create the second always-on machine this ADR's one-machine decision rules out. Manual `fly deploy ./relay --ha=false` remains the fallback.
 - **Bad:** A second deploy surface sits permanently in the request path. Timeout and retry changes touch two systems, and a Cloudflare Pages Functions outage breaks the forms even when Fly and Shopify are both healthy.
-- **Bad:** The Shopify client secret is now stored at rest with two vendors rather than one — Cloudflare retains it to preserve the direct-call rollback path. Rotate the credential **only once the cutover is verified.** Cloudflare's copy stays live until the relay carries traffic, so rotating earlier invalidates a secret that is still in the request path — turning an intermittent failure into a total outage. Rotation is hygiene, not a requirement; skipping it breaks nothing.
+- **Bad:** The Shopify client secret is now stored at rest with two vendors rather than one — Cloudflare retains it to preserve the direct-call rollback path. Rotate the credential **only once the cutover is verified.** Cloudflare's copy stays live until the relay carries traffic, so rotating earlier invalidates a secret that is still in the request path — turning an intermittent failure into a total outage. Rotation is hygiene, not a requirement; skipping it breaks nothing. See `relay/README.md`'s "Rotating the Shopify client secret" section for the exact order.
 - **Bad, accepted deliberately:** the relay forwards **any** GraphQL document once
   authenticated — there is no operation allowlist. Anyone holding `SHOPIFY_RELAY_SECRET`
   therefore has the custom app's full scopes (`read_customers`, `write_customers`,
@@ -138,67 +145,57 @@ The existing retry/backoff logic in `shopify.ts` is untouched and stays in place
 
 ## Operating the relay
 
-Facts established while standing this up (2026-09-05), recorded because none of
-them are visible in `fly.toml` or recoverable from the code:
+Facts discovered while standing this up (2026-09-05) that shaped the operational decisions
+below — recorded because none of them are visible in `fly.toml` or recoverable from the code.
+**For current runbook instructions — deploying, verifying, rotating secrets, first-time
+setup — see `relay/README.md`, which CLAUDE.md designates the single source of truth for how
+to operate the relay.** What stays here is the WHY: the discoveries and mistakes that produced
+those instructions, not the instructions themselves.
 
-- **Deploy with `fly deploy ./relay --ha=false`.** On an app whose process group
-  has **zero** machines, `fly deploy` creates **two** — an HA spare for
-  zero-downtime deploys. That is documented default behavior, not a billing
-  trick, and it prints a warning when it happens. It only triggers on a group
-  with no machines (first deploy, or a redeploy after scaling to zero); later
-  deploys preserve the existing count, so `fly scale count 1` sticks and
-  `--ha=false` is belt-and-braces rather than a per-deploy ritual.
-- **Machine count is not expressible in `fly.toml`.** It lives in Fly's state,
-  set by `fly scale count` / `fly machine clone` / `fly machine destroy`. This
-  app runs **one** machine on purpose: two always-on machines would be
-  $4.86/mo compute instead of $2.43, and the HA they buy is redundant here —
-  the relay is stateless, `shopify.ts` keeps its 5-attempt backoff in front of
-  it, and unsetting `SHOPIFY_RELAY_URL` is a working rollback.
+- **`fly deploy` against a process group with zero machines creates an extra "HA spare"
+  machine** by default — a standby Fly starts so a deploy can roll through one machine at a
+  time with zero downtime. That's documented behavior, not a billing trick, but it doubles
+  compute cost for HA this stateless relay doesn't need: `shopify.ts` already carries a
+  5-attempt retry, and unsetting `SHOPIFY_RELAY_URL` is a working rollback. `--ha=false`
+  prevents it; see README's Deploying section for the command and exactly when this bites
+  (first deploy, or a redeploy after scaling to zero).
+- **Machine count is not expressible in `fly.toml`.** It lives in Fly's state, set by
+  `fly scale count` / `fly machine clone` / `fly machine destroy`. This app runs **one**
+  machine on purpose: two always-on machines would be $4.86/mo compute instead of $2.43, for
+  HA this relay doesn't need for the reasons above.
 - **Ignore flyctl's own hint here.** On creating the spare it suggests setting
-  `min_machines_running = 0`. That would not have prevented the spare (it is
-  already the `fly launch` default), and for this app it would enable
-  scale-to-zero — the cold-start behavior deliberately disabled above.
-  `min_machines_running` has no effect at all unless `auto_stop_machines` is
-  `"stop"` or `"suspend"`. The flag that prevents the spare is `--ha=false`.
-- **Egress IPs are app-and-region scoped, not per-machine.** One allocation
-  covers up to 64 machines, and the IPv6 comes with the IPv4 for the single
-  $3.60/mo charge. Both machines shared `209.71.89.37` while two were running —
-  verified from inside each. So the HA spare was a cost question, never a
-  correctness one; there was no risk of half the traffic leaving from a shared
-  NAT.
-- **The app needs an INBOUND public IP as well as the egress one — they are opposite
-  directions and allocating one does not give you the other.** `fly apps create` +
-  `fly deploy` (unlike `fly launch`) allocated no public IP, so
+  `min_machines_running = 0`. That would not have prevented the spare (it is already the
+  `fly launch` default), and for this app it would enable scale-to-zero — the cold-start
+  behavior deliberately disabled above. `min_machines_running` has no effect at all unless
+  `auto_stop_machines` is `"stop"` or `"suspend"`. The flag that prevents the spare is
+  `--ha=false`.
+- **Egress IPs are app-and-region scoped, not per-machine.** One allocation covers up to 64
+  machines, and the IPv6 comes with the IPv4 for the single $3.60/mo charge. Both machines
+  shared `209.71.89.37` while two were running (a byproduct of the HA-spare mistake above) —
+  verified from inside each. So that mistake was a cost question, never a correctness one;
+  there was no risk of half the traffic leaving from a shared NAT.
+- **The app needed an inbound public IP as well as the egress one, and this was not obvious
+  going in — they are opposite directions and allocating one does not give you the other.**
+  `fly apps create` + `fly deploy` (unlike `fly launch`) allocated no public IP, so
   `august-jones-relay.fly.dev` resolved to nothing and the relay was unreachable from the
-  internet while being perfectly healthy internally. **Fly's own health check showed 1/1
-  the whole time**, because it runs over the private network — so "healthy" and
-  "reachable" are genuinely independent here, and only an external curl distinguishes
-  them. Cutting over in that state would have failed every Cloudflare call and taken both
-  forms down completely, which is strictly worse than the intermittent failure this ADR
-  exists to fix. Fixed with `fly ips allocate-v4 --shared` (`66.241.124.197`, free) and
-  `fly ips allocate-v6` (`2a09:8280:1::184:54e7:0`, free). Use `--shared`: a *dedicated*
-  IPv4 is $2/mo and buys nothing for a plain HTTPS service. This is the inbound product
-  the Options section warns not to confuse with `allocate-egress` — it turns out both are
+  internet while being perfectly healthy internally. **Fly's own health check showed 1/1 the
+  whole time**, because it runs over the private network — so "healthy" and "reachable" are
+  genuinely independent here, and only an external curl distinguishes them. Cutting over in
+  that state would have failed every Cloudflare call and taken both forms down completely,
+  which is strictly worse than the intermittent failure this ADR exists to fix. See README's
+  First-time setup section for the fix and its Verifying section for the external-curl check
+  that actually catches this — Fly's own health check cannot. This is the inbound product the
+  Options section above warns not to confuse with `allocate-egress`; it turns out both are
   needed, for opposite directions.
-- **The egress IP survives machine destruction and redeploys.** It is released
-  only by an explicit `fly ips release-egress`. The IP allocated here is
-  `209.71.89.37` (plus `2a09:8280:e626:1:0:184:54e7:0`) — note this is a *new*
-  address, not the `209.71.89.82` from the Phase 0 probe, which was torn down.
-  Its WAF reputation therefore starts from zero.
-- **There is no free tier.** Fly discontinued the Hobby/Launch/Scale plans on
-  2024-10-07; the "3 free shared-cpu-1x 256MB VMs" allowance is honored only for
-  organizations that were already on those plans. Whether this org qualifies is
-  visible only in the Fly dashboard and has not been checked — if it does, the
-  compute line is $0.
-- **Deploys now run in CI (2026-09-05).** `.github/workflows/deploy-relay.yml`
-  deploys on every push to `main` that touches `relay/**`, plus a manual
-  `workflow_dispatch`. It re-runs `pnpm exec tsc -p relay --noEmit` and the
-  relay's unit tests before deploying, then runs `fly deploy ./relay --ha=false
-  --remote-only` — `--ha=false` is non-negotiable there for the same reason
-  it's non-negotiable by hand: a deploy against a process group with zero
-  machines otherwise creates a second always-on machine. `FLY_API_TOKEN` must
-  be an **app-scoped** token, created with `fly tokens create deploy -a
-  august-jones-relay` and stored as a GitHub Actions repository secret — not
-  an org-wide token — so a leaked secret can only redeploy this one app.
-  Manual `fly deploy ./relay --ha=false` from a maintainer's machine remains
-  the fallback if CI or Fly's API is unavailable.
+- **The egress IP survives machine destruction and redeploys.** It is released only by an
+  explicit `fly ips release-egress`. The IP allocated here is `209.71.89.37` (plus
+  `2a09:8280:e626:1:0:184:54e7:0`) — note this is a *new* address, not the `209.71.89.82` from
+  the Phase 0 probe, which was torn down. Its WAF reputation therefore starts from zero.
+- **There is no free tier.** Fly discontinued the Hobby/Launch/Scale plans on 2024-10-07; the
+  "3 free shared-cpu-1x 256MB VMs" allowance is honored only for organizations that were
+  already on those plans. Whether this org qualifies is visible only in the Fly dashboard and
+  has not been checked — if it does, the compute line is $0.
+- **Deploys run in CI (2026-09-05)** via `.github/workflows/deploy-relay.yml`, reversing this
+  ADR's earlier deferral of a deploy pipeline. The reasoning for that reversal lives with the
+  consequence it revises, above; it is not repeated here. See README's Deploying section for
+  what the workflow runs and the manual fallback.

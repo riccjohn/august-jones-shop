@@ -70,6 +70,12 @@ async function mintToken(
 export function createTokenManager(env: TokenEnv): TokenManager {
   let cached: { token: string; expiresAt: number } | null = null;
   let pending: Promise<{ token: string; expiresAt: number }> | null = null;
+  // Bumped by invalidate(). A mint captures the generation it started under;
+  // if invalidate() runs before that mint resolves, the generation it
+  // captured is now stale, so the resolved token is handed back to its
+  // caller but NOT written to `cached` — otherwise an in-flight mint would
+  // silently undo the invalidation the instant it finished.
+  let generation = 0;
 
   async function getToken(): Promise<string> {
     if (cached && cached.expiresAt - Date.now() >= REFRESH_BUFFER_MS) {
@@ -77,9 +83,12 @@ export function createTokenManager(env: TokenEnv): TokenManager {
     }
 
     if (!pending) {
+      const mintGeneration = generation;
       pending = mintToken(env)
         .then((result) => {
-          cached = result;
+          if (generation === mintGeneration) {
+            cached = result;
+          }
           return result;
         })
         .finally(() => {
@@ -93,6 +102,7 @@ export function createTokenManager(env: TokenEnv): TokenManager {
 
   function invalidate(): void {
     cached = null;
+    generation++;
   }
 
   return { getToken, invalidate };

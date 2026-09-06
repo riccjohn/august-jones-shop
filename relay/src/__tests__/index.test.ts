@@ -2,7 +2,7 @@
 import http from "node:http";
 import type { AddressInfo } from "node:net";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createServer, type RelayEnv } from "../index";
+import { createServer, missingRequiredEnv, type RelayEnv } from "../index";
 
 const RELAY_SECRET = "relay-secret-value";
 
@@ -229,6 +229,13 @@ describe("POST /graphql — secret gating", () => {
           body,
         );
         expect(res.status).toBe(401);
+        // JSON, not text/plain: fetchShopifyJson on the client only retries
+        // a non-JSON response, so a bad secret must surface as JSON to be
+        // reported immediately instead of burning all 5 retry attempts.
+        expect(res.headers["content-type"]).toBe("application/json");
+        expect(JSON.parse(res.body)).toEqual({
+          errors: [{ message: "unauthorized" }],
+        });
       });
 
       expect(fetchMock).not.toHaveBeenCalled();
@@ -273,6 +280,7 @@ describe("routing", () => {
     ["PUT", "/graphql"],
     ["DELETE", "/graphql"],
     ["POST", "/healthz"],
+    ["POST", "/verify"],
     ["GET", "/"],
     ["GET", "/does-not-exist"],
   ])("returns 404 for %s %s", async (method, path) => {
@@ -283,6 +291,10 @@ describe("routing", () => {
         headers: { "X-Relay-Secret": RELAY_SECRET },
       });
       expect(res.status).toBe(404);
+      expect(res.headers["content-type"]).toBe("application/json");
+      expect(JSON.parse(res.body)).toEqual({
+        errors: [{ message: "not found" }],
+      });
     });
   });
 });
@@ -496,5 +508,193 @@ describe("logging", () => {
       errorSpy.mockRestore();
       warnSpy.mockRestore();
     }
+  });
+});
+
+describe("POST /graphql — malformed body", () => {
+  it("returns 400 JSON (not 502) when the client body isn't valid JSON", async () => {
+    const fetchMock = vi.fn(async () => {
+      throw new Error("must not call upstream on a client body error");
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await withServer(baseEnv, async (port) => {
+      const body = "{not-json";
+      const res = await rawRequest(
+        port,
+        {
+          method: "POST",
+          path: "/graphql",
+          headers: graphqlHeaders(body, { "X-Relay-Secret": RELAY_SECRET }),
+        },
+        body,
+      );
+
+      expect(res.status).toBe(400);
+      expect(res.headers["content-type"]).toBe("application/json");
+      expect(JSON.parse(res.body)).toEqual({
+        errors: [{ message: "invalid JSON body" }],
+      });
+    });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("POST /graphql — payload too large", () => {
+  it("returns 413 JSON and stops reading once the body exceeds 1 MiB", async () => {
+    const fetchMock = vi.fn(async () => {
+      throw new Error("must not call upstream on an oversized body");
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await withServer(baseEnv, async (port) => {
+      const oversized = "a".repeat(1024 * 1024 + 1);
+      const body = JSON.stringify({ query: oversized });
+      const res = await rawRequest(
+        port,
+        {
+          method: "POST",
+          path: "/graphql",
+          headers: graphqlHeaders(body, { "X-Relay-Secret": RELAY_SECRET }),
+        },
+        body,
+      );
+
+      expect(res.status).toBe(413);
+      expect(res.headers["content-type"]).toBe("application/json");
+      expect(JSON.parse(res.body)).toEqual({
+        errors: [{ message: "payload too large" }],
+      });
+    });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("POST /graphql — relay-side upstream failure", () => {
+  it("returns 502 JSON when the upstream fetch itself throws (not a non-JSON response)", async () => {
+    const fetchMock = vi.fn(async () => {
+      throw new Error("network unreachable");
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await withServer(baseEnv, async (port) => {
+      const body = JSON.stringify({ query: "query { shop { name } }" });
+      const res = await rawRequest(
+        port,
+        {
+          method: "POST",
+          path: "/graphql",
+          headers: graphqlHeaders(body, { "X-Relay-Secret": RELAY_SECRET }),
+        },
+        body,
+      );
+
+      expect(res.status).toBe(502);
+      expect(res.headers["content-type"]).toBe("application/json");
+      expect(JSON.parse(res.body)).toEqual({
+        errors: [{ message: "bad gateway" }],
+      });
+    });
+  });
+});
+
+describe("GET /verify", () => {
+  it("rejects a missing/wrong X-Relay-Secret with 401, exactly like /graphql", async () => {
+    const fetchMock = vi.fn(async () => {
+      throw new Error("must not call upstream when secret is invalid");
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await withServer(baseEnv, async (port) => {
+      const res = await rawRequest(port, { method: "GET", path: "/verify" });
+      expect(res.status).toBe(401);
+      expect(JSON.parse(res.body)).toEqual({
+        errors: [{ message: "unauthorized" }],
+      });
+    });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("runs a read-only { shop { name } } query through the token manager and returns the result", async () => {
+    const { fetchMock } = makeFetchMock();
+    vi.stubGlobal("fetch", fetchMock);
+
+    await withServer(baseEnv, async (port) => {
+      const res = await rawRequest(port, {
+        method: "GET",
+        path: "/verify",
+        headers: { "X-Relay-Secret": RELAY_SECRET },
+      });
+      expect(res.status).toBe(200);
+      expect(JSON.parse(res.body)).toEqual({ data: { ok: true } });
+    });
+
+    const graphqlCall = fetchMock.mock.calls.find(([url]) =>
+      url.toString().includes("/admin/api/"),
+    );
+    expect(graphqlCall).toBeDefined();
+    const [, init] = graphqlCall as [string, RequestInit];
+    expect(JSON.parse(init.body as string)).toEqual({
+      query: "{ shop { name } }",
+      variables: undefined,
+    });
+  });
+
+  it("surfaces the upstream error (via forwardAndRespond) the same way /graphql does", async () => {
+    const fetchMock = vi.fn(async () => {
+      throw new Error("network unreachable");
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await withServer(baseEnv, async (port) => {
+      const res = await rawRequest(port, {
+        method: "GET",
+        path: "/verify",
+        headers: { "X-Relay-Secret": RELAY_SECRET },
+      });
+      expect(res.status).toBe(502);
+      expect(JSON.parse(res.body)).toEqual({
+        errors: [{ message: "bad gateway" }],
+      });
+    });
+  });
+});
+
+describe("missingRequiredEnv", () => {
+  it("returns an empty array when all four required vars are present", () => {
+    expect(missingRequiredEnv(baseEnv)).toEqual([]);
+  });
+
+  it("names exactly the missing/empty required vars, ignoring PORT and other unrelated env", () => {
+    const partialEnv: RelayEnv = {
+      SHOPIFY_STORE_DOMAIN: "test-shop.myshopify.com",
+      SHOPIFY_CLIENT_ID: "",
+      SHOPIFY_CLIENT_SECRET: "client-secret",
+      SHOPIFY_RELAY_SECRET: undefined,
+    };
+
+    expect(missingRequiredEnv(partialEnv)).toEqual([
+      "SHOPIFY_CLIENT_ID",
+      "SHOPIFY_RELAY_SECRET",
+    ]);
+  });
+
+  it("reports all four when the env is entirely empty", () => {
+    const emptyEnv: RelayEnv = {
+      SHOPIFY_STORE_DOMAIN: "",
+      SHOPIFY_CLIENT_ID: "",
+      SHOPIFY_CLIENT_SECRET: "",
+      SHOPIFY_RELAY_SECRET: undefined,
+    };
+
+    expect(missingRequiredEnv(emptyEnv)).toEqual([
+      "SHOPIFY_STORE_DOMAIN",
+      "SHOPIFY_CLIENT_ID",
+      "SHOPIFY_CLIENT_SECRET",
+      "SHOPIFY_RELAY_SECRET",
+    ]);
   });
 });

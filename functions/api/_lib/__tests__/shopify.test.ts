@@ -235,6 +235,29 @@ describe("createShopifyClient — relay mode", () => {
     expect(relayCallCount).toBe(1);
   });
 
+  it("surfaces a relay-side JSON error (e.g. a bad X-Relay-Secret) immediately, without the 5-attempt retry", async () => {
+    // The relay reports its own errors (401/404/400/502) as JSON, not
+    // text/plain, precisely so this path stays fast: fetchShopifyJson only
+    // retries a response it can't parse as JSON, and a relay misconfiguration
+    // is never going to become parseable by trying again.
+    let relayCallCount = 0;
+    const fetchMock = vi.fn(async (url: string | URL) => {
+      const urlStr = url.toString();
+      if (urlStr === "https://relay.example.com/graphql") {
+        relayCallCount++;
+        return jsonResponse({ errors: [{ message: "unauthorized" }] }, 401);
+      }
+      throw new Error(`Unexpected fetch to ${urlStr}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const client = await createShopifyClient(relayEnv);
+    await expect(client.request("query { ok }")).rejects.toThrow(
+      "unauthorized",
+    );
+    expect(relayCallCount).toBe(1);
+  });
+
   it("passes through mutation userErrors within data unchanged, matching direct mode", async () => {
     const fetchMock = vi.fn(async (url: string | URL) => {
       const urlStr = url.toString();

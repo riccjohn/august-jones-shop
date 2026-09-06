@@ -108,6 +108,38 @@ describe("createTokenManager — minting and caching", () => {
     expect(await manager.getToken()).toBe("tok-2");
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
+
+  it("does not let an in-flight mint repopulate the cache after invalidate() runs during it", async () => {
+    let resolveFirstMint: (response: Response) => void = () => {};
+    const firstMintPromise = new Promise<Response>((resolve) => {
+      resolveFirstMint = resolve;
+    });
+
+    const fetchMock = vi
+      .fn()
+      .mockImplementationOnce(() => firstMintPromise)
+      .mockImplementationOnce(async () =>
+        jsonResponse({ access_token: "tok-2", expires_in: 3600 }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const manager = createTokenManager(env);
+    const inFlight = manager.getToken();
+
+    // invalidate() fires while the mint above is still awaiting its fetch —
+    // this is the race the generation counter guards against.
+    manager.invalidate();
+    resolveFirstMint(jsonResponse({ access_token: "tok-1", expires_in: 3600 }));
+
+    // The caller that started the in-flight mint still gets its token...
+    await expect(inFlight).resolves.toBe("tok-1");
+
+    // ...but the cache must stay empty: the next call re-mints from scratch
+    // rather than returning "tok-1", which invalidate() was meant to evict.
+    const afterInvalidate = await manager.getToken();
+    expect(afterInvalidate).toBe("tok-2");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe("createTokenManager — non-JSON upstream responses", () => {
