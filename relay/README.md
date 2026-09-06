@@ -108,7 +108,7 @@ Then confirm with the Verifying section below before pointing any traffic at it.
 
 CI does it: `.github/workflows/deploy-relay.yml` runs on pushes to `main` touching
 `relay/**`, and on manual dispatch. It typechecks, runs the relay's tests, then runs
-`fly deploy ./relay --ha=false --remote-only` — `--remote-only` builds the container image on
+`flyctl deploy ./relay --ha=false --remote-only` — `--remote-only` builds the container image on
 Fly's own builder instead of requiring a local Docker daemon in the CI runner. It then curls
 the public `/healthz` and fails the run if the relay is not reachable from outside Fly, which
 is the one thing Fly's own health check cannot tell you (see Verifying).

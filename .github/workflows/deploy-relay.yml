@@ -46,8 +46,12 @@ jobs:
       - name: Setup flyctl
         uses: superfly/flyctl-actions/setup-flyctl@v1
 
+      # `flyctl`, not `fly`. setup-flyctl installs the binary under its full
+      # name only ("Added flyctl to the path"); the `fly` alias exists in a
+      # local Homebrew install but not on the runner, so `fly deploy` here
+      # fails with "command not found" while working fine by hand.
       - name: Deploy relay
-        run: fly deploy ./relay --ha=false --remote-only
+        run: flyctl deploy ./relay --ha=false --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
