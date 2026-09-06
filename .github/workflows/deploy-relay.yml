@@ -43,3 +43,23 @@ jobs:
         run: fly deploy ./relay --ha=false --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      # Fly's own health check runs over the private network, so it reports
+      # 1/1 for a machine that has no public ingress IP and is unreachable
+      # from Cloudflare. ADR-0003 records that exact trap costing an outage.
+      # Only an external request distinguishes "healthy" from "reachable",
+      # so make one before calling the deploy good.
+      - name: Verify the relay is reachable from the public internet
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if [ "$(curl -fsS --max-time 10 https://august-jones-relay.fly.dev/healthz)" = "ok" ]; then
+              echo "relay reachable on attempt $attempt"
+              exit 0
+            fi
+            echo "attempt $attempt: not reachable yet"
+            sleep 5
+          done
+          echo "::error::august-jones-relay.fly.dev did not serve /healthz after the deploy."
+          echo "::error::Check 'fly ips list -a august-jones-relay' for a PUBLIC INGRESS address --"
+          echo "::error::the egress IP is a separate product and does not make the app reachable."
+          exit 1
