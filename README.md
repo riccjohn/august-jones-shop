@@ -44,6 +44,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - `pnpm format` — Auto-format code with Biome
 - `pnpm test:e2e` — Run Playwright e2e tests
 - `pnpm test:e2e:ui` — Run Playwright tests in UI mode
+- `pnpm exec tsc -p functions --noEmit` — Typecheck the Cloudflare Pages Functions
+- `pnpm exec tsc -p relay --noEmit` — Typecheck the Fly.io relay
 
 ## Managing Events
 
@@ -130,6 +132,25 @@ The maker is solo and sometimes needs to pause new custom commissions. Toggling 
 - **Production:** flip `DEFAULT_CUSTOMS_OPEN` in `src/lib/config.ts` to `false`, commit, and push — Cloudflare Pages redeploys automatically. There's no dashboard/runtime toggle.
 - **Local testing:** set `NEXT_PUBLIC_CUSTOMS_OPEN=false` in `.env.local` (gitignored, doesn't touch the committed default) and reload `pnpm dev`. Remove the line or set it to `true` to go back to the open state.
 
+## Forms and the Shopify relay
+
+The contact form and email signup are the only parts of this site with a backend. They
+POST to **Cloudflare Pages Functions** in `functions/api/`, which write to the Shopify
+Admin API — not to Next.js API routes, which a static export cannot run.
+
+Those Shopify calls can optionally be routed through a small always-on service on Fly.io
+(`relay/`) that holds a **static egress IP**, because Shopify's WAF scores Cloudflare's
+shared egress addresses and intermittently answers with a bot-challenge page instead of
+JSON.
+
+It is opt-in and off by default: with `SHOPIFY_RELAY_URL` unset, the Shopify calls go
+direct, exactly as before. Unsetting that one variable is also the rollback — no code
+change, no Fly change.
+
+- **Why:** [ADR-0003](./docs/adr/0003-move-shopify-api-calls-to-fly-io-for-a-static-egress-ip.md)
+- **How to operate it** — deploying, the Fly/Cloudflare env var split, verifying,
+  rolling back, rotating secrets: **[relay/README.md](./relay/README.md)**
+
 ## Deployment
 
 This site is configured for deployment on **Cloudflare Pages** as a static export.
@@ -137,6 +158,10 @@ This site is configured for deployment on **Cloudflare Pages** as a static expor
 1. Push changes to GitHub
 2. Cloudflare Pages automatically builds and deploys
 3. Set `NEXT_PUBLIC_UMAMI_WEBSITE_ID` in Cloudflare Pages Settings → Environment Variables (see Analytics Setup above)
+
+The Fly.io relay deploys separately, from `.github/workflows/deploy-relay.yml`, on pushes
+to `main` that touch `relay/**`. It is a different service on a different host with its own
+secrets — see [relay/README.md](./relay/README.md).
 
 ## Project Structure
 
@@ -146,6 +171,8 @@ src/
 ├── components/       # React components
 │   └── ui/          # shadcn/ui components
 └── lib/             # Utilities (analytics, etc.)
+functions/api/        # Cloudflare Pages Functions (contact form, email signup)
+relay/                # Fly.io Shopify egress relay (optional, see above)
 ```
 
 See [CLAUDE.md](./CLAUDE.md) for detailed development guidelines and conventions.
