@@ -51,7 +51,7 @@ request while reporting a healthy `/healthz`.
 
 | Name | Value |
 |---|---|
-| `SHOPIFY_RELAY_URL` | `https://august-jones-relay.fly.dev` — **no trailing slash** |
+| `SHOPIFY_RELAY_URL` | `https://august-jones-relay.fly.dev` (canonical form; a trailing slash is tolerated) |
 | `SHOPIFY_RELAY_SECRET` | must match the relay's copy **byte for byte** |
 
 The three `SHOPIFY_*` credentials stay on Cloudflare too. They are the rollback path.
@@ -175,6 +175,10 @@ Cloudflare's copy is the live path until the relay carries traffic; rotating ear
 invalidates a credential still in the request path and takes both forms down completely.
 
 ## Verifying
+
+CI already runs the first check below after every deploy (see Deploying) and fails the
+run if it doesn't pass. Run these by hand for ad hoc checks — after first-time setup,
+after rotating a secret, or whenever you want to confirm the live state yourself.
 
 ```sh
 # reachable, healthy
