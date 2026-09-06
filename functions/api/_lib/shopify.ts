@@ -183,7 +183,12 @@ export async function createShopifyClient(
         "SHOPIFY_RELAY_URL is set but SHOPIFY_RELAY_SECRET is missing",
       );
     }
-    graphqlUrl = `${relayUrl}/graphql`;
+    // Tolerate a trailing slash on the configured URL. Without this,
+    // `https://relay.example/` builds `POST //graphql`, which matches no
+    // route on the relay and comes back as its 404 JSON — surfacing to the
+    // user as a 500 whose message is the single word "not found". A silent
+    // config typo should not be that hard to diagnose.
+    graphqlUrl = `${relayUrl.replace(/\/+$/, "")}/graphql`;
     authHeaders = { "X-Relay-Secret": env.SHOPIFY_RELAY_SECRET };
   } else {
     const accessToken = await fetchAccessToken(env);

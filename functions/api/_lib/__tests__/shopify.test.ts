@@ -285,6 +285,29 @@ describe("createShopifyClient — relay mode", () => {
       { field: ["email"], message: "is invalid" },
     ]);
   });
+
+  it("tolerates a trailing slash on SHOPIFY_RELAY_URL instead of building //graphql", async () => {
+    // `//graphql` matches no route on the relay and comes back as its 404
+    // JSON, which surfaces to the user as a 500 reading "not found" — an
+    // unreasonably opaque failure for a stray slash in a config value.
+    let requestedUrl: string | undefined;
+    const fetchMock = vi.fn(async (url: string | URL) => {
+      requestedUrl = url.toString();
+      if (requestedUrl === "https://relay.example.com/graphql") {
+        return jsonResponse({ data: { ok: true } });
+      }
+      throw new Error(`Unexpected fetch to ${requestedUrl}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const client = await createShopifyClient({
+      ...relayEnv,
+      SHOPIFY_RELAY_URL: "https://relay.example.com/",
+    });
+    await expect(client.request("query { ok }")).resolves.toEqual({ ok: true });
+
+    expect(requestedUrl).toBe("https://relay.example.com/graphql");
+  });
 });
 
 describe("createShopifyClient — relay misconfiguration", () => {
