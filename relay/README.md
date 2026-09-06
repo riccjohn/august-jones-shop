@@ -41,7 +41,7 @@ from the request — this is not a general-purpose proxy.
 | `SHOPIFY_STORE_DOMAIN` | the one store this relay may talk to |
 | `SHOPIFY_CLIENT_ID` | Shopify custom app credentials, used to mint access tokens |
 | `SHOPIFY_CLIENT_SECRET` | ditto |
-| `SHOPIFY_RELAY_SECRET` | shared secret callers must present as `X-Relay-Secret` |
+| `RELAY_SHARED_SECRET` | shared secret callers must present as `X-Relay-Secret` |
 
 All four are required — the process checks for them at startup and exits with a log line
 naming exactly which are missing rather than starting up half-configured and 401ing every
@@ -51,12 +51,12 @@ request while reporting a healthy `/healthz`.
 
 | Name | Value |
 |---|---|
-| `SHOPIFY_RELAY_URL` | `https://august-jones-relay.fly.dev` (canonical form; a trailing slash is tolerated) |
-| `SHOPIFY_RELAY_SECRET` | must match the relay's copy **byte for byte** |
+| `RELAY_URL` | `https://august-jones-relay.fly.dev` (canonical form; a trailing slash is tolerated) |
+| `RELAY_SHARED_SECRET` | must match the relay's copy **byte for byte** |
 
 The three `SHOPIFY_*` credentials stay on Cloudflare too. They are the rollback path.
 
-**These two go together.** Setting `SHOPIFY_RELAY_URL` without `SHOPIFY_RELAY_SECRET` is not a
+**These two go together.** Setting `RELAY_URL` without `RELAY_SHARED_SECRET` is not a
 fallback to direct calls — `createShopifyClient` throws instead. Leaving both unset is the only
 way to get direct-call behavior; a half-set pair is treated as a misconfiguration to fail loudly
 on, not something to silently degrade past.
@@ -79,7 +79,7 @@ fly secrets set -a august-jones-relay \
   SHOPIFY_STORE_DOMAIN=... \
   SHOPIFY_CLIENT_ID=... \
   SHOPIFY_CLIENT_SECRET=... \
-  SHOPIFY_RELAY_SECRET="$(openssl rand -hex 32)"
+  RELAY_SHARED_SECRET="$(openssl rand -hex 32)"
 
 # 3. Allocate the outbound (egress) IP — this is the whole point of the relay
 fly ips allocate-egress -a august-jones-relay
@@ -133,18 +133,18 @@ after scaling to zero — but that is exactly when you would not notice.
 Pointing production traffic at the relay for the first time. First-time setup builds the
 app; this turns it on. Assumes a green deploy (above).
 
-**0. Confirm you still have the `SHOPIFY_RELAY_SECRET` value — before anything depends on
+**0. Confirm you still have the `RELAY_SHARED_SECRET` value — before anything depends on
 it.** `fly secrets list` shows digests, never values: a Fly secret cannot be read back. If
 you generated it inline with `openssl rand -hex 32` and did not save it anywhere, it is
 gone, and Cloudflare needs it byte for byte. Set a new one now, while nothing is using it:
 
 ```sh
-openssl rand -hex 32 | sed 's/^/SHOPIFY_RELAY_SECRET=/' | tee /tmp/relay-secret.txt \
+openssl rand -hex 32 | sed 's/^/RELAY_SHARED_SECRET=/' | tee /tmp/relay-secret.txt \
   | fly secrets import -a august-jones-relay
 ```
 
 Rotating at this point costs nothing. Rotating after cutover is an outage — see Rotating
-`SHOPIFY_RELAY_SECRET` below.
+`RELAY_SHARED_SECRET` below.
 
 **1. Confirm the relay is running current code.** `fly status -a august-jones-relay` shows
 the deployed image and when it last updated. A merge touching `relay/**` redeploys it via
@@ -182,7 +182,7 @@ an external uptime monitor on `/healthz` — nothing currently alerts if the rel
 
 If anything looks wrong at any step, Rolling back is one deleted variable.
 
-## Rotating `SHOPIFY_RELAY_SECRET`
+## Rotating `RELAY_SHARED_SECRET`
 
 **Order: Cloudflare off → Fly rotate → Cloudflare on with the new value.** Rotating Fly first
 out of habit leaves the live path pointing at a secret the relay has already stopped
@@ -194,17 +194,17 @@ Cloudflare needs a redeploy to pick up a variable, that gap is minutes, not seco
 
 Do not rotate in place. Use the rollback path as a maintenance window:
 
-1. **Leave relay mode.** Delete `SHOPIFY_RELAY_URL` in Cloudflare Pages (Production and
+1. **Leave relay mode.** Delete `RELAY_URL` in Cloudflare Pages (Production and
    Preview) and redeploy. Traffic now goes directly to Shopify — flaky but functional, and
    no submission depends on the relay secret.
 2. **Rotate on Fly.** Generate and set in one step, without printing it:
    ```sh
-   openssl rand -hex 32 | sed 's/^/SHOPIFY_RELAY_SECRET=/' | tee /tmp/relay-secret.txt \
+   openssl rand -hex 32 | sed 's/^/RELAY_SHARED_SECRET=/' | tee /tmp/relay-secret.txt \
      | fly secrets import -a august-jones-relay
    ```
-3. **Update Cloudflare.** Set `SHOPIFY_RELAY_SECRET` to the new value
+3. **Update Cloudflare.** Set `RELAY_SHARED_SECRET` to the new value
    (`cut -d= -f2 /tmp/relay-secret.txt`) on both environments.
-4. **Re-enter relay mode.** Restore `SHOPIFY_RELAY_URL` and redeploy.
+4. **Re-enter relay mode.** Restore `RELAY_URL` and redeploy.
 5. **Verify** (below), then `rm /tmp/relay-secret.txt`.
 
 If you accept a brief window of failed submissions instead, the order is Fly first, then
@@ -243,7 +243,7 @@ curl -s -o /dev/null -w '%{http_code}\n' -X POST -d '{}' \
   https://august-jones-relay.fly.dev/graphql                              # -> 401
 
 # secret + credentials + Shopify reachability, end to end, no side effects —
-# the safe pre-cutover check. Fill in the real SHOPIFY_RELAY_SECRET value.
+# the safe pre-cutover check. Fill in the real RELAY_SHARED_SECRET value.
 curl -fsS -H 'X-Relay-Secret: <the-relay-secret>' \
   https://august-jones-relay.fly.dev/verify
                                               # -> {"data":{"shop":{"name":"..."}}}
@@ -263,7 +263,7 @@ report `1/1` while being unreachable from the internet — only an external `cur
 
 ## Rolling back
 
-Delete `SHOPIFY_RELAY_URL` in Cloudflare Pages and redeploy. That restores direct Shopify
+Delete `RELAY_URL` in Cloudflare Pages and redeploy. That restores direct Shopify
 calls with no code change and no Fly change. The relay can keep running; it just stops
 receiving traffic.
 

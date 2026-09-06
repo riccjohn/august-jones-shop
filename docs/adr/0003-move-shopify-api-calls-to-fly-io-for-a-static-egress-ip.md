@@ -88,7 +88,7 @@ We will stand up a small, always-on **egress relay** on Fly.io holding a dedicat
 
 The relay owns the Shopify credentials. It exposes two authenticated routes behind the same shared-secret check — `POST /graphql`, which attaches its own access token and forwards the query to the configured store's Admin API, returning the upstream status and body verbatim, and `GET /verify`, a read-only no-op probe added later (see `relay/README.md`) so a cutover can be checked end to end without writing a real customer record. It mints and caches that access token itself, refreshing on expiry or on an upstream 401. It accepts no caller-supplied target host, and no route reaches any origin other than the one store domain in its own configuration.
 
-All handlers and `_lib` modules stay on Cloudflare Pages exactly where they are. The only application change is `createShopifyClient` in `functions/api/_lib/shopify.ts`, which sends GraphQL to the relay when `SHOPIFY_RELAY_URL` is set and calls Shopify directly when it is not. Callers authenticate with a shared secret compared in constant time; the relay fails closed if that secret is unset.
+All handlers and `_lib` modules stay on Cloudflare Pages exactly where they are. The only application change is `createShopifyClient` in `functions/api/_lib/shopify.ts`, which sends GraphQL to the relay when `RELAY_URL` is set and calls Shopify directly when it is not. Callers authenticate with a shared secret compared in constant time; the relay fails closed if that secret is unset.
 
 The existing retry/backoff logic in `shopify.ts` is untouched and stays in place as defense-in-depth — a dedicated IP still needs to build reputation with Shopify's WAF over an unpublished timeline, so early requests could still occasionally be challenged.
 
@@ -119,14 +119,14 @@ The existing retry/backoff logic in `shopify.ts` is untouched and stays in place
 ## Consequences
 
 - **Good:** Contact form and newsletter signup submissions become reliable rather than probabilistic, once the dedicated IP builds WAF reputation.
-- **Good:** Rollback is an environment variable, not a revert. Unsetting `SHOPIFY_RELAY_URL` in Cloudflare Pages restores today's flaky-but-functional direct calls without a code change or redeploy of the relay. See `relay/README.md`'s "Rolling back" section for the exact steps.
-- **Good:** The migration surface is one function (`createShopifyClient`), one new service, and two new env vars (`SHOPIFY_RELAY_URL`, `SHOPIFY_RELAY_SECRET`) alongside the 3 existing Shopify ones. No handler moves, no frontend file changes, and the retry/backoff logic is untouched.
+- **Good:** Rollback is an environment variable, not a revert. Unsetting `RELAY_URL` in Cloudflare Pages restores today's flaky-but-functional direct calls without a code change or redeploy of the relay. See `relay/README.md`'s "Rolling back" section for the exact steps.
+- **Good:** The migration surface is one function (`createShopifyClient`), one new service, and two new env vars (`RELAY_URL`, `RELAY_SHARED_SECRET`) alongside the 3 existing Shopify ones. No handler moves, no frontend file changes, and the retry/backoff logic is untouched.
 - **Good:** Token caching on the relay removes one Shopify round trip per submission, which reduces WAF exposure independently of the IP change.
 - **Bad:** New operational dependency — a second hosted account, its own billing ($6.03/mo), and a new deploy step. This is a genuinely new category of ops for a project that has none beyond Cloudflare's managed pipeline. **Revised 2026-09-05:** a GitHub Actions deploy pipeline now exists (`.github/workflows/deploy-relay.yml`), reversing the earlier deferral. That deferral assumed `FLY_API_TOKEN` would be an org-wide credential, weighing the added attack surface against how rarely the relay changes. It is instead an **app-scoped** token (`fly tokens create deploy -a august-jones-relay`), which can deploy `august-jones-relay` and nothing else in the org — a much narrower blast radius than the deferral assumed, and one that no longer needs "changes often enough" to justify. The workflow re-runs the relay's typecheck and unit tests before every deploy and passes `--ha=false`, so it cannot silently create the second always-on machine this ADR's one-machine decision rules out. Manual `fly deploy ./relay --ha=false` remains the fallback.
 - **Bad:** A second deploy surface sits permanently in the request path. Timeout and retry changes touch two systems, and a Cloudflare Pages Functions outage breaks the forms even when Fly and Shopify are both healthy.
 - **Bad:** The Shopify client secret is now stored at rest with two vendors rather than one — Cloudflare retains it to preserve the direct-call rollback path. Rotate the credential **only once the cutover is verified.** Cloudflare's copy stays live until the relay carries traffic, so rotating earlier invalidates a secret that is still in the request path — turning an intermittent failure into a total outage. Rotation is hygiene, not a requirement; skipping it breaks nothing. See `relay/README.md`'s "Rotating the Shopify client secret" section for the exact order.
 - **Bad, accepted deliberately:** the relay forwards **any** GraphQL document once
-  authenticated — there is no operation allowlist. Anyone holding `SHOPIFY_RELAY_SECRET`
+  authenticated — there is no operation allowlist. Anyone holding `RELAY_SHARED_SECRET`
   therefore has the custom app's full scopes (`read_customers`, `write_customers`,
   `write_draft_orders`) from anywhere on the internet, where today that requires compromising
   the Cloudflare environment itself. Accepted because the realistic leak paths for that secret
@@ -156,7 +156,7 @@ those instructions, not the instructions themselves.
   machine** by default — a standby Fly starts so a deploy can roll through one machine at a
   time with zero downtime. That's documented behavior, not a billing trick, but it doubles
   compute cost for HA this stateless relay doesn't need: `shopify.ts` already carries a
-  5-attempt retry, and unsetting `SHOPIFY_RELAY_URL` is a working rollback. `--ha=false`
+  5-attempt retry, and unsetting `RELAY_URL` is a working rollback. `--ha=false`
   prevents it; see README's Deploying section for the command and exactly when this bites
   (first deploy, or a redeploy after scaling to zero).
 - **Machine count is not expressible in `fly.toml`.** It lives in Fly's state, set by

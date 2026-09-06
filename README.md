@@ -143,7 +143,7 @@ Those Shopify calls can optionally be routed through a small always-on service o
 shared egress addresses and intermittently answers with a bot-challenge page instead of
 JSON.
 
-It is opt-in and off by default: with `SHOPIFY_RELAY_URL` unset, the Shopify calls go
+It is opt-in and off by default: with `RELAY_URL` unset, the Shopify calls go
 direct, exactly as before. Unsetting that one variable is also the rollback — no code
 change, no Fly change.
 

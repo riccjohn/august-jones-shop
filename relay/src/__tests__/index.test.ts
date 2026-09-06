@@ -10,7 +10,7 @@ const baseEnv: RelayEnv = {
   SHOPIFY_STORE_DOMAIN: "test-shop.myshopify.com",
   SHOPIFY_CLIENT_ID: "client-id",
   SHOPIFY_CLIENT_SECRET: "client-secret",
-  SHOPIFY_RELAY_SECRET: RELAY_SECRET,
+  RELAY_SHARED_SECRET: RELAY_SECRET,
 };
 
 interface RawResponse {
@@ -123,8 +123,8 @@ describe("GET /healthz", () => {
     });
   });
 
-  it("returns 200 even when SHOPIFY_RELAY_SECRET is unset", async () => {
-    const { SHOPIFY_RELAY_SECRET: _omit, ...envWithoutSecret } = baseEnv;
+  it("returns 200 even when RELAY_SHARED_SECRET is unset", async () => {
+    const { RELAY_SHARED_SECRET: _omit, ...envWithoutSecret } = baseEnv;
 
     await withServer(envWithoutSecret as RelayEnv, async (port) => {
       const res = await rawRequest(port, { method: "GET", path: "/healthz" });
@@ -242,7 +242,7 @@ describe("POST /graphql — secret gating", () => {
     },
   );
 
-  it("fails closed when SHOPIFY_RELAY_SECRET is unset: every /graphql request is rejected, never allowed through", async () => {
+  it("fails closed when RELAY_SHARED_SECRET is unset: every /graphql request is rejected, never allowed through", async () => {
     const fetchMock = vi.fn(async () => {
       throw new Error(
         "must not call upstream when relay secret is unconfigured",
@@ -250,7 +250,7 @@ describe("POST /graphql — secret gating", () => {
     });
     vi.stubGlobal("fetch", fetchMock);
 
-    const { SHOPIFY_RELAY_SECRET: _omit, ...envWithoutSecret } = baseEnv;
+    const { RELAY_SHARED_SECRET: _omit, ...envWithoutSecret } = baseEnv;
 
     await withServer(envWithoutSecret as RelayEnv, async (port) => {
       const body = JSON.stringify({ query: "query { shop { name } }" });
@@ -747,12 +747,12 @@ describe("missingRequiredEnv", () => {
       SHOPIFY_STORE_DOMAIN: "test-shop.myshopify.com",
       SHOPIFY_CLIENT_ID: "",
       SHOPIFY_CLIENT_SECRET: "client-secret",
-      SHOPIFY_RELAY_SECRET: undefined,
+      RELAY_SHARED_SECRET: undefined,
     };
 
     expect(missingRequiredEnv(partialEnv)).toEqual([
       "SHOPIFY_CLIENT_ID",
-      "SHOPIFY_RELAY_SECRET",
+      "RELAY_SHARED_SECRET",
     ]);
   });
 
@@ -761,14 +761,14 @@ describe("missingRequiredEnv", () => {
       SHOPIFY_STORE_DOMAIN: "",
       SHOPIFY_CLIENT_ID: "",
       SHOPIFY_CLIENT_SECRET: "",
-      SHOPIFY_RELAY_SECRET: undefined,
+      RELAY_SHARED_SECRET: undefined,
     };
 
     expect(missingRequiredEnv(emptyEnv)).toEqual([
       "SHOPIFY_STORE_DOMAIN",
       "SHOPIFY_CLIENT_ID",
       "SHOPIFY_CLIENT_SECRET",
-      "SHOPIFY_RELAY_SECRET",
+      "RELAY_SHARED_SECRET",
     ]);
   });
 });

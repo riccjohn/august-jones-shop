@@ -10,7 +10,7 @@ import {
 } from "./token";
 
 export interface RelayEnv extends TokenEnv {
-  SHOPIFY_RELAY_SECRET?: string;
+  RELAY_SHARED_SECRET?: string;
 }
 
 // Read cap for a client-supplied /graphql body. Auth is checked before
@@ -38,9 +38,9 @@ function isValidRelaySecret(
   env: RelayEnv,
   provided: string | undefined,
 ): boolean {
-  if (!env.SHOPIFY_RELAY_SECRET) return false;
+  if (!env.RELAY_SHARED_SECRET) return false;
   if (!provided) return false;
-  return timingSafeStringEqual(provided, env.SHOPIFY_RELAY_SECRET);
+  return timingSafeStringEqual(provided, env.RELAY_SHARED_SECRET);
 }
 
 function relaySecretHeader(req: http.IncomingMessage): string | undefined {
@@ -274,7 +274,7 @@ export function missingRequiredEnv(env: RelayEnv): string[] {
     "SHOPIFY_STORE_DOMAIN",
     "SHOPIFY_CLIENT_ID",
     "SHOPIFY_CLIENT_SECRET",
-    "SHOPIFY_RELAY_SECRET",
+    "RELAY_SHARED_SECRET",
   ];
   return required.filter((key) => !env[key]);
 }
@@ -284,7 +284,7 @@ if (require.main === module) {
     SHOPIFY_STORE_DOMAIN: process.env.SHOPIFY_STORE_DOMAIN ?? "",
     SHOPIFY_CLIENT_ID: process.env.SHOPIFY_CLIENT_ID ?? "",
     SHOPIFY_CLIENT_SECRET: process.env.SHOPIFY_CLIENT_SECRET ?? "",
-    SHOPIFY_RELAY_SECRET: process.env.SHOPIFY_RELAY_SECRET,
+    RELAY_SHARED_SECRET: process.env.RELAY_SHARED_SECRET,
   };
 
   // Fail fast rather than serving /healthz 200 with no working credentials.
