@@ -1,11 +1,10 @@
 import type { TokenManager } from "./token";
 
 // Kept in lockstep with functions/api/_lib/shopify.ts's own API_VERSION
-// constant. This is the relay-mode path and that is the direct-call
-// (rollback) path — the two are separate tsconfig projects with no shared
-// import between them, so nothing but this comment enforces it. Letting them
-// drift would mean rolling back (unsetting SHOPIFY_RELAY_URL) silently
-// switches which Shopify API version the app talks to.
+// constant — this is the relay-mode path and that is the direct-call
+// (rollback) path. They are separate tsconfig projects and cannot share an
+// import, so the invariant is enforced by
+// relay/src/__tests__/api-version-lockstep.test.ts. Change both together.
 const API_VERSION = "2026-07";
 
 export interface GraphqlEnv {
