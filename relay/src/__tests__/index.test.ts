@@ -509,6 +509,80 @@ describe("logging", () => {
       warnSpy.mockRestore();
     }
   });
+
+  it("emits one structured line per request carrying both the relay's status and Shopify's", async () => {
+    const { fetchMock } = makeFetchMock();
+    vi.stubGlobal("fetch", fetchMock);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    try {
+      await withServer(baseEnv, async (port) => {
+        const body = JSON.stringify({ query: "query { ok }" });
+        await rawRequest(
+          port,
+          {
+            method: "POST",
+            path: "/graphql?trace=1",
+            headers: graphqlHeaders(body, { "X-Relay-Secret": RELAY_SECRET }),
+          },
+          body,
+        );
+      });
+
+      expect(logSpy).toHaveBeenCalledTimes(1);
+      const entry = JSON.parse(logSpy.mock.calls[0][0] as string);
+      expect(entry).toMatchObject({
+        method: "POST",
+        path: "/graphql",
+        status: 200,
+        upstreamStatus: 200,
+      });
+      expect(typeof entry.ms).toBe("number");
+    } finally {
+      logSpy.mockRestore();
+    }
+  });
+
+  it("distinguishes a relay-side rejection from an upstream one by leaving upstreamStatus unset", async () => {
+    const { fetchMock } = makeFetchMock();
+    vi.stubGlobal("fetch", fetchMock);
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    try {
+      await withServer(baseEnv, async (port) => {
+        const body = JSON.stringify({ query: "query { ok }" });
+        await rawRequest(
+          port,
+          {
+            method: "POST",
+            path: "/graphql",
+            headers: graphqlHeaders(body, { "X-Relay-Secret": "wrong" }),
+          },
+          body,
+        );
+      });
+
+      const entry = JSON.parse(logSpy.mock.calls[0][0] as string);
+      expect(entry.status).toBe(401);
+      expect(entry.upstreamStatus).toBeUndefined();
+    } finally {
+      logSpy.mockRestore();
+    }
+  });
+
+  it("does not log /healthz, which Fly probes every 15 seconds", async () => {
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+
+    try {
+      await withServer(baseEnv, async (port) => {
+        await rawRequest(port, { method: "GET", path: "/healthz" });
+      });
+
+      expect(logSpy).not.toHaveBeenCalled();
+    } finally {
+      logSpy.mockRestore();
+    }
+  });
 });
 
 describe("POST /graphql — malformed body", () => {

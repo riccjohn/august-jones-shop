@@ -100,6 +100,51 @@ function sendJsonError(
 }
 
 /**
+ * Mutable per-request scratch space for facts the access log wants but the
+ * response itself doesn't carry — currently just the status Shopify replied
+ * with, which is the difference between "the relay rejected this" and "the
+ * relay forwarded it and Shopify rejected it".
+ */
+interface RequestOutcome {
+  upstreamStatus?: number;
+}
+
+/**
+ * One structured line per request, emitted on response finish.
+ *
+ * Deliberately metadata only: method, path, the status we returned, the
+ * status Shopify returned, and elapsed time. No bodies, no headers, no
+ * token, no secret — the relay handles the Shopify client secret and a
+ * shared relay secret, and an access log is the classic place both leak.
+ * A test asserts none of them reach console.
+ *
+ * This exists because ADR-0003 calls for an observation period after
+ * cutover to decide whether the static egress IP actually fixed the WAF
+ * challenges, and until now the relay logged nothing at all — leaving no
+ * way to tell a relay-side rejection from a Shopify-side one when a form
+ * failed.
+ */
+function logRequest(
+  method: string,
+  path: string,
+  status: number,
+  startedAt: number,
+  outcome: RequestOutcome,
+): void {
+  console.log(
+    JSON.stringify({
+      method,
+      // Bound an arbitrary client-supplied URL so a long path can't bloat
+      // the log line.
+      path: path.slice(0, 100),
+      status,
+      upstreamStatus: outcome.upstreamStatus,
+      ms: Date.now() - startedAt,
+    }),
+  );
+}
+
+/**
  * Runs a GraphQL request through the token manager and writes the result (or
  * failure) to the response. Shared by /graphql and /verify so there is one
  * fetch/error-handling path rather than two.
@@ -109,9 +154,11 @@ async function forwardAndRespond(
   tokenManager: TokenManager,
   body: GraphqlRequestBody,
   res: http.ServerResponse,
+  outcome: RequestOutcome,
 ): Promise<void> {
   try {
     const result = await forwardGraphqlRequest(env, tokenManager, body);
+    outcome.upstreamStatus = result.status;
     res.writeHead(result.status, {
       "Content-Type": result.contentType ?? "application/octet-stream",
     });
@@ -125,6 +172,7 @@ async function forwardAndRespond(
       // challenge, and it only retries when the response fails to parse as
       // JSON — wrapping it in `{"errors":[...]}` here would make it parse
       // successfully and short-circuit that retry.
+      outcome.upstreamStatus = err.status;
       res.writeHead(err.status, { "Content-Type": "text/plain" });
       res.end(err.body);
       return;
@@ -141,10 +189,18 @@ export function createServer(env: RelayEnv): http.Server {
     const path = (req.url ?? "").split("?")[0];
 
     if (method === "GET" && path === "/healthz") {
+      // Not logged: Fly probes this every 15s, and 5,760 identical lines a
+      // day would bury the handful that matter.
       res.writeHead(200, { "Content-Type": "text/plain" });
       res.end("ok");
       return;
     }
+
+    const startedAt = Date.now();
+    const outcome: RequestOutcome = {};
+    res.on("finish", () => {
+      logRequest(method, path, res.statusCode, startedAt, outcome);
+    });
 
     if (method === "POST" && path === "/graphql") {
       if (!isValidRelaySecret(env, relaySecretHeader(req))) {
@@ -166,6 +222,7 @@ export function createServer(env: RelayEnv): http.Server {
             tokenManager,
             { query: parsed.query, variables: parsed.variables },
             res,
+            outcome,
           );
         })
         .catch((err: unknown) => {
@@ -198,6 +255,7 @@ export function createServer(env: RelayEnv): http.Server {
         tokenManager,
         { query: "{ shop { name } }" },
         res,
+        outcome,
       );
       return;
     }

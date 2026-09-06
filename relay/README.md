@@ -21,6 +21,13 @@ for why.
   (its HTML bot-challenge page) is forwarded verbatim, status and body unchanged, specifically
   *to keep it* triggering that retry.
 
+- **One structured log line per request** (`fly logs -a august-jones-relay`), as JSON:
+  `{"method","path","status","upstreamStatus","ms"}`. `status` is what the relay returned,
+  `upstreamStatus` what Shopify returned — so a missing `upstreamStatus` means the relay
+  rejected the call before it ever reached Shopify. Metadata only: no bodies, no headers,
+  no tokens, no secrets, and a test enforces that. `/healthz` is not logged (Fly probes it
+  every 15s).
+
 It forwards `{query, variables}` to one fixed store, attaching a Shopify access token it
 mints and caches itself. The store domain comes from the relay's own env and is never read
 from the request — this is not a general-purpose proxy.
