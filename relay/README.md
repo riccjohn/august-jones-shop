@@ -47,6 +47,27 @@ All four are required — the process checks for them at startup and exits with 
 naming exactly which are missing rather than starting up half-configured and 401ing every
 request while reporting a healthy `/healthz`.
 
+### Where each one comes from
+
+| Name | Origin | Shopify sees it? |
+|---|---|---|
+| `SHOPIFY_STORE_DOMAIN` | your store's `.myshopify.com` address | — |
+| `SHOPIFY_CLIENT_ID` | Shopify Dev Dashboard → your custom app | yes, to mint tokens |
+| `SHOPIFY_CLIENT_SECRET` | Shopify Dev Dashboard → your custom app | yes, to mint tokens |
+| `RELAY_SHARED_SECRET` | **you invent it** — `openssl rand -hex 32` | **never** |
+
+The `SHOPIFY_` prefix means exactly one thing: issued by Shopify. `RELAY_SHARED_SECRET` is
+not, and there is nowhere to look it up. It is a password you make up once so the relay can
+tell our Cloudflare Functions apart from anyone else who finds
+`august-jones-relay.fly.dev`, which is a public address. Cloudflare sends it as the
+`X-Relay-Secret` header; the relay compares it to its own copy and 401s on a mismatch.
+"Shared" is the load-bearing word — both sides must hold the same string, and that is the
+whole mechanism. No registry, no issuer, no recovery if lost (see Cutting over, step 0).
+
+In relay mode the Shopify credentials never leave the relay: Cloudflare talks only to the
+relay, and the relay alone exchanges `CLIENT_ID`/`CLIENT_SECRET` for an access token. That
+is the point of putting them there — see ADR-0003, "Where the Shopify credentials live".
+
 **On Cloudflare Pages (Production *and* Preview):**
 
 | Name | Value |
@@ -181,6 +202,36 @@ ones during this window do **not** mean the cutover failed. ADR-0003 has the rea
 an external uptime monitor on `/healthz` — nothing currently alerts if the relay goes down.
 
 If anything looks wrong at any step, Rolling back is one deleted variable.
+
+## Renaming the relay variables (one-time, 2026-09-06)
+
+These were once called `SHOPIFY_RELAY_URL` and `SHOPIFY_RELAY_SECRET`. If a deployment
+still uses the old names, migrate in this order — **the Fly secret first, because the
+relay exits at startup when a required variable is missing**, so deploying renamed code
+against the old secret name crash-loops the machine.
+
+```sh
+# 1. Add the new name on Fly, keeping the old one for now. Rotate the value at the
+#    same time -- you are already paying the coordination cost.
+openssl rand -hex 32 | sed 's/^/RELAY_SHARED_SECRET=/' | tee /tmp/relay-secret.txt \
+  | fly secrets import -a august-jones-relay
+
+# 2. Merge the renamed code. CI redeploys; the machine now reads RELAY_SHARED_SECRET.
+# 3. Confirm it came up and is serving:
+fly status -a august-jones-relay
+curl -fsS https://august-jones-relay.fly.dev/healthz     # -> ok
+
+# 4. Drop the old secret, now that nothing reads it.
+fly secrets unset SHOPIFY_RELAY_SECRET -a august-jones-relay
+```
+
+Then in Cloudflare Pages, on **both** Production and Preview: delete `SHOPIFY_RELAY_URL`
+and `SHOPIFY_RELAY_SECRET`, add `RELAY_URL` and `RELAY_SHARED_SECRET` (the new value from
+`cut -d= -f2 /tmp/relay-secret.txt`), and redeploy. Verify, then `rm /tmp/relay-secret.txt`.
+
+If relay mode was already live, do the Cloudflare half as described in Rotating
+`RELAY_SHARED_SECRET` below — drop `RELAY_URL` first so traffic leaves relay mode while the
+names are in flux, rather than 401ing every submission in between.
 
 ## Rotating `RELAY_SHARED_SECRET`
 
