@@ -133,6 +133,33 @@ describe("forwardGraphqlRequest — forwarding", () => {
   });
 });
 
+describe("forwardGraphqlRequest — upstream timeout", () => {
+  it("bounds each call to Shopify with its own signal, including the post-401 retry", async () => {
+    // A signal reused across both calls would already be spent by the time
+    // the 401 retry goes out, aborting it immediately.
+    const signals: (AbortSignal | null)[] = [];
+    let calls = 0;
+    const fetchMock = vi.fn(async (_url: string | URL, init?: RequestInit) => {
+      calls++;
+      signals.push(init?.signal ?? null);
+      return new Response(JSON.stringify({ data: { ok: true } }), {
+        status: calls === 1 ? 401 : 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await forwardGraphqlRequest(env, fakeTokenManager(), {
+      query: "query { ok }",
+    });
+
+    expect(signals).toHaveLength(2);
+    expect(signals.every((signal) => signal !== null)).toBe(true);
+    expect(signals.every((signal) => signal?.aborted === false)).toBe(true);
+    expect(new Set(signals).size).toBe(2);
+  });
+});
+
 describe("forwardGraphqlRequest — upstream 401 handling", () => {
   it("invalidates the token, re-mints once, and retries after an upstream 401", async () => {
     let graphqlCalls = 0;

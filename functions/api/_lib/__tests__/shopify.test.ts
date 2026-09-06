@@ -310,6 +310,38 @@ describe("createShopifyClient — relay mode", () => {
   });
 });
 
+describe("fetchShopifyJson — per-attempt timeout", () => {
+  it("gives every retry attempt its own unexpired signal rather than one shared across the loop", async () => {
+    // A single AbortSignal.timeout() hoisted into the shared `init` would
+    // fire once and abort every remaining attempt instantly, silently
+    // disabling the bot-challenge retry this whole function exists for.
+    const seen: { signal: AbortSignal | null; abortedAtCallTime: boolean }[] =
+      [];
+    const fetchMock = vi.fn(async (_url: string | URL, init?: RequestInit) => {
+      const signal = init?.signal ?? null;
+      seen.push({ signal, abortedAtCallTime: signal?.aborted ?? false });
+      return htmlChallengeResponse();
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    vi.useFakeTimers();
+    const resultPromise = (async () => {
+      const client = await createShopifyClient(relayEnv);
+      return client.request("query { ok }");
+    })();
+    const assertion = expect(resultPromise).rejects.toThrow(
+      NonJsonShopifyResponseError,
+    );
+    await vi.runAllTimersAsync();
+    await assertion;
+
+    expect(seen).toHaveLength(5);
+    expect(seen.every((call) => call.signal !== null)).toBe(true);
+    expect(seen.every((call) => !call.abortedAtCallTime)).toBe(true);
+    expect(new Set(seen.map((call) => call.signal)).size).toBe(5);
+  });
+});
+
 describe("createShopifyClient — relay misconfiguration", () => {
   it("throws a ShopifyApiError when SHOPIFY_RELAY_URL is set but SHOPIFY_RELAY_SECRET is missing, rather than silently falling back to direct calls", async () => {
     const halfConfiguredEnv = {

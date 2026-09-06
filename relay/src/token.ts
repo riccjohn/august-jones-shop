@@ -33,6 +33,12 @@ export interface TokenManager {
 // actually elapses, so callers never race a token that's about to die.
 const REFRESH_BUFFER_MS = 60_000;
 
+// Ceiling on a single call to Shopify. Without one, a hung upstream holds
+// the connection from Cloudflare open indefinitely and the form spins
+// forever; with one, the caller gets a 502 it can act on. Deliberately
+// generous — Shopify normally answers in well under a second.
+export const UPSTREAM_TIMEOUT_MS = 10_000;
+
 async function mintToken(
   env: TokenEnv,
 ): Promise<{ token: string; expiresAt: number }> {
@@ -46,6 +52,7 @@ async function mintToken(
         client_id: env.SHOPIFY_CLIENT_ID,
         client_secret: env.SHOPIFY_CLIENT_SECRET,
       }).toString(),
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
     },
   );
 

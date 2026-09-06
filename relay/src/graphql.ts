@@ -1,4 +1,4 @@
-import type { TokenManager } from "./token";
+import { type TokenManager, UPSTREAM_TIMEOUT_MS } from "./token";
 
 // Kept in lockstep with functions/api/_lib/shopify.ts's own API_VERSION
 // constant — this is the relay-mode path and that is the direct-call
@@ -36,6 +36,9 @@ async function callShopify(
         "X-Shopify-Access-Token": token,
       },
       body: JSON.stringify(body),
+      // A fresh signal per call, not a shared one: the 401 path below issues
+      // a second request, and a reused timeout would already be spent.
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
     },
   );
 }

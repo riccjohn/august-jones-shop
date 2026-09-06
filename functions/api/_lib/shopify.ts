@@ -38,6 +38,21 @@ interface AccessTokenResponse {
 const RETRY_ATTEMPTS = 5;
 const RETRY_BASE_DELAY_MS = 300;
 
+/**
+ * Ceiling on a single outbound attempt, whether it goes direct to Shopify or
+ * through the relay. Without one a hung upstream leaves the form spinning
+ * with nothing to report.
+ *
+ * Larger than the relay's own 10s per-upstream-call budget (see
+ * relay/src/token.ts) so the nearer hop is not the one that gives up on a
+ * request the relay is still working through.
+ *
+ * A timeout mid-mutation is inherently ambiguous — the write may or may not
+ * have landed — but that ambiguity already existed; all this changes is that
+ * the caller now finds out in seconds instead of hanging.
+ */
+const REQUEST_TIMEOUT_MS = 20_000;
+
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -76,7 +91,14 @@ async function parseJsonResponse<T>(response: Response): Promise<T> {
  */
 async function fetchShopifyJson<T>(url: string, init: RequestInit): Promise<T> {
   for (let attempt = 1; attempt <= RETRY_ATTEMPTS; attempt++) {
-    const response = await fetch(url, init);
+    // The signal is built per attempt, never hoisted into the caller's
+    // `init`. A single AbortSignal.timeout() shared across the loop fires
+    // once and then aborts every remaining attempt instantly — turning the
+    // bot-challenge retry this function exists for into a no-op.
+    const response = await fetch(url, {
+      ...init,
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
     try {
       return await parseJsonResponse<T>(response);
     } catch (err) {
