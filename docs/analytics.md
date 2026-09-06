@@ -25,6 +25,30 @@ Client click → trackXxxClick() → window.umami.track(eventName, eventData)
 | `trackEmailSignupError(source)` | `email_signup_error` | `footer`, `join`, `home` |
 | `trackContactFormError()` | `contact_form_error` | — |
 
+## Verifying an event actually fired
+
+Two different domains are involved, which is the usual reason a working event looks broken:
+
+| Domain | Role |
+|---|---|
+| `cloud.umami.is` | serves `script.js`, and hosts the dashboard |
+| `gateway.umami.is` | receives the events — `POST /api/send` |
+
+In DevTools, filter the Network tab on `umami` (not `cloud.umami.is`) or you will miss every
+event. In the dashboard, custom events live under **Events**, not the main traffic view.
+
+If no `POST gateway.umami.is/api/send` appears at all:
+
+- **Check the hostname.** `layout.tsx` sets `data-domains="augustjones.shop,www.augustjones.shop"`,
+  so the script deliberately sends nothing on `*.pages.dev` — preview and pages.dev production
+  URLs included. Server-side behavior is unaffected, so a form still writes to Shopify while
+  reporting no analytics.
+- **Check for a blocker.** Both domains are on common blocklists, at the extension level and in
+  DNS filters like Pi-hole. `track()` in `src/lib/analytics.ts` no-ops silently when the script
+  did not load, so there is no console error to find.
+- **Confirm the script loaded** — `window.umami` in the console should be an object with a
+  `track` function.
+
 Umami automatically captures: page URL, referrer, UTM params (`utm_source`, `utm_medium`, `utm_campaign`), browser, OS, device type, and country.
 
 ## Umami Cloud Setup (one-time)
