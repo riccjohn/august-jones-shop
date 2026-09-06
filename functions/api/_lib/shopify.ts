@@ -1,9 +1,16 @@
+// Kept in lockstep with relay/src/graphql.ts's own API_VERSION constant —
+// this is the direct-call (rollback) path and that is the relay-mode path
+// (ADR-0003). They are separate tsconfig projects and cannot share an
+// import, so the invariant is enforced by
+// relay/src/__tests__/api-version-lockstep.test.ts. Change both together.
 const API_VERSION = "2026-07";
 
 export interface ShopifyEnv {
   SHOPIFY_STORE_DOMAIN: string;
   SHOPIFY_CLIENT_ID: string;
   SHOPIFY_CLIENT_SECRET: string;
+  SHOPIFY_RELAY_URL?: string;
+  SHOPIFY_RELAY_SECRET?: string;
 }
 
 interface GraphQLResponse<T> {
@@ -30,6 +37,21 @@ interface AccessTokenResponse {
 
 const RETRY_ATTEMPTS = 5;
 const RETRY_BASE_DELAY_MS = 300;
+
+/**
+ * Ceiling on a single outbound attempt, whether it goes direct to Shopify or
+ * through the relay. Without one a hung upstream leaves the form spinning
+ * with nothing to report.
+ *
+ * Larger than the relay's own 10s per-upstream-call budget (see
+ * relay/src/token.ts) so the nearer hop is not the one that gives up on a
+ * request the relay is still working through.
+ *
+ * A timeout mid-mutation is inherently ambiguous — the write may or may not
+ * have landed — but that ambiguity already existed; all this changes is that
+ * the caller now finds out in seconds instead of hanging.
+ */
+const REQUEST_TIMEOUT_MS = 20_000;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -69,7 +91,14 @@ async function parseJsonResponse<T>(response: Response): Promise<T> {
  */
 async function fetchShopifyJson<T>(url: string, init: RequestInit): Promise<T> {
   for (let attempt = 1; attempt <= RETRY_ATTEMPTS; attempt++) {
-    const response = await fetch(url, init);
+    // The signal is built per attempt, never hoisted into the caller's
+    // `init`. A single AbortSignal.timeout() shared across the loop fires
+    // once and then aborts every remaining attempt instantly — turning the
+    // bot-challenge retry this function exists for into a no-op.
+    const response = await fetch(url, {
+      ...init,
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
     try {
       return await parseJsonResponse<T>(response);
     } catch (err) {
@@ -151,27 +180,55 @@ export interface ShopifyClient {
   findCustomerByEmail(email: string): Promise<CustomerLookup | null>;
 }
 
-/** Fetches a fresh access token and returns a client bound to it for this request. */
+/**
+ * Fetches a fresh access token (unless relay mode is configured) and returns
+ * a client bound to it for this request.
+ *
+ * When `SHOPIFY_RELAY_URL` is set, GraphQL requests are sent to the relay
+ * instead of directly to Shopify, authenticated with `X-Relay-Secret` rather
+ * than a Shopify access token — no OAuth call is made from this environment
+ * at all. `SHOPIFY_RELAY_URL` without `SHOPIFY_RELAY_SECRET` is treated as a
+ * misconfiguration, not a fallback to direct calls.
+ */
 export async function createShopifyClient(
   env: ShopifyEnv,
 ): Promise<ShopifyClient> {
-  const accessToken = await fetchAccessToken(env);
+  const relayUrl = env.SHOPIFY_RELAY_URL;
+
+  let graphqlUrl: string;
+  let authHeaders: Record<string, string>;
+
+  if (relayUrl) {
+    if (!env.SHOPIFY_RELAY_SECRET) {
+      throw new ShopifyApiError(
+        "SHOPIFY_RELAY_URL is set but SHOPIFY_RELAY_SECRET is missing",
+      );
+    }
+    // Tolerate a trailing slash on the configured URL. Without this,
+    // `https://relay.example/` builds `POST //graphql`, which matches no
+    // route on the relay and comes back as its 404 JSON — surfacing to the
+    // user as a 500 whose message is the single word "not found". A silent
+    // config typo should not be that hard to diagnose.
+    graphqlUrl = `${relayUrl.replace(/\/+$/, "")}/graphql`;
+    authHeaders = { "X-Relay-Secret": env.SHOPIFY_RELAY_SECRET };
+  } else {
+    const accessToken = await fetchAccessToken(env);
+    graphqlUrl = `https://${env.SHOPIFY_STORE_DOMAIN}/admin/api/${API_VERSION}/graphql.json`;
+    authHeaders = { "X-Shopify-Access-Token": accessToken };
+  }
 
   async function request<T>(
     query: string,
     variables?: Record<string, unknown>,
   ): Promise<T> {
-    const json = await fetchShopifyJson<GraphQLResponse<T>>(
-      `https://${env.SHOPIFY_STORE_DOMAIN}/admin/api/${API_VERSION}/graphql.json`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Shopify-Access-Token": accessToken,
-        },
-        body: JSON.stringify({ query, variables }),
+    const json = await fetchShopifyJson<GraphQLResponse<T>>(graphqlUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders,
       },
-    );
+      body: JSON.stringify({ query, variables }),
+    });
 
     if (json.errors && json.errors.length > 0) {
       throw new ShopifyApiError(json.errors.map((e) => e.message).join("; "));

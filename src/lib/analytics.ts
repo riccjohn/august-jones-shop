@@ -36,3 +36,7 @@ export function trackEmailSignup(source: EmailSignupSource) {
 export function trackContactFormError() {
   track("contact_form_error");
 }
+
+export function trackEmailSignupError(source: EmailSignupSource) {
+  track("email_signup_error", { source });
+}

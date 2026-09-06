@@ -11,6 +11,7 @@ export default defineConfig({
     include: [
       "src/**/*.{test,spec}.{ts,tsx}",
       "functions/**/*.{test,spec}.{ts,tsx}",
+      "relay/**/*.{test,spec}.{ts,tsx}",
     ],
   },
 });

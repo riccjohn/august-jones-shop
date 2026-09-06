@@ -3,6 +3,10 @@ import { cleanup } from "@testing-library/react";
 import { afterEach, beforeAll } from "vitest";
 
 beforeAll(() => {
+  // Relay tests run under `// @vitest-environment node` (no DOM globals),
+  // sharing this setup file. Skip the jsdom-only patches there.
+  if (typeof window === "undefined") return;
+
   window.HTMLElement.prototype.scrollIntoView = () => {};
   window.HTMLElement.prototype.hasPointerCapture = () => false;
   window.HTMLElement.prototype.releasePointerCapture = () => {};

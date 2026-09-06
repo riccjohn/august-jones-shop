@@ -1,0 +1,72 @@
+name: Deploy relay
+
+on:
+  push:
+    branches: [main]
+    paths: ['relay/**']
+  workflow_dispatch:
+
+# Deployment authenticates with FLY_API_TOKEN, so GITHUB_TOKEN needs nothing
+# beyond reading the repo to check it out. Without an explicit block the token
+# inherits whatever the repo default is, which may include write scopes this
+# workflow has no use for.
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-relay
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck relay
+        run: pnpm exec tsc -p relay --noEmit
+
+      - name: Relay unit tests
+        run: pnpm exec vitest run relay
+
+      - name: Setup flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@v1
+
+      - name: Deploy relay
+        run: fly deploy ./relay --ha=false --remote-only
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      # Fly's own health check runs over the private network, so it reports
+      # 1/1 for a machine that has no public ingress IP and is unreachable
+      # from Cloudflare. ADR-0003 records that exact trap costing an outage.
+      # Only an external request distinguishes "healthy" from "reachable",
+      # so make one before calling the deploy good.
+      - name: Verify the relay is reachable from the public internet
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if [ "$(curl -fsS --max-time 10 https://august-jones-relay.fly.dev/healthz)" = "ok" ]; then
+              echo "relay reachable on attempt $attempt"
+              exit 0
+            fi
+            echo "attempt $attempt: not reachable yet"
+            sleep 5
+          done
+          echo "::error::august-jones-relay.fly.dev did not serve /healthz after the deploy."
+          echo "::error::Check 'fly ips list -a august-jones-relay' for a PUBLIC INGRESS address --"
+          echo "::error::the egress IP is a separate product and does not make the app reachable."
+          exit 1

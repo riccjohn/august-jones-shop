@@ -22,6 +22,8 @@ Client click → trackXxxClick() → window.umami.track(eventName, eventData)
 | `trackInstagramClick(location)` | `instagram_click` | `hero`, `footer` |
 | `trackEmailClick()` | `email_click` | — |
 | `trackEmailSignup(source)` | `email_signup` | `footer`, `join`, `home` |
+| `trackEmailSignupError(source)` | `email_signup_error` | `footer`, `join`, `home` |
+| `trackContactFormError()` | `contact_form_error` | — |
 
 Umami automatically captures: page URL, referrer, UTM params (`utm_source`, `utm_medium`, `utm_campaign`), browser, OS, device type, and country.
 

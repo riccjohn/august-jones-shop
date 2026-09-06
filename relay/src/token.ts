@@ -1,0 +1,130 @@
+export interface TokenEnv {
+  SHOPIFY_STORE_DOMAIN: string;
+  SHOPIFY_CLIENT_ID: string;
+  SHOPIFY_CLIENT_SECRET: string;
+}
+
+/**
+ * A non-JSON response from Shopify's OAuth token endpoint. Surfaced verbatim
+ * (status + body) rather than parsed, so a caller can forward it unchanged.
+ */
+export class NonJsonUpstreamResponseError extends Error {
+  readonly status: number;
+  readonly body: string;
+
+  constructor(status: number, body: string) {
+    super(`Shopify returned a non-JSON response (status ${status})`);
+    this.status = status;
+    this.body = body;
+  }
+}
+
+interface AccessTokenResponse {
+  access_token?: string;
+  expires_in?: number;
+}
+
+export interface TokenManager {
+  getToken(): Promise<string>;
+  invalidate(): void;
+}
+
+// Proactively refresh this many milliseconds before the token's expires_in
+// actually elapses, so callers never race a token that's about to die.
+const REFRESH_BUFFER_MS = 60_000;
+
+// Ceiling on a single call to Shopify. Without one, a hung upstream holds
+// the connection from Cloudflare open indefinitely and the form spins
+// forever; with one, the caller gets a 502 it can act on. Deliberately
+// generous — Shopify normally answers in well under a second.
+export const UPSTREAM_TIMEOUT_MS = 10_000;
+
+async function mintToken(
+  env: TokenEnv,
+): Promise<{ token: string; expiresAt: number }> {
+  const response = await fetch(
+    `https://${env.SHOPIFY_STORE_DOMAIN}/admin/oauth/access_token`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "client_credentials",
+        client_id: env.SHOPIFY_CLIENT_ID,
+        client_secret: env.SHOPIFY_CLIENT_SECRET,
+      }).toString(),
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    },
+  );
+
+  const text = await response.text();
+  let json: AccessTokenResponse;
+  try {
+    json = JSON.parse(text) as AccessTokenResponse;
+  } catch {
+    throw new NonJsonUpstreamResponseError(response.status, text);
+  }
+
+  if (!json.access_token || json.expires_in === undefined) {
+    throw new Error("Shopify token response missing access_token/expires_in");
+  }
+
+  return {
+    token: json.access_token,
+    expiresAt: Date.now() + json.expires_in * 1000,
+  };
+}
+
+export function createTokenManager(env: TokenEnv): TokenManager {
+  let cached: { token: string; expiresAt: number } | null = null;
+  // The in-flight mint, tagged with the generation it started under so a
+  // caller arriving after an invalidate() can tell it apart from a fresh one.
+  let pending: {
+    generation: number;
+    promise: Promise<{ token: string; expiresAt: number }>;
+  } | null = null;
+  // Bumped by invalidate(). A mint captures the generation it started under;
+  // if invalidate() runs before that mint resolves, the generation it
+  // captured is now stale, so the resolved token is handed back to its
+  // caller but NOT written to `cached` — otherwise an in-flight mint would
+  // silently undo the invalidation the instant it finished.
+  let generation = 0;
+
+  async function getToken(): Promise<string> {
+    if (cached && cached.expiresAt - Date.now() >= REFRESH_BUFFER_MS) {
+      return cached.token;
+    }
+
+    // Join an in-flight mint only if it started under the current
+    // generation. Without the generation check, the 401 path in
+    // forwardGraphqlRequest — invalidate(), then immediately getToken() —
+    // could attach to a mint that began before the 401 and be handed back
+    // the very token Shopify just rejected, so the retry fails identically.
+    if (!pending || pending.generation !== generation) {
+      const mintGeneration = generation;
+      const promise = mintToken(env)
+        .then((result) => {
+          if (generation === mintGeneration) {
+            cached = result;
+          }
+          return result;
+        })
+        .finally(() => {
+          // Only clear if a newer mint hasn't already taken this slot.
+          if (pending?.generation === mintGeneration) {
+            pending = null;
+          }
+        });
+      pending = { generation: mintGeneration, promise };
+    }
+
+    const result = await pending.promise;
+    return result.token;
+  }
+
+  function invalidate(): void {
+    cached = null;
+    generation++;
+  }
+
+  return { getToken, invalidate };
+}

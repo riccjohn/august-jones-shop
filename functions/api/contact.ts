@@ -48,18 +48,18 @@ function isContactPayload(value: unknown): value is ContactPayload {
     return false;
   }
 
-  return (
+  return Boolean(
     firstName &&
-    lastName &&
-    email &&
-    isValidEmail(email) &&
-    typeof instagram === "string" &&
-    team &&
-    pieceType &&
-    size &&
-    materialsSource &&
-    typeof message === "string" &&
-    policyAgreed === true
+      lastName &&
+      email &&
+      isValidEmail(email) &&
+      typeof instagram === "string" &&
+      team &&
+      pieceType &&
+      size &&
+      materialsSource &&
+      typeof message === "string" &&
+      policyAgreed === true,
   );
 }
 
