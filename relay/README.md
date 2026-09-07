@@ -103,9 +103,10 @@ Client ID and Client Secret used below.
 
 A **Fly secret** is an environment variable attached to the Fly app, set with `fly secrets
 set` (below). A **Cloudflare Pages env var** is set in the Cloudflare dashboard under the
-project's Settings → Environment Variables — **separately** for the Production and
-Preview environments, both of which must be set for the relay to carry both live and
-preview-deploy traffic.
+project's Settings → Variables and secrets — **separately** for the Production and
+Preview environments (the "Choose Environment" dropdown at the top of Settings scopes the
+whole page), both of which must be set for the relay to carry both live and preview-deploy
+traffic.
 
 The three `SHOPIFY_*` credentials are also kept on Cloudflare Pages, in addition to Fly:
 that copy is what `createShopifyClient` uses to call Shopify directly, so it's what keeps
@@ -227,7 +228,7 @@ How to turn the relay on for an app that's already deployed and healthy.
    Shopify credentials, and Shopify itself are all reachable, without writing any data.
    Expect `{"data":{"shop":{"name":"..."}}}`; do not continue past a `401` or `502`.
 4. **Set `RELAY_URL` and `RELAY_SHARED_SECRET` on Cloudflare Pages** — the project's
-   Settings → Environment Variables, on **both** the Production and Preview
+   Settings → Variables and secrets, on **both** the Production and Preview
    environments — then redeploy Cloudflare (see Credentials for how). Nothing changes
    until that redeploy finishes.
 5. **Submit one real email-list signup** (the `EmailSignupForm` component), then confirm
@@ -297,7 +298,7 @@ Building the relay from scratch, step 4, for why both are required.
 
 ## Rolling back
 
-Delete `RELAY_URL` in Cloudflare Pages (Settings → Environment Variables, both Production
+Delete `RELAY_URL` in Cloudflare Pages (Settings → Variables and secrets, both Production
 and Preview) and redeploy. That's the entire rollback: Shopify calls go direct again, with
 no code change and no change to the Fly app. The relay itself keeps running; it just stops
 receiving traffic.

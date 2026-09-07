@@ -66,7 +66,7 @@ In `.env.local` (local development):
 NEXT_PUBLIC_UMAMI_WEBSITE_ID=your-website-id-uuid
 ```
 
-In Cloudflare Pages (production): **Workers & Pages → august-jones-shop → Settings → Environment Variables → Add variable**:
+In Cloudflare Pages (production): **Workers & Pages → august-jones-shop → Settings → Variables and secrets → Add variable**:
 - Variable: `NEXT_PUBLIC_UMAMI_WEBSITE_ID`
 - Value: your Website ID
 
