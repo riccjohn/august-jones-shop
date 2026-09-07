@@ -5,7 +5,6 @@ import { FooterShopLink } from "@/components/FooterShopLink";
 import InstagramIcon from "@/components/InstagramIcon";
 import { InstagramLink } from "@/components/InstagramLink";
 import { TrackedEmailLink } from "@/components/TrackedEmailLink";
-import { CUSTOM_ORDERS_URL } from "@/lib/constants";
 
 export const Footer = () => {
   return (
@@ -70,14 +69,12 @@ export const Footer = () => {
               >
                 Sizing
               </Link>
-              <a
-                href={CUSTOM_ORDERS_URL}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                href="/contact"
                 className="text-sm text-foreground/75 transition-colors duration-200 hover:text-accent"
               >
                 Contact
-              </a>
+              </Link>
             </nav>
           </div>
 

@@ -1,9 +1,9 @@
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { GrainOverlay } from "@/components/GrainOverlay";
 import { Button } from "@/components/ui/button";
-import { CUSTOM_ORDERS_URL } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Size Charts | August Jones",
@@ -175,14 +175,12 @@ export default function SizingPage() {
           <p className="mt-4 max-w-xl text-sm/relaxed text-foreground/55">
             Looking for a Full Length Military Jacket? Sizing details are coming
             soon.{" "}
-            <a
-              href={CUSTOM_ORDERS_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/contact"
               className="underline underline-offset-4 hover:text-accent transition-colors duration-200"
             >
               Reach out
-            </a>{" "}
+            </Link>{" "}
             and I'll help you find your fit.
           </p>
         </div>
@@ -315,14 +313,10 @@ export default function SizingPage() {
                 variant="brand"
                 className="h-14 gap-3 px-10 text-base font-medium uppercase tracking-widest"
               >
-                <a
-                  href={CUSTOM_ORDERS_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <Link href="/contact">
                   <span>Get in Touch</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </a>
+                </Link>
               </Button>
             </div>
           </div>
