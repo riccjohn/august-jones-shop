@@ -60,3 +60,8 @@ setup and the exact catch/no-catch boundary.
 - **Bad:** `captureMessage` groups Sentry issues by message text. Any Shopify message that
   embeds an email address or an ID would fragment into one issue per submission instead of
   grouping — worth watching once real events land.
+- **Mitigated:** `@sentry/cloudflare`'s default `httpServerIntegration` attaches the raw
+  request body to every event — including `captureMessage`/`captureException` — regardless
+  of `sendDefaultPii`, which would have sent full contact-form/signup submissions (name,
+  email, message) to Sentry on every routine Shopify rejection. `functions/_middleware.ts`
+  sets `maxRequestBodySize: "none"` to disable this.

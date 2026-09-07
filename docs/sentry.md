@@ -32,11 +32,13 @@ exception via `Sentry.captureException(err)`. Both return a 500 JSON response ei
 
 ## Setup 1: Error tracking for the Pages Functions
 
-1. **Create the Sentry project.** Platform: **Cloudflare Workers** — not Next.js, even
-   though the site is Next.js, because what's being instrumented is the Pages Functions
-   backend, which runs on the Workers runtime. The only thing you need off the
-   post-creation screen is the **DSN** (also findable later at Settings → Projects →
-   `<project>` → Client Keys (DSN)). Do not add a payment method — see Cost.
+1. **Create the Sentry project.** Name it `august-jones-functions` — Setup 2's uptime
+   monitor is configured under that project name, so using anything else here means
+   updating it there too. Platform: **Cloudflare Workers** — not Next.js, even though the
+   site is Next.js, because what's being instrumented is the Pages Functions backend,
+   which runs on the Workers runtime. The only thing you need off the post-creation
+   screen is the **DSN** (also findable later at Settings → Projects → `<project>` →
+   Client Keys (DSN)). Do not add a payment method — see Cost.
 
 2. **Set `SENTRY_DSN`** in Cloudflare. Workers & Pages → august-jones-shop → Settings →
    **Variables and secrets**. Server-only, no `NEXT_PUBLIC_` prefix. See `.env.example`.

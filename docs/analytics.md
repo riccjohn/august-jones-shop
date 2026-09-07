@@ -25,6 +25,11 @@ Client click → trackXxxClick() → window.umami.track(eventName, eventData)
 | `trackEmailSignupError(source)` | `email_signup_error` | `footer`, `join`, `home` |
 | `trackContactFormError()` | `contact_form_error` | — |
 
+`contact_form_error` and `email_signup_error` are client-side signals only — a bare count,
+suppressible by an ad blocker, with no stack trace. The server side of the same failures
+(the actual Shopify rejection, with detail and alerting) is covered separately by Sentry:
+see [docs/sentry.md](./sentry.md).
+
 ## Verifying an event actually fired
 
 Two different domains are involved, which is the usual reason a working event looks broken:
