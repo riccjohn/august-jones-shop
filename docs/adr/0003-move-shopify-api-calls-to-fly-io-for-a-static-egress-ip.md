@@ -116,6 +116,17 @@ The existing retry/backoff logic in `shopify.ts` is untouched and stays in place
 - **On the relay, which mints and caches its own token (chosen)** — the client secret is never placed in a request body, so it cannot leak through a logged request or an error message that echoes a payload. It also collapses the per-submission token round trip into a 24h cache, removing the OAuth endpoint from the hot path entirely and cutting challengeable requests per submission from three to two (signup) and four to three (contact).
 - **On Cloudflare, with the relay as a generic URL forwarder** — rejected. Forwarding `fetchShopifyJson` wholesale means the OAuth exchange, `client_id` and `client_secret` included, transits the relay on every single submission. It also makes the relay a general-purpose proxy whose safety depends on a target-host allowlist, rather than a service with one fixed destination.
 
+### Recovery when the relay is unreachable (issue #97, revisited 2026-09-07)
+
+- **Do nothing beyond the existing retry/backoff; rely on manual rollback (chosen)** — `fetchShopifyJson`'s 5-attempt retry only covers a response that comes back but fails to parse as JSON (`NonJsonShopifyResponseError`); a `fetch()` that throws outright — relay unreachable, machine stopped, network blip — isn't caught anywhere and propagates out of `createShopifyClient`, which `contact.ts`/`subscribe.ts` turn into a 500. Rollback (unsetting `RELAY_URL` in Cloudflare Pages, per `relay/README.md`) stays manual. Kept as-is.
+- **Automatically retry direct against Shopify when the relay is unreachable (rejected)** — would degrade a relay outage to "flaky but functional" (today's pre-ADR-0003 baseline) instead of a hard failure. Rejected on four grounds:
+  - **Double-submission risk can't be fully closed.** Both handlers do multi-step mutations (`customerCreate`/`customerUpdate`, then for contact a `draftOrderCreate`). A `fetch()` throw can mean the request never reached the relay (safe to retry) or that the relay completed the write and only the reply back failed (unsafe — a same-request direct retry would duplicate the write). Cloudflare Workers' `fetch()` doesn't reliably distinguish these. The only way to make a mutation retry safe is a re-check before retrying (e.g. re-running the customer lookup before retrying `customerCreate`), and `draftOrderCreate` has no equivalent existence check at all — so a fully safe fallback isn't achievable for the operation where the exposure is worst.
+  - **Detection already exists and is fast.** A Sentry uptime check polls `august-jones-relay.fly.dev/healthz` from Sentry's external infrastructure every minute (configured in the Sentry GUI, not in this repo) and has already fired alerts. This is the specific external check the "Operating the relay" section below calls out as missing from Fly's own health check (which runs over the private network and can read healthy while unreachable from the internet) — so the "silently broken for hours" scenario that motivated this proposal is already covered by a ~1-minute-detection channel outside the code, at the cost of a manual rollback rather than an automatic one.
+  - **Doubles the failure surface.** Every request would hit two independent transports instead of one.
+  - **Muddies the post-cutover WAF-observation window** this ADR's Validation section depends on — if direct calls silently absorb relay failures, a successful response no longer tells you which path served the request.
+
+  Sentry's own error monitoring for the Cloudflare Pages Functions (`august-jones-functions`) does not cover this gap on its own: both handlers already catch the relay-unreachable error and return a normal `jsonResponse({ error }, 500)`, a handled outcome rather than an uncaught exception, so it is not reported the way a genuinely uncaught throw is. (One example surfaced during this review, `SyntaxError: ... "not json" is not valid JSON`, is an uncaught exception from `context.request.json()` running before either handler's try/catch — a separate, pre-existing gap, unrelated to this decision.) The uptime check, not the error monitor, is what closes this one.
+
 ## Consequences
 
 - **Good:** Contact form and newsletter signup submissions become reliable rather than probabilistic, once the dedicated IP builds WAF reputation.
@@ -186,7 +197,9 @@ that produced those instructions, not the instructions themselves.
   "Building the relay from scratch" section for the fix and its Verifying section for the
   external-curl check that actually catches this — Fly's own health check cannot. This is the
   inbound product the Options section above warns not to confuse with `allocate-egress`; it
-  turns out both are needed, for opposite directions.
+  turns out both are needed, for opposite directions. A Sentry uptime check now polls
+  `/healthz` from outside Fly's network on the same 1-minute cadence in production — see
+  "Recovery when the relay is unreachable" above.
 - **The egress IP survives machine destruction and redeploys.** It is released only by an
   explicit `fly ips release-egress`. The IP allocated here is `209.71.89.37` (plus
   `2a09:8280:e626:1:0:184:54e7:0`) — note this is a *new* address, not the `209.71.89.82` from
