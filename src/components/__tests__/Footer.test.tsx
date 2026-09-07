@@ -83,19 +83,14 @@ describe("Footer", () => {
     expect(aboutLink).toHaveAttribute("href", "/about");
   });
 
-  it("links 'Contact' to the Shopify custom-orders page, opened in a new tab", () => {
+  it("contains a link to /contact in the footer navigation", () => {
     render(<Footer />);
     const nav = screen.getByRole("navigation", {
       name: "Footer navigation",
     });
     const contactLink = within(nav).getByRole("link", { name: /contact/i });
     expect(contactLink).toBeInTheDocument();
-    expect(contactLink).toHaveAttribute(
-      "href",
-      "https://store.augustjones.shop/pages/custom-orders",
-    );
-    expect(contactLink).toHaveAttribute("target", "_blank");
-    expect(contactLink).toHaveAttribute("rel", "noopener noreferrer");
+    expect(contactLink).toHaveAttribute("href", "/contact");
   });
 
   it("renders the EmailSignupForm with source='footer'", () => {
