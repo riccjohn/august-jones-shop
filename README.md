@@ -121,7 +121,7 @@ Then restart the dev server and hard refresh your browser (Cmd+Shift+R on Mac, C
 
 ## Analytics Setup
 
-The site uses **Umami Cloud** for analytics — pageviews, referrers, countries, and custom event tracking (Shop Now clicks, Instagram clicks, email clicks). Configured via `NEXT_PUBLIC_UMAMI_WEBSITE_ID` in Cloudflare Pages Settings → Environment Variables.
+The site uses **Umami Cloud** for analytics — pageviews, referrers, countries, and custom event tracking (Shop Now clicks, Instagram clicks, email clicks). Configured via `NEXT_PUBLIC_UMAMI_WEBSITE_ID` in Cloudflare Pages Settings → Variables and secrets.
 
 See **[docs/analytics.md](./docs/analytics.md)** for full setup instructions and how to share the dashboard with August.
 
@@ -157,7 +157,7 @@ This site is configured for deployment on **Cloudflare Pages** as a static expor
 
 1. Push changes to GitHub
 2. Cloudflare Pages automatically builds and deploys
-3. Set `NEXT_PUBLIC_UMAMI_WEBSITE_ID` in Cloudflare Pages Settings → Environment Variables (see Analytics Setup above)
+3. Set `NEXT_PUBLIC_UMAMI_WEBSITE_ID` in Cloudflare Pages Settings → Variables and secrets (see Analytics Setup above)
 
 The Fly.io relay deploys separately, from `.github/workflows/deploy-relay.yml`, on pushes
 to `main` that touch `relay/**`. It is a different service on a different host with its own
