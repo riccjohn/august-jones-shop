@@ -100,6 +100,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       if (error) {
         return errorResponse(error);
       }
+      if (!data.customerUpdate.customer) {
+        return errorResponse("Shopify did not return a customer");
+      }
     } else {
       const data = await client.request<{
         customerCreate: UserErrorResult & { customer: { id: string } | null };
@@ -114,6 +117,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       const error = joinUserErrors(data.customerCreate.userErrors);
       if (error) {
         return errorResponse(error);
+      }
+      if (!data.customerCreate.customer) {
+        return errorResponse("Shopify did not return a customer");
       }
     }
 

@@ -1,4 +1,8 @@
 import type { PagesFunction } from "@cloudflare/workers-types";
+import {
+  type ContactPayload,
+  isContactPayload,
+} from "./_lib/contact-validation";
 import { caughtErrorResponse, errorResponse } from "./_lib/error-response";
 import { jsonResponse } from "./_lib/json-response";
 import {
@@ -9,60 +13,8 @@ import {
   type ShopifyClient,
   type ShopifyEnv,
 } from "./_lib/shopify";
-import { getStringField, isObject, isValidEmail } from "./_lib/validate";
 
 type Env = ShopifyEnv;
-
-interface ContactPayload {
-  firstName: string;
-  lastName: string;
-  email: string;
-  instagram: string;
-  team: string;
-  pieceType: string;
-  size: string;
-  materialsSource: string;
-  message: string;
-  policyAgreed: boolean;
-  website?: string;
-}
-
-function isContactPayload(value: unknown): value is ContactPayload {
-  if (!isObject(value)) {
-    return false;
-  }
-
-  const firstName = getStringField(value, "firstName");
-  const lastName = getStringField(value, "lastName");
-  const email = getStringField(value, "email");
-  const instagram = Reflect.get(value, "instagram");
-  const team = getStringField(value, "team");
-  const pieceType = getStringField(value, "pieceType");
-  const size = getStringField(value, "size");
-  const materialsSource = getStringField(value, "materialsSource");
-  const message = Reflect.get(value, "message");
-  const policyAgreed = Reflect.get(value, "policyAgreed");
-
-  // Reject if honeypot is filled (non-empty website field)
-  const website = Reflect.get(value, "website");
-  if (typeof website === "string" && website.length > 0) {
-    return false;
-  }
-
-  return Boolean(
-    firstName &&
-      lastName &&
-      email &&
-      isValidEmail(email) &&
-      typeof instagram === "string" &&
-      team &&
-      pieceType &&
-      size &&
-      materialsSource &&
-      typeof message === "string" &&
-      policyAgreed === true,
-  );
-}
 
 const CONTACT_TAG = "contact-form";
 
