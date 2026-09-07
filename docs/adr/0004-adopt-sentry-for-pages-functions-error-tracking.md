@@ -57,9 +57,12 @@ setup and the exact catch/no-catch boundary.
 - **Bad:** Two known blind spots remain — payload-validation 400s are deliberately not
   reported (would flood Sentry with bot traffic from the honeypot), and client-side failures
   never reach the function at all. Both tracked in issue #104.
-- **Bad:** `captureMessage` groups Sentry issues by message text. Any Shopify message that
-  embeds an email address or an ID would fragment into one issue per submission instead of
-  grouping — worth watching once real events land.
+- **Mitigated:** `captureMessage` groups Sentry issues by message text, so a Shopify message
+  that embeds a submitted email address would otherwise fragment into one issue per
+  submission instead of grouping — and leak that email into Sentry. `error-response.ts`
+  redacts email addresses (message, and the exception's stack) before reporting, fixing
+  both. Other PII shapes (e.g. a bare ID) aren't covered and would still leak — worth
+  watching once real events land.
 - **Mitigated:** `@sentry/cloudflare`'s default `httpServerIntegration` attaches the raw
   request body to every event — including `captureMessage`/`captureException` — regardless
   of `sendDefaultPii`, which would have sent full contact-form/signup submissions (name,

@@ -135,9 +135,9 @@ failing — surface as thrown exceptions in the Pages Function via `captureExcep
 ### When the alert fires
 
 `RELAY_URL` is set in Cloudflare production, so the relay is load-bearing: if it is down,
-both forms are down with it. It also runs as a **single machine** (`relay/fly.toml` is
-scaled to 1 deliberately), so there is no redundancy to absorb a host problem or a bad
-deploy.
+both forms are down with it. It also runs as a **single machine** (scaled to 1 via
+`fly scale count`, per ADR-0003 — machine count isn't expressible in `fly.toml` itself),
+so there is no redundancy to absorb a host problem or a bad deploy.
 
 The immediate mitigation is the ADR-0003 rollback: delete `RELAY_URL` in Cloudflare
 (Settings → Variables and secrets, under both Production and Preview) and redeploy. Shopify calls

@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/cloudflare";
 import type { ShopifyEnv } from "./api/_lib/shopify";
 
 interface Env extends ShopifyEnv {
-  SENTRY_DSN: string;
+  SENTRY_DSN?: string;
 }
 
 /**

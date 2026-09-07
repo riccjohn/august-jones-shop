@@ -23,6 +23,23 @@ describe("errorResponse", () => {
       "error",
     );
   });
+
+  it("redacts email addresses before reporting to Sentry", () => {
+    errorResponse("Email jane@example.com is invalid");
+
+    expect(Sentry.captureMessage).toHaveBeenCalledWith(
+      "Email [redacted-email] is invalid",
+      "error",
+    );
+  });
+
+  it("returns the unredacted message to the client", async () => {
+    const response = errorResponse("Email jane@example.com is invalid");
+
+    expect(await response.json()).toEqual({
+      error: "Email jane@example.com is invalid",
+    });
+  });
 });
 
 describe("caughtErrorResponse", () => {
@@ -46,5 +63,24 @@ describe("caughtErrorResponse", () => {
     caughtErrorResponse(err);
 
     expect(Sentry.captureException).toHaveBeenCalledWith(err);
+  });
+
+  it("redacts email addresses from the message and stack before reporting to Sentry", () => {
+    const err = new Error("Customer jane@example.com already exists");
+    caughtErrorResponse(err);
+
+    expect(Sentry.captureException).toHaveBeenLastCalledWith(err);
+    expect(err.message).toBe("Customer [redacted-email] already exists");
+    expect(err.stack).not.toContain("jane@example.com");
+  });
+
+  it("returns the caught Error's original, unredacted message to the client", async () => {
+    const response = caughtErrorResponse(
+      new Error("Customer jane@example.com already exists"),
+    );
+
+    expect(await response.json()).toEqual({
+      error: "Customer jane@example.com already exists",
+    });
   });
 });
