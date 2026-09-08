@@ -3,8 +3,8 @@ import { caughtErrorResponse, errorResponse } from "./_lib/error-response";
 import { jsonResponse } from "./_lib/json-response";
 import {
   appendNote,
+  checkCustomerMutation,
   createShopifyClient,
-  joinUserErrors,
   mergeTags,
   type ShopifyEnv,
 } from "./_lib/shopify";
@@ -96,9 +96,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           tags: mergeTags(existing.tags, [NEWSLETTER_TAG]),
         },
       });
-      const error = joinUserErrors(data.customerUpdate.userErrors);
-      if (error) {
-        return errorResponse(error);
+      const result = checkCustomerMutation(data.customerUpdate);
+      if ("error" in result) {
+        return errorResponse(result.error);
       }
     } else {
       const data = await client.request<{
@@ -111,9 +111,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           tags: [NEWSLETTER_TAG],
         },
       });
-      const error = joinUserErrors(data.customerCreate.userErrors);
-      if (error) {
-        return errorResponse(error);
+      const result = checkCustomerMutation(data.customerCreate);
+      if ("error" in result) {
+        return errorResponse(result.error);
       }
     }
 

@@ -155,6 +155,29 @@ export function joinUserErrors(userErrors: UserError[]): string | null {
   return userErrors.map((e) => e.message).join("; ");
 }
 
+interface CustomerMutationResult {
+  userErrors: UserError[];
+  customer: { id: string } | null;
+}
+
+/**
+ * Validates a customerCreate/customerUpdate result: userErrors first, then
+ * the null-customer case Shopify uses to signal a write that silently failed
+ * despite an empty userErrors array.
+ */
+export function checkCustomerMutation(
+  result: CustomerMutationResult,
+): { customer: { id: string } } | { error: string } {
+  const error = joinUserErrors(result.userErrors);
+  if (error) {
+    return { error };
+  }
+  if (!result.customer) {
+    return { error: "Shopify did not return a customer" };
+  }
+  return { customer: result.customer };
+}
+
 interface CustomerLookup {
   id: string;
   note: string | null;

@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ContactForm } from "@/components/ContactForm";
 import * as analytics from "@/lib/analytics";
+import { isContactPayload } from "../../../functions/api/_lib/contact-validation";
 
 vi.mock("@/lib/analytics", () => ({
   trackContactFormError: vi.fn(),
@@ -314,6 +315,28 @@ describe("ContactForm", () => {
       );
       expect(body.message).toBe("I want a custom hoodie");
       expect(body.policyAgreed).toBe(true);
+    });
+  });
+
+  describe("contract with functions/api/contact.ts", () => {
+    it("POSTs a body that the real isContactPayload validator accepts", async () => {
+      const user = userEvent.setup();
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response(JSON.stringify({}), { status: 200 }));
+      vi.stubGlobal("fetch", mockFetch);
+
+      render(<ContactForm />);
+      await fillForm(user);
+      await user.click(
+        screen.getByRole("button", { name: /request a custom/i }),
+      );
+
+      await waitFor(() => expect(mockFetch).toHaveBeenCalledOnce());
+
+      const [, init] = mockFetch.mock.calls[0] as [string, RequestInit];
+      const body: unknown = JSON.parse(init.body as string);
+      expect(isContactPayload(body)).toBe(true);
     });
   });
 
