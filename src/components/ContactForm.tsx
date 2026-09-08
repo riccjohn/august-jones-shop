@@ -32,6 +32,7 @@ const PIECE_TYPES: FormOption[] = [
     label: "Full Length Military Jacket ($195–$245)",
   },
   { value: "vest", label: "Vest ($285–$350)" },
+  { value: "other", label: "Other - please describe below" },
 ];
 
 const ONE_SIZE_VALUE = "one-size";
