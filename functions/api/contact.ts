@@ -7,6 +7,7 @@ import { caughtErrorResponse, errorResponse } from "./_lib/error-response";
 import { jsonResponse } from "./_lib/json-response";
 import {
   appendNote,
+  checkCustomerMutation,
   createShopifyClient,
   joinUserErrors,
   mergeTags,
@@ -82,8 +83,8 @@ async function upsertContactCustomer(
         tags: mergeTags(existing.tags, [CONTACT_TAG]),
       },
     });
-    const error = joinUserErrors(data.customerUpdate.userErrors);
-    if (error) return { error };
+    const result = checkCustomerMutation(data.customerUpdate);
+    if ("error" in result) return { error: result.error };
     return { customerId: existing.id };
   }
 
@@ -98,12 +99,9 @@ async function upsertContactCustomer(
       tags: [CONTACT_TAG],
     },
   });
-  const error = joinUserErrors(data.customerCreate.userErrors);
-  if (error) return { error };
-  if (!data.customerCreate.customer) {
-    return { error: "Shopify did not return a customer" };
-  }
-  return { customerId: data.customerCreate.customer.id };
+  const result = checkCustomerMutation(data.customerCreate);
+  if ("error" in result) return { error: result.error };
+  return { customerId: result.customer.id };
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
