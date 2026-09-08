@@ -85,6 +85,29 @@ export const allEvents: AugustJonesEvent[] = [
     venueName: "The Rusty Bee Lounge",
   },
   {
+    id: "sauced-chicago-oct-2026",
+    marketName: "Sauced Chicago",
+    sessions: [
+      {
+        startDate: "2026-10-02T17:00-05:00",
+        endDate: "2026-10-02T22:00-05:00",
+      },
+      {
+        startDate: "2026-10-03T17:00-05:00",
+        endDate: "2026-10-03T22:00-05:00",
+      },
+    ],
+    venueName: "HOSTE",
+    address: {
+      street: "1857 W 16th St",
+      city: "Chicago",
+      state: "IL",
+      zip: "60608",
+    },
+    mapsUrl: "https://mapq.st/4xQOueg",
+    eventWebsiteUrl: "https://www.saucedmarket.com/chicago",
+  },
+  {
     id: "chicago-artisan-market-2026-10-18",
     marketName: "Chicago Artisan Market – Fulton Market",
     description:
