@@ -1,8 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
+  type CustomerLookup,
   createShopifyClient,
   NonJsonShopifyResponseError,
+  recoverTakenCustomer,
   ShopifyApiError,
+  type ShopifyClient,
   type ShopifyEnv,
 } from "../shopify";
 
@@ -357,5 +360,125 @@ describe("createShopifyClient — relay misconfiguration", () => {
       ShopifyApiError,
     );
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("ShopifyClient.findCustomerByEmailDirect", () => {
+  async function clientWithGraphqlResponse(body: unknown) {
+    let sentBody: { query: string; variables: Record<string, unknown> };
+    const fetchMock = vi.fn(async (url: string | URL, init?: RequestInit) => {
+      const urlStr = url.toString();
+      if (urlStr.includes("/admin/oauth/access_token")) {
+        return jsonResponse({ access_token: "test-token" });
+      }
+      if (urlStr.includes("/admin/api/")) {
+        sentBody = JSON.parse(String(init?.body));
+        return jsonResponse(body);
+      }
+      throw new Error(`Unexpected fetch to ${urlStr}`);
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const client = await createShopifyClient(env);
+    return { client, getSentBody: () => sentBody };
+  }
+
+  it("reads by identity through customerByIdentifier rather than the customers search index", async () => {
+    // The whole point of this lookup: `customers(query:)` is a search index
+    // that lags behind writes, so it can miss a customer that exists.
+    const customer: CustomerLookup = {
+      id: "gid://shopify/Customer/1",
+      note: "hi",
+      tags: ["newsletter"],
+    };
+    const { client, getSentBody } = await clientWithGraphqlResponse({
+      data: { customerByIdentifier: customer },
+    });
+
+    await expect(
+      client.findCustomerByEmailDirect("jane@example.com"),
+    ).resolves.toEqual(customer);
+
+    const sent = getSentBody();
+    expect(sent.query).toContain("customerByIdentifier");
+    expect(sent.query).not.toContain("customers(first:");
+    expect(sent.variables).toEqual({
+      identifier: { emailAddress: "jane@example.com" },
+    });
+  });
+
+  it("returns null when no customer has that email", async () => {
+    const { client } = await clientWithGraphqlResponse({
+      data: { customerByIdentifier: null },
+    });
+
+    await expect(
+      client.findCustomerByEmailDirect("nobody@example.com"),
+    ).resolves.toBeNull();
+  });
+});
+
+describe("recoverTakenCustomer", () => {
+  const customer: CustomerLookup = {
+    id: "gid://shopify/Customer/1",
+    note: null,
+    tags: [],
+  };
+
+  function stubClient(direct: CustomerLookup | null): ShopifyClient {
+    return {
+      request: vi.fn(),
+      findCustomerByEmail: vi.fn().mockResolvedValue(null),
+      findCustomerByEmailDirect: vi.fn().mockResolvedValue(direct),
+    } as unknown as ShopifyClient;
+  }
+
+  it("resolves the customer behind a duplicate-email error", async () => {
+    const client = stubClient(customer);
+
+    await expect(
+      recoverTakenCustomer(
+        client,
+        "Email has already been taken",
+        "jane@example.com",
+      ),
+    ).resolves.toEqual(customer);
+    expect(client.findCustomerByEmailDirect).toHaveBeenCalledWith(
+      "jane@example.com",
+    );
+  });
+
+  it("matches the duplicate-email message inside a joined multi-error string", async () => {
+    // joinUserErrors concatenates with "; ", so an exact comparison would
+    // miss a conflict reported alongside another userError.
+    const client = stubClient(customer);
+
+    await expect(
+      recoverTakenCustomer(
+        client,
+        "Email has already been taken; Phone is invalid",
+        "jane@example.com",
+      ),
+    ).resolves.toEqual(customer);
+  });
+
+  it("does not look up anything for an unrelated error", async () => {
+    const client = stubClient(customer);
+
+    await expect(
+      recoverTakenCustomer(client, "Email is invalid", "jane@example.com"),
+    ).resolves.toBeNull();
+    expect(client.findCustomerByEmailDirect).not.toHaveBeenCalled();
+  });
+
+  it("returns null when the direct lookup also finds nothing", async () => {
+    const client = stubClient(null);
+
+    await expect(
+      recoverTakenCustomer(
+        client,
+        "Email has already been taken",
+        "jane@example.com",
+      ),
+    ).resolves.toBeNull();
   });
 });

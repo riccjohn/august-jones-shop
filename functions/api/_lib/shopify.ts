@@ -178,7 +178,7 @@ export function checkCustomerMutation(
   return { customer: result.customer };
 }
 
-interface CustomerLookup {
+export interface CustomerLookup {
   id: string;
   note: string | null;
   tags: string[];
@@ -198,9 +198,60 @@ const FIND_CUSTOMER_QUERY = `
   }
 `;
 
+const CUSTOMER_BY_IDENTIFIER_QUERY = `
+  query CustomerByEmail($identifier: CustomerIdentifierInput!) {
+    customerByIdentifier(identifier: $identifier) {
+      id
+      note
+      tags
+    }
+  }
+`;
+
 export interface ShopifyClient {
   request<T>(query: string, variables?: Record<string, unknown>): Promise<T>;
+  /**
+   * Looks a customer up through `customers(query:)` — Shopify's search
+   * index, which lags behind writes. Fine as an opportunistic first look,
+   * but a null answer is not proof the customer doesn't exist.
+   */
   findCustomerByEmail(email: string): Promise<CustomerLookup | null>;
+  /**
+   * Looks a customer up through `customerByIdentifier`, a direct read by
+   * identity rather than a search. Not subject to the index lag above, so
+   * this is the lookup to trust when Shopify has just told us an email is
+   * taken but `findCustomerByEmail` came back empty.
+   */
+  findCustomerByEmailDirect(email: string): Promise<CustomerLookup | null>;
+}
+
+/**
+ * Shopify's `customerCreate` userError wording for a duplicate email. Worth
+ * matching on despite the brittleness: it is the only signal distinguishing
+ * "this email already belongs to a customer" from every other create
+ * failure, and Shopify exposes no error code alongside it.
+ */
+const EMAIL_ALREADY_TAKEN_MESSAGE = "Email has already been taken";
+
+/**
+ * Recovers the customer behind a duplicate-email `customerCreate` failure,
+ * or null if the failure was something else.
+ *
+ * `findCustomerByEmail` reads a search index that lags behind writes, so it
+ * can miss a customer who demonstrably exists — which is exactly what a
+ * "taken" error from `customerCreate` proves. Re-running the same search
+ * would usually just miss again; `findCustomerByEmailDirect` reads by
+ * identity and resolves it.
+ */
+export async function recoverTakenCustomer(
+  client: ShopifyClient,
+  error: string,
+  email: string,
+): Promise<CustomerLookup | null> {
+  if (!error.includes(EMAIL_ALREADY_TAKEN_MESSAGE)) {
+    return null;
+  }
+  return client.findCustomerByEmailDirect(email);
 }
 
 /**
@@ -274,7 +325,19 @@ export async function createShopifyClient(
     return data.customers.edges[0]?.node ?? null;
   }
 
-  return { request, findCustomerByEmail };
+  async function findCustomerByEmailDirect(
+    email: string,
+  ): Promise<CustomerLookup | null> {
+    const data = await request<{
+      customerByIdentifier: CustomerLookup | null;
+    }>(CUSTOMER_BY_IDENTIFIER_QUERY, {
+      identifier: { emailAddress: email },
+    });
+
+    return data.customerByIdentifier ?? null;
+  }
+
+  return { request, findCustomerByEmail, findCustomerByEmailDirect };
 }
 
 /** Merges new tags into an existing tag list without duplicates. */
