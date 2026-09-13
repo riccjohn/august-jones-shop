@@ -7,6 +7,7 @@ import {
   checkCustomerMutation,
   createShopifyClient,
   mergeTags,
+  recoverTakenCustomer,
   type ShopifyClient,
   type ShopifyEnv,
 } from "./_lib/shopify";
@@ -79,23 +80,23 @@ const CUSTOMER_EMAIL_MARKETING_CONSENT_UPDATE_MUTATION = `
   }
 `;
 
-// The exact wording of Shopify's customerCreate userError for a duplicate
-// email. Used to detect the search-index-lag race: findCustomerByEmail can
-// return null for an email that already exists because Shopify's
-// `customers(query:)` lookup is a search index, not a direct table read.
-const EMAIL_ALREADY_TAKEN_MESSAGE = "Email has already been taken";
-
 interface EmailMarketingConsent {
-  marketingState: string;
-  marketingOptInLevel: string;
+  marketingState: "SUBSCRIBED";
+  marketingOptInLevel: "SINGLE_OPT_IN";
   consentUpdatedAt: string;
 }
 
 /**
- * Updates an existing customer's profile and newsletter consent. Two
- * sequential mutations because Shopify's customerUpdate rejects
+ * Subscribes an existing customer: newsletter consent first, then the note
+ * and tag. Two sequential mutations because Shopify's customerUpdate rejects
  * `emailMarketingConsent` — consent must go through the dedicated
  * customerEmailMarketingConsentUpdate mutation instead.
+ *
+ * Consent leads deliberately. Either call can fail on its own, and consent is
+ * what the visitor actually asked for; the note and tag are bookkeeping. The
+ * order also keeps a retry clean: re-applying consent is idempotent, while
+ * appendNote is not, so updating first would stack a duplicate note onto the
+ * customer every time a visitor resubmitted after a consent failure.
  */
 async function subscribeExistingCustomer(
   client: ShopifyClient,
@@ -104,6 +105,20 @@ async function subscribeExistingCustomer(
   note: string,
   emailMarketingConsent: EmailMarketingConsent,
 ): Promise<{ error: string } | { ok: true }> {
+  const consentData = await client.request<{
+    customerEmailMarketingConsentUpdate: UserErrorResult & {
+      customer: { id: string } | null;
+    };
+  }>(CUSTOMER_EMAIL_MARKETING_CONSENT_UPDATE_MUTATION, {
+    input: { customerId: customer.id, emailMarketingConsent },
+  });
+  const consentResult = checkCustomerMutation(
+    consentData.customerEmailMarketingConsentUpdate,
+  );
+  if ("error" in consentResult) {
+    return consentResult;
+  }
+
   const updateData = await client.request<{
     customerUpdate: UserErrorResult & { customer: { id: string } | null };
   }>(CUSTOMER_UPDATE_MUTATION, {
@@ -117,20 +132,6 @@ async function subscribeExistingCustomer(
   const updateResult = checkCustomerMutation(updateData.customerUpdate);
   if ("error" in updateResult) {
     return updateResult;
-  }
-
-  const consentData = await client.request<{
-    customerEmailMarketingConsentUpdate: UserErrorResult & {
-      customer: { id: string } | null;
-    };
-  }>(CUSTOMER_EMAIL_MARKETING_CONSENT_UPDATE_MUTATION, {
-    input: { customerId: customer.id, emailMarketingConsent },
-  });
-  const consentResult = checkCustomerMutation(
-    consentData.customerEmailMarketingConsentUpdate,
-  );
-  if ("error" in consentResult) {
-    return consentResult;
   }
 
   return { ok: true };
@@ -181,16 +182,15 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
       const result = checkCustomerMutation(data.customerCreate);
       if ("error" in result) {
-        // Shopify's customer search index can lag behind writes, so a
-        // duplicate-email conflict here can mean the customer already
-        // exists despite findCustomerByEmail finding nothing moments ago.
-        // Look again before giving up, and fall back to updating them.
-        const isAlreadyTaken = result.error.includes(
-          EMAIL_ALREADY_TAKEN_MESSAGE,
+        // A duplicate-email conflict here means the customer exists despite
+        // findCustomerByEmail finding nothing moments ago — its search index
+        // lags behind writes. recoverTakenCustomer re-reads by identity
+        // instead, so we can fall back to updating them.
+        const recovered = await recoverTakenCustomer(
+          client,
+          result.error,
+          email,
         );
-        const recovered = isAlreadyTaken
-          ? await client.findCustomerByEmail(email)
-          : null;
         if (!recovered) {
           return errorResponse(result.error);
         }

@@ -7,10 +7,12 @@ import { caughtErrorResponse, errorResponse } from "./_lib/error-response";
 import { jsonResponse } from "./_lib/json-response";
 import {
   appendNote,
+  type CustomerLookup,
   checkCustomerMutation,
   createShopifyClient,
   joinUserErrors,
   mergeTags,
+  recoverTakenCustomer,
   type ShopifyClient,
   type ShopifyEnv,
 } from "./_lib/shopify";
@@ -66,6 +68,30 @@ const DRAFT_ORDER_CREATE_MUTATION = `
   }
 `;
 
+/**
+ * Appends this submission's note and tag to a customer who already exists.
+ * Deliberately leaves firstName/lastName alone — the form shouldn't overwrite
+ * a name already on the account.
+ */
+async function updateContactCustomer(
+  client: ShopifyClient,
+  customer: CustomerLookup,
+  note: string,
+): Promise<{ customerId: string } | { error: string }> {
+  const data = await client.request<{
+    customerUpdate: UserErrorResult & { customer: { id: string } | null };
+  }>(CUSTOMER_UPDATE_MUTATION, {
+    input: {
+      id: customer.id,
+      note: appendNote(customer.note, note),
+      tags: mergeTags(customer.tags, [CONTACT_TAG]),
+    },
+  });
+  const result = checkCustomerMutation(data.customerUpdate);
+  if ("error" in result) return { error: result.error };
+  return { customerId: customer.id };
+}
+
 async function upsertContactCustomer(
   client: ShopifyClient,
   payload: ContactPayload,
@@ -74,18 +100,7 @@ async function upsertContactCustomer(
   const existing = await client.findCustomerByEmail(payload.email);
 
   if (existing) {
-    const data = await client.request<{
-      customerUpdate: UserErrorResult & { customer: { id: string } | null };
-    }>(CUSTOMER_UPDATE_MUTATION, {
-      input: {
-        id: existing.id,
-        note: appendNote(existing.note, note),
-        tags: mergeTags(existing.tags, [CONTACT_TAG]),
-      },
-    });
-    const result = checkCustomerMutation(data.customerUpdate);
-    if ("error" in result) return { error: result.error };
-    return { customerId: existing.id };
+    return updateContactCustomer(client, existing, note);
   }
 
   const data = await client.request<{
@@ -100,7 +115,19 @@ async function upsertContactCustomer(
     },
   });
   const result = checkCustomerMutation(data.customerCreate);
-  if ("error" in result) return { error: result.error };
+  if ("error" in result) {
+    // Same search-index race subscribe.ts handles: findCustomerByEmail reads
+    // an index that lags behind writes, so a duplicate-email conflict here
+    // means the customer does exist. Re-read by identity and update them
+    // rather than losing the submission.
+    const recovered = await recoverTakenCustomer(
+      client,
+      result.error,
+      payload.email,
+    );
+    if (!recovered) return { error: result.error };
+    return updateContactCustomer(client, recovered, note);
+  }
   return { customerId: result.customer.id };
 }
 
