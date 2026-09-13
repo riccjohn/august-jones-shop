@@ -178,7 +178,7 @@ export function checkCustomerMutation(
   return { customer: result.customer };
 }
 
-interface CustomerLookup {
+export interface CustomerLookup {
   id: string;
   note: string | null;
   tags: string[];
