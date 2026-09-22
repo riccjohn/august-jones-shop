@@ -86,16 +86,33 @@ credential split, enabling it, verifying, rolling back, and rotating each creden
 relay has its own tsconfig and is excluded from the root one:
 `pnpm exec tsc -p relay --noEmit`, `pnpm exec vitest run relay`.
 
+## Error tracking
+
+**Sentry** (`@sentry/cloudflare`) covers the two Cloudflare Pages Functions only — the
+Next.js frontend is deliberately **not** instrumented, so don't add browser-side Sentry
+without revisiting `docs/adr/0004-adopt-sentry-for-pages-functions-error-tracking.md`.
+
+`functions/_middleware.ts` installs `Sentry.sentryPagesPlugin` (DSN from
+`context.env.SENTRY_DSN`); every 500 path goes through `errorResponse` /
+`caughtErrorResponse` in `functions/api/_lib/error-response.ts`. Never put user-supplied
+form content into a Sentry report. A Sentry uptime monitor pings the relay's `/healthz`.
+See `docs/sentry.md` for setup.
+
 ## Commands
 
 - `pnpm dev` — Start dev server (http://localhost:3000)
 - `pnpm build` — Production build
 - `pnpm lint` — Lint with Biome (`biome check`)
 - `pnpm format` — Auto-format with Biome (`biome format --write`)
+- `pnpm test:unit` — Run Vitest unit tests (`src/`, `functions/`, `relay/`)
 - `pnpm test:e2e` — Run Playwright e2e tests
 - `pnpm test:e2e:ui` — Run Playwright tests in UI mode
+- `pnpm exec tsc --noEmit` — Typecheck the app (also in pre-commit)
 - `pnpm exec tsc -p relay --noEmit` — Typecheck the Fly.io relay (also in CI + pre-commit)
 - `pnpm exec tsc -p functions --noEmit` — Typecheck Cloudflare Pages Functions (ditto)
+
+Three separate tsconfigs, so a single typecheck never covers the whole repo — `functions/`
+and `relay/` are excluded from the root one and each needs its own `-p` run.
 
 ## Tech Stack
 
@@ -105,7 +122,7 @@ relay has its own tsconfig and is excluded from the root one:
 - **shadcn/ui** for component library (New York style, Lucide icons)
 - **Playwright** for e2e testing (`e2e/` directory)
 - **Biome 2** for linting and formatting (space indent, width 2, recommended rules + Next/React domains)
-- **pnpm 10.29.1** as package manager (pinned via `packageManager` field)
+- **pnpm 11.18.0** as package manager (pinned via `packageManager` field — that field is the source of truth)
 
 ## Code Conventions
 
