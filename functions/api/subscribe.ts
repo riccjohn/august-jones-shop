@@ -1,5 +1,9 @@
 import type { PagesFunction } from "@cloudflare/workers-types";
-import { caughtErrorResponse, errorResponse } from "./_lib/error-response";
+import {
+  caughtErrorResponse,
+  errorResponse,
+  rejectedInputResponse,
+} from "./_lib/error-response";
 import { jsonResponse } from "./_lib/json-response";
 import {
   appendNote,
@@ -21,25 +25,27 @@ interface SubscribePayload {
   website?: string;
 }
 
-function isSubscribePayload(value: unknown): value is SubscribePayload {
+/** Names the invalid fields, in form order; empty means valid. Names only, never values. */
+function findInvalidSubscribeFields(value: unknown): string[] {
   if (!isObject(value)) {
-    return false;
+    return ["payload"];
   }
 
   const email = getStringField(value, "email");
-  const source = getStringField(value, "source");
-
-  if (!email || !source || !isValidEmail(email)) {
-    return false;
-  }
+  const invalid: string[] = [];
+  if (!email || !isValidEmail(email)) invalid.push("email");
+  if (!getStringField(value, "source")) invalid.push("source");
 
   // Reject if honeypot is filled (non-empty website field)
   const website = Reflect.get(value, "website");
   if (typeof website === "string" && website.length > 0) {
-    return false;
+    invalid.push("website");
   }
+  return invalid;
+}
 
-  return true;
+function isSubscribePayload(value: unknown): value is SubscribePayload {
+  return findInvalidSubscribeFields(value).length === 0;
 }
 
 const NEWSLETTER_TAG = "newsletter";
@@ -140,7 +146,11 @@ async function subscribeExistingCustomer(
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const raw = await context.request.json<unknown>();
   if (!isSubscribePayload(raw)) {
-    return jsonResponse({ error: "A valid email is required" }, 400);
+    return rejectedInputResponse(
+      "Subscribe",
+      findInvalidSubscribeFields(raw),
+      "A valid email is required",
+    );
   }
   const { email, source } = raw;
 

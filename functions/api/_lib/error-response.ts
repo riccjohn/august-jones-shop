@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/cloudflare";
 import { jsonResponse } from "./json-response";
+import { INVALID_EMAIL_MESSAGE } from "./validate";
 
 const EMAIL_PATTERN = /[^\s@]+@[^\s@]+\.[^\s@]+/g;
 
@@ -31,4 +32,30 @@ export function caughtErrorResponse(err: unknown): Response {
   }
   Sentry.captureException(err);
   return jsonResponse({ error: message }, 500);
+}
+
+/**
+ * Returns a 400 naming the rejected fields. errorResponse only reports 500s,
+ * so without this a form the server keeps rejecting would be invisible.
+ * Reports a Sentry warning — field names only, never submitted values —
+ * except for honeypot hits ("website"), which are bots working as designed.
+ * A lone bad email gets a specific message the form can show the visitor;
+ * anything else gets `fallbackError`.
+ */
+export function rejectedInputResponse(
+  source: string,
+  fields: string[],
+  fallbackError: string,
+): Response {
+  if (!fields.includes("website")) {
+    Sentry.captureMessage(
+      `${source} rejected: invalid ${fields.join(", ")}`,
+      "warning",
+    );
+  }
+  const emailOnly = fields.length === 1 && fields[0] === "email";
+  return jsonResponse(
+    { error: emailOnly ? INVALID_EMAIL_MESSAGE : fallbackError, fields },
+    400,
+  );
 }

@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/cloudflare";
 import { beforeEach, describe, expect, it, type Mock, vi } from "vitest";
 import type { ShopifyClient, ShopifyEnv } from "../_lib/shopify";
 import * as shopifyLib from "../_lib/shopify";
@@ -315,5 +316,54 @@ describe("subscribe onRequestPost — customerCreate 'already taken' race recove
     expect(response.status).toBe(500);
     expect(await response.json()).toEqual({ error: "Email is invalid" });
     expect(findCustomerByEmailDirect).not.toHaveBeenCalled();
+  });
+});
+
+describe("subscribe onRequestPost — rejecting invalid payloads", () => {
+  beforeEach(() => {
+    vi.mocked(Sentry.captureMessage).mockClear();
+  });
+
+  it("returns a 400 naming the email when it is malformed, without touching Shopify", async () => {
+    const response = await onRequestPost(
+      makeContext({ ...validBody, email: "jane@gmail" }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: "Please enter a valid email address, like you@example.com.",
+      fields: ["email"],
+    });
+    expect(shopifyLib.createShopifyClient).not.toHaveBeenCalled();
+  });
+
+  it("reports the rejection to Sentry as a warning with field names only", async () => {
+    await onRequestPost(makeContext({ ...validBody, email: "jane@gmail" }));
+
+    expect(Sentry.captureMessage).toHaveBeenCalledWith(
+      "Subscribe rejected: invalid email",
+      "warning",
+    );
+  });
+
+  it("reports a missing source, which is a bug in the page rather than the visitor", async () => {
+    const response = await onRequestPost(
+      makeContext({ email: validBody.email }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(Sentry.captureMessage).toHaveBeenCalledWith(
+      "Subscribe rejected: invalid source",
+      "warning",
+    );
+  });
+
+  it("does not report honeypot rejections to Sentry", async () => {
+    const response = await onRequestPost(
+      makeContext({ ...validBody, website: "http://spam.test" }),
+    );
+
+    expect(response.status).toBe(400);
+    expect(Sentry.captureMessage).not.toHaveBeenCalled();
   });
 });

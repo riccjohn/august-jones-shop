@@ -509,4 +509,93 @@ describe("ContactForm", () => {
       );
     });
   });
+
+  describe("email validation", () => {
+    it("blocks submission of an email with no dot after the @, matching the server rule", async () => {
+      const user = userEvent.setup();
+      const mockFetch = vi.fn();
+      vi.stubGlobal("fetch", mockFetch);
+
+      render(<ContactForm />);
+      await fillForm(user, { email: "jane@gmail" });
+      await user.click(
+        screen.getByRole("button", { name: /request a custom/i }),
+      );
+
+      expect(screen.getByRole("textbox", { name: /^email$/i })).toBeInvalid();
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it("clears the validation error once the email is corrected", async () => {
+      const user = userEvent.setup();
+      render(<ContactForm />);
+      const email = screen.getByRole("textbox", { name: /^email$/i });
+
+      await user.type(email, "jane@gmail");
+      expect(email).toBeInvalid();
+
+      await user.type(email, ".com");
+      expect(email).toBeValid();
+    });
+  });
+
+  describe("error state — server rejected the input (400)", () => {
+    it("shows the server's specific message instead of the generic one", async () => {
+      const user = userEvent.setup();
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue(
+          new Response(
+            JSON.stringify({
+              error:
+                "Please enter a valid email address, like you@example.com.",
+              fields: ["email"],
+            }),
+            { status: 400 },
+          ),
+        ),
+      );
+
+      render(<ContactForm />);
+      await fillForm(user);
+      await user.click(
+        screen.getByRole("button", { name: /request a custom/i }),
+      );
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(/please enter a valid email address/i),
+        ).toBeInTheDocument(),
+      );
+      expect(
+        screen.queryByText(/something went wrong/i),
+      ).not.toBeInTheDocument();
+      expect(analytics.trackContactFormError).toHaveBeenCalledOnce();
+    });
+
+    it("never shows the raw error text of a 500 response", async () => {
+      const user = userEvent.setup();
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue(
+          new Response(JSON.stringify({ error: "Shopify internal detail" }), {
+            status: 500,
+          }),
+        ),
+      );
+
+      render(<ContactForm />);
+      await fillForm(user);
+      await user.click(
+        screen.getByRole("button", { name: /request a custom/i }),
+      );
+
+      await waitFor(() =>
+        expect(screen.getByText(/something went wrong/i)).toBeInTheDocument(),
+      );
+      expect(
+        screen.queryByText(/shopify internal detail/i),
+      ).not.toBeInTheDocument();
+    });
+  });
 });

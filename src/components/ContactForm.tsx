@@ -17,6 +17,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useFormSubmit } from "@/hooks/use-form-submit";
 import { trackContactFormError } from "@/lib/analytics";
+import { applyEmailValidity } from "@/lib/email-validity";
 
 type FormOption = { value: string; label: string };
 
@@ -78,7 +79,8 @@ function optionLabel(options: FormOption[], value: string) {
 }
 
 export function ContactForm() {
-  const { state, setState, submit } = useFormSubmit("/api/contact");
+  const { state, setState, errorMessage, submit } =
+    useFormSubmit("/api/contact");
   const [pieceType, setPieceType] = useState("");
   const [size, setSize] = useState("");
   const honeypotId = useId();
@@ -213,6 +215,7 @@ export function ContactForm() {
               type="email"
               placeholder="you@example.com"
               required
+              onChange={applyEmailValidity}
               disabled={disabled}
             />
           </div>
@@ -353,7 +356,12 @@ export function ContactForm() {
           </Label>
         </div>
 
-        {state === "error" && (
+        {state === "error" && errorMessage && (
+          <p role="alert" className="text-sm text-red-600">
+            {errorMessage}
+          </p>
+        )}
+        {state === "error" && !errorMessage && (
           <p className="text-sm text-red-600">
             Something went wrong. Try emailing{" "}
             <a

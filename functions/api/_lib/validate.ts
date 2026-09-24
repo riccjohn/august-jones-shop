@@ -30,3 +30,7 @@ export function isValidEmail(email: string): boolean {
   const afterAt = email.substring(atIndex + 1);
   return afterAt.includes(".");
 }
+
+/** Shown by the server on a bad email and by the forms' own pre-submit check. */
+export const INVALID_EMAIL_MESSAGE =
+  "Please enter a valid email address, like you@example.com.";
