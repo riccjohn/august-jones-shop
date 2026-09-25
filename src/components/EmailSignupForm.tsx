@@ -12,7 +12,7 @@ import {
   trackEmailSignupError,
 } from "@/lib/analytics";
 import { CONTACT_EMAIL } from "@/lib/constants";
-import { applyEmailValidity } from "@/lib/email-validity";
+import { applyEmailValidity, blockInvalidEmail } from "@/lib/email-validity";
 
 export function EmailSignupForm({
   source,
@@ -33,6 +33,7 @@ export function EmailSignupForm({
     e.preventDefault();
 
     const form = e.currentTarget;
+    if (blockInvalidEmail(form)) return;
     const formData = new FormData(form);
     const honeypot = formData.get("website") as string;
     if (honeypot) {

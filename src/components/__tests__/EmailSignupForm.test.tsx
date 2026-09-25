@@ -230,6 +230,37 @@ describe("EmailSignupForm", () => {
       expect(mockFetch).not.toHaveBeenCalled();
     });
 
+    it("leaves an empty field to the browser's required message", async () => {
+      const user = userEvent.setup();
+      render(<EmailSignupForm source="footer" />);
+      const email = screen.getByRole<HTMLInputElement>("textbox", {
+        name: /email/i,
+      });
+
+      await user.type(email, "a");
+      await user.clear(email);
+
+      expect(email.validationMessage).not.toMatch(/valid email address/i);
+    });
+
+    it("blocks a bad email set without a change event", async () => {
+      const user = userEvent.setup();
+      const mockFetch = vi.fn();
+      vi.stubGlobal("fetch", mockFetch);
+      render(<EmailSignupForm source="footer" />);
+      const email = screen.getByRole("textbox", { name: /email/i });
+
+      // Simulates autofill: the value lands without React seeing an event.
+      Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value",
+      )?.set?.call(email, "jane@gmail");
+      await user.click(screen.getByRole("button", { name: /./ }));
+
+      expect(mockFetch).not.toHaveBeenCalled();
+      expect(email).toBeInvalid();
+    });
+
     it("clears the validation error once the email is corrected", async () => {
       const user = userEvent.setup();
       render(<EmailSignupForm source="footer" />);
@@ -244,6 +275,28 @@ describe("EmailSignupForm", () => {
   });
 
   describe("server rejected the input (400)", () => {
+    it("keeps the generic message and emailing fallback for a rejection that isn't a bad email", async () => {
+      const user = userEvent.setup();
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue(
+          new Response(JSON.stringify({ error: "Invalid subscribe request" }), {
+            status: 400,
+          }),
+        ),
+      );
+
+      render(<EmailSignupForm source="footer" />);
+      await fillAndSubmit(user);
+
+      await waitFor(() =>
+        expect(screen.getByText(/something went wrong/i)).toBeInTheDocument(),
+      );
+      expect(
+        screen.queryByText(/invalid subscribe request/i),
+      ).not.toBeInTheDocument();
+    });
+
     it("shows the server's specific message instead of the generic one", async () => {
       const user = userEvent.setup();
       vi.stubGlobal(
@@ -253,7 +306,7 @@ describe("EmailSignupForm", () => {
             JSON.stringify({
               error:
                 "Please enter a valid email address, like you@example.com.",
-              fields: ["email"],
+              invalidEmail: true,
             }),
             { status: 400 },
           ),

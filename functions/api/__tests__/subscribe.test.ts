@@ -332,18 +332,15 @@ describe("subscribe onRequestPost — rejecting invalid payloads", () => {
     expect(response.status).toBe(400);
     expect(await response.json()).toEqual({
       error: "Please enter a valid email address, like you@example.com.",
-      fields: ["email"],
+      invalidEmail: true,
     });
     expect(shopifyLib.createShopifyClient).not.toHaveBeenCalled();
   });
 
-  it("reports the rejection to Sentry as a warning with field names only", async () => {
+  it("does not report a bad email to Sentry, which is an ordinary visitor typo", async () => {
     await onRequestPost(makeContext({ ...validBody, email: "jane@gmail" }));
 
-    expect(Sentry.captureMessage).toHaveBeenCalledWith(
-      "Subscribe rejected: invalid email",
-      "warning",
-    );
+    expect(Sentry.captureMessage).not.toHaveBeenCalled();
   });
 
   it("reports a missing source, which is a bug in the page rather than the visitor", async () => {
@@ -352,6 +349,9 @@ describe("subscribe onRequestPost — rejecting invalid payloads", () => {
     );
 
     expect(response.status).toBe(400);
+    expect(await response.json()).toEqual({
+      error: "Invalid subscribe request",
+    });
     expect(Sentry.captureMessage).toHaveBeenCalledWith(
       "Subscribe rejected: invalid source",
       "warning",

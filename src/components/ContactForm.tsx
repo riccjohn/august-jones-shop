@@ -17,7 +17,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useFormSubmit } from "@/hooks/use-form-submit";
 import { trackContactFormError } from "@/lib/analytics";
-import { applyEmailValidity } from "@/lib/email-validity";
+import { applyEmailValidity, blockInvalidEmail } from "@/lib/email-validity";
 
 type FormOption = { value: string; label: string };
 
@@ -118,6 +118,7 @@ export function ContactForm() {
     e.preventDefault();
 
     const form = e.currentTarget;
+    if (blockInvalidEmail(form)) return;
     const formData = new FormData(form);
     const honeypot = formData.get("website") as string;
     if (honeypot) {

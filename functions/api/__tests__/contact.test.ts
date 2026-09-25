@@ -188,7 +188,7 @@ describe("onRequestPost rejecting invalid payloads", () => {
     expect(res.status).toBe(400);
     expect(await res.json()).toEqual({
       error: "Please enter a valid email address, like you@example.com.",
-      fields: ["email"],
+      invalidEmail: true,
     });
     expect(shopifyLib.createShopifyClient).not.toHaveBeenCalled();
   });
@@ -197,19 +197,22 @@ describe("onRequestPost rejecting invalid payloads", () => {
     const res = await onRequestPost(makeContext({ ...validBody, team: "" }));
 
     expect(res.status).toBe(400);
-    expect(await res.json()).toEqual({
-      error: "All fields are required",
-      fields: ["team"],
-    });
+    expect(await res.json()).toEqual({ error: "All fields are required" });
   });
 
   it("reports the rejection to Sentry as a warning with field names only", async () => {
-    await onRequestPost(makeContext({ ...validBody, email: "jane@gmail" }));
+    await onRequestPost(makeContext({ ...validBody, team: "" }));
 
     expect(Sentry.captureMessage).toHaveBeenCalledWith(
-      "Contact form rejected: invalid email",
+      "Contact form rejected: invalid team",
       "warning",
     );
+  });
+
+  it("does not report a bad email to Sentry, which is an ordinary visitor typo", async () => {
+    await onRequestPost(makeContext({ ...validBody, email: "jane@gmail" }));
+
+    expect(Sentry.captureMessage).not.toHaveBeenCalled();
   });
 
   it("does not report honeypot rejections to Sentry", async () => {

@@ -549,7 +549,7 @@ describe("ContactForm", () => {
             JSON.stringify({
               error:
                 "Please enter a valid email address, like you@example.com.",
-              fields: ["email"],
+              invalidEmail: true,
             }),
             { status: 400 },
           ),

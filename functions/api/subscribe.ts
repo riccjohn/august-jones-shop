@@ -149,7 +149,7 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     return rejectedInputResponse(
       "Subscribe",
       findInvalidSubscribeFields(raw),
-      "A valid email is required",
+      "Invalid subscribe request",
     );
   }
   const { email, source } = raw;

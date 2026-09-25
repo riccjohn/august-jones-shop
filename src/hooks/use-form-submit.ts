@@ -5,16 +5,24 @@ import { useState } from "react";
 type FormState = "idle" | "submitting" | "success" | "error";
 
 /**
- * Only a 400 carries a message meant for the visitor (the server saying which
- * input it rejected). Anything else may echo Shopify internals, so it is never
- * surfaced — callers fall back to their generic error copy.
+ * Only a 400 flagged `invalidEmail` carries a message meant for the visitor.
+ * Every other rejection (a page bug, a bot) and any non-400 (which may echo
+ * Shopify internals) is never surfaced — callers fall back to their generic
+ * error copy, which includes the emailing fallback.
  */
 async function readRejectionMessage(res: Response): Promise<string | null> {
   if (res.status !== 400) return null;
   try {
     const body: unknown = await res.json();
-    if (typeof body === "object" && body !== null && "error" in body) {
-      return typeof body.error === "string" ? body.error : null;
+    if (
+      typeof body === "object" &&
+      body !== null &&
+      "invalidEmail" in body &&
+      body.invalidEmail === true &&
+      "error" in body &&
+      typeof body.error === "string"
+    ) {
+      return body.error;
     }
   } catch {
     // Body wasn't JSON; fall through to the generic message.
@@ -26,7 +34,7 @@ async function readRejectionMessage(res: Response): Promise<string | null> {
  * Hook for managing form submission state and fetching.
  * Handles state transitions, error logging, and provides a submit function.
  * Also exposes setState for cases like honeypot handling that need to set state directly,
- * and errorMessage for a server-supplied rejection reason (null when generic).
+ * and errorMessage for a server-supplied bad-email message (null when generic).
  */
 export function useFormSubmit(url: string) {
   const [state, setState] = useState<FormState>("idle");

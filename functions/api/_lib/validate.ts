@@ -1,4 +1,10 @@
 /**
+ * Pure, Cloudflare-types-free: src/lib/email-validity.ts imports this file, so
+ * it is compiled by the root tsconfig too. Keep it free of Cloudflare-specific
+ * types and imports.
+ */
+
+/**
  * Checks if a value is a non-null object.
  */
 export function isObject(value: unknown): value is Record<string, unknown> {

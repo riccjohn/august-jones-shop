@@ -35,27 +35,34 @@ export function caughtErrorResponse(err: unknown): Response {
 }
 
 /**
- * Returns a 400 naming the rejected fields. errorResponse only reports 500s,
- * so without this a form the server keeps rejecting would be invisible.
- * Reports a Sentry warning — field names only, never submitted values —
- * except for honeypot hits ("website"), which are bots working as designed.
- * A lone bad email gets a specific message the form can show the visitor;
- * anything else gets `fallbackError`.
+ * Returns a 400 for a rejected submission. errorResponse only reports 500s, so
+ * without a warning here a form the server keeps rejecting would be invisible.
+ * The warning carries field names only, never submitted values, and is skipped
+ * for the two expected cases: honeypot hits ("website") are bots working as
+ * designed, and a lone bad email is an ordinary visitor typo.
+ *
+ * A lone bad email gets a specific message plus `invalidEmail: true`, the only
+ * 400 the form shows the visitor. Anything else gets the generic
+ * `fallbackError`, and the body names no fields (so a bot can't learn which
+ * one tripped it).
  */
 export function rejectedInputResponse(
   source: string,
   fields: string[],
   fallbackError: string,
 ): Response {
-  if (!fields.includes("website")) {
+  const emailOnly = fields.length === 1 && fields[0] === "email";
+  if (!emailOnly && !fields.includes("website")) {
     Sentry.captureMessage(
       `${source} rejected: invalid ${fields.join(", ")}`,
       "warning",
     );
   }
-  const emailOnly = fields.length === 1 && fields[0] === "email";
-  return jsonResponse(
-    { error: emailOnly ? INVALID_EMAIL_MESSAGE : fallbackError, fields },
-    400,
-  );
+  if (emailOnly) {
+    return jsonResponse(
+      { error: INVALID_EMAIL_MESSAGE, invalidEmail: true },
+      400,
+    );
+  }
+  return jsonResponse({ error: fallbackError }, 400);
 }

@@ -1,3 +1,11 @@
+/**
+ * Pure, Cloudflare-types-free by design (unlike contact.ts) so it can be
+ * imported from src/ tests to check ContactForm's real POST body against it
+ * — the root tsconfig has no @cloudflare/workers-types wiring, and pulling
+ * that in via contact.ts's PagesFunction/Response usage breaks `tsc` at the
+ * root. Keep this file free of Cloudflare-specific types.
+ */
+
 import { getStringField, isObject, isValidEmail } from "./validate";
 
 export interface ContactPayload {
@@ -13,14 +21,6 @@ export interface ContactPayload {
   policyAgreed: boolean;
   website?: string;
 }
-
-/**
- * Pure, Cloudflare-types-free by design (unlike contact.ts) so it can be
- * imported from src/ tests to check ContactForm's real POST body against it
- * — the root tsconfig has no @cloudflare/workers-types wiring, and pulling
- * that in via contact.ts's PagesFunction/Response usage breaks `tsc` at the
- * root. Keep this file free of Cloudflare-specific types.
- */
 
 /**
  * Names the fields that make `value` an invalid contact payload, in form
