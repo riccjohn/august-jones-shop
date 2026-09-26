@@ -216,4 +216,136 @@ describe("EmailSignupForm", () => {
       });
     });
   });
+
+  describe("email validation", () => {
+    it("blocks submission of an email with no dot after the @, matching the server rule", async () => {
+      const user = userEvent.setup();
+      const mockFetch = vi.fn();
+      vi.stubGlobal("fetch", mockFetch);
+
+      render(<EmailSignupForm source="footer" />);
+      await fillAndSubmit(user, "jane@gmail");
+
+      expect(screen.getByRole("textbox", { name: /email/i })).toBeInvalid();
+      expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it("leaves an empty field to the browser's required message", async () => {
+      const user = userEvent.setup();
+      render(<EmailSignupForm source="footer" />);
+      const email = screen.getByRole<HTMLInputElement>("textbox", {
+        name: /email/i,
+      });
+
+      await user.type(email, "a");
+      await user.clear(email);
+
+      expect(email.validationMessage).not.toMatch(/valid email address/i);
+    });
+
+    it("blocks a bad email set without a change event", async () => {
+      const user = userEvent.setup();
+      const mockFetch = vi.fn();
+      vi.stubGlobal("fetch", mockFetch);
+      render(<EmailSignupForm source="footer" />);
+      const email = screen.getByRole("textbox", { name: /email/i });
+
+      // Simulates autofill: the value lands without React seeing an event.
+      Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value",
+      )?.set?.call(email, "jane@gmail");
+      await user.click(screen.getByRole("button", { name: /./ }));
+
+      expect(mockFetch).not.toHaveBeenCalled();
+      expect(email).toBeInvalid();
+    });
+
+    it("submits a corrected email set without a change event, instead of keeping the stale error", async () => {
+      const user = userEvent.setup();
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response(null, { status: 200 }));
+      vi.stubGlobal("fetch", mockFetch);
+      render(<EmailSignupForm source="footer" />);
+      const email = screen.getByRole("textbox", { name: /email/i });
+
+      await user.type(email, "jane@gmail");
+      await user.tab();
+      // Simulates autofill fixing the typo: React sees no event.
+      Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value",
+      )?.set?.call(email, "jane@gmail.com");
+      await user.click(screen.getByRole("button", { name: "Sign Up" }));
+
+      expect(mockFetch).toHaveBeenCalledOnce();
+    });
+
+    it("clears the validation error once the email is corrected", async () => {
+      const user = userEvent.setup();
+      render(<EmailSignupForm source="footer" />);
+      const email = screen.getByRole("textbox", { name: /email/i });
+
+      await user.type(email, "jane@gmail");
+      expect(email).toBeInvalid();
+
+      await user.type(email, ".com");
+      expect(email).toBeValid();
+    });
+  });
+
+  describe("server rejected the input (400)", () => {
+    it("keeps the generic message and emailing fallback for a rejection that isn't a bad email", async () => {
+      const user = userEvent.setup();
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue(
+          new Response(JSON.stringify({ error: "Invalid subscribe request" }), {
+            status: 400,
+          }),
+        ),
+      );
+
+      render(<EmailSignupForm source="footer" />);
+      await fillAndSubmit(user);
+
+      await waitFor(() =>
+        expect(screen.getByText(/something went wrong/i)).toBeInTheDocument(),
+      );
+      expect(
+        screen.queryByText(/invalid subscribe request/i),
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows the server's specific message instead of the generic one", async () => {
+      const user = userEvent.setup();
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue(
+          new Response(
+            JSON.stringify({
+              error:
+                "Please enter a valid email address, like you@example.com.",
+              invalidEmail: true,
+            }),
+            { status: 400 },
+          ),
+        ),
+      );
+
+      render(<EmailSignupForm source="footer" />);
+      await fillAndSubmit(user);
+
+      await waitFor(() =>
+        expect(
+          screen.getByText(/please enter a valid email address/i),
+        ).toBeInTheDocument(),
+      );
+      expect(
+        screen.queryByText(/something went wrong/i),
+      ).not.toBeInTheDocument();
+      expect(analytics.trackEmailSignupError).toHaveBeenCalledWith("footer");
+    });
+  });
 });

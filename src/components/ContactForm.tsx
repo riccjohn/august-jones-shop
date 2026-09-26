@@ -17,6 +17,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useFormSubmit } from "@/hooks/use-form-submit";
 import { trackContactFormError } from "@/lib/analytics";
+import {
+  applyEmailValidity,
+  blockInvalidEmail,
+  syncEmailValidityBeforeSubmit,
+} from "@/lib/email-validity";
 
 type FormOption = { value: string; label: string };
 
@@ -78,7 +83,8 @@ function optionLabel(options: FormOption[], value: string) {
 }
 
 export function ContactForm() {
-  const { state, setState, submit } = useFormSubmit("/api/contact");
+  const { state, setState, errorMessage, submit } =
+    useFormSubmit("/api/contact");
   const [pieceType, setPieceType] = useState("");
   const [size, setSize] = useState("");
   const honeypotId = useId();
@@ -116,6 +122,7 @@ export function ContactForm() {
     e.preventDefault();
 
     const form = e.currentTarget;
+    if (blockInvalidEmail(form)) return;
     const formData = new FormData(form);
     const honeypot = formData.get("website") as string;
     if (honeypot) {
@@ -213,6 +220,7 @@ export function ContactForm() {
               type="email"
               placeholder="you@example.com"
               required
+              onChange={applyEmailValidity}
               disabled={disabled}
             />
           </div>
@@ -353,7 +361,12 @@ export function ContactForm() {
           </Label>
         </div>
 
-        {state === "error" && (
+        {state === "error" && errorMessage && (
+          <p role="alert" className="text-sm text-red-600">
+            {errorMessage}
+          </p>
+        )}
+        {state === "error" && !errorMessage && (
           <p className="text-sm text-red-600">
             Something went wrong. Try emailing{" "}
             <a
@@ -371,6 +384,7 @@ export function ContactForm() {
           size="lg"
           variant="brand"
           disabled={disabled}
+          onClick={syncEmailValidityBeforeSubmit}
           className="h-14 w-full text-base font-medium uppercase tracking-widest sm:w-auto sm:px-12"
         >
           {state === "submitting" ? "Sending..." : "Request a Custom"}

@@ -1,9 +1,14 @@
 import type { PagesFunction } from "@cloudflare/workers-types";
 import {
   type ContactPayload,
+  findInvalidContactFields,
   isContactPayload,
 } from "./_lib/contact-validation";
-import { caughtErrorResponse, errorResponse } from "./_lib/error-response";
+import {
+  caughtErrorResponse,
+  errorResponse,
+  rejectedInputResponse,
+} from "./_lib/error-response";
 import { jsonResponse } from "./_lib/json-response";
 import {
   appendNote,
@@ -132,9 +137,15 @@ async function upsertContactCustomer(
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
-  const raw = await context.request.json<unknown>();
+  // Unparseable JSON becomes undefined, so it gets the same 400 as any other
+  // non-object body instead of an uncaught 500.
+  const raw = await context.request.json<unknown>().catch(() => undefined);
   if (!isContactPayload(raw)) {
-    return jsonResponse({ error: "All fields are required" }, 400);
+    return rejectedInputResponse(
+      "Contact form",
+      findInvalidContactFields(raw),
+      "All fields are required",
+    );
   }
 
   const note = buildContactNote(raw);

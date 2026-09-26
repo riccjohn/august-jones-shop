@@ -1,4 +1,10 @@
 /**
+ * Pure, Cloudflare-types-free: src/lib/email-validity.ts imports this file, so
+ * it is compiled by the root tsconfig too. Keep it free of Cloudflare-specific
+ * types and imports.
+ */
+
+/**
  * Checks if a value is a non-null object.
  */
 export function isObject(value: unknown): value is Record<string, unknown> {
@@ -30,3 +36,7 @@ export function isValidEmail(email: string): boolean {
   const afterAt = email.substring(atIndex + 1);
   return afterAt.includes(".");
 }
+
+/** Shown by the server on a bad email and by the forms' own pre-submit check. */
+export const INVALID_EMAIL_MESSAGE =
+  "Please enter a valid email address, like you@example.com.";

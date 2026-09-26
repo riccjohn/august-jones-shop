@@ -12,6 +12,11 @@ import {
   trackEmailSignupError,
 } from "@/lib/analytics";
 import { CONTACT_EMAIL } from "@/lib/constants";
+import {
+  applyEmailValidity,
+  blockInvalidEmail,
+  syncEmailValidityBeforeSubmit,
+} from "@/lib/email-validity";
 
 export function EmailSignupForm({
   source,
@@ -22,7 +27,8 @@ export function EmailSignupForm({
   className?: string;
   "aria-labelledby"?: string;
 }) {
-  const { state, setState, submit } = useFormSubmit("/api/subscribe");
+  const { state, setState, errorMessage, submit } =
+    useFormSubmit("/api/subscribe");
   const disabled = state === "submitting";
   const honeypotId = useId();
   const emailId = useId();
@@ -31,6 +37,7 @@ export function EmailSignupForm({
     e.preventDefault();
 
     const form = e.currentTarget;
+    if (blockInvalidEmail(form)) return;
     const formData = new FormData(form);
     const honeypot = formData.get("website") as string;
     if (honeypot) {
@@ -73,14 +80,25 @@ export function EmailSignupForm({
           type="email"
           placeholder="you@example.com"
           required
+          onChange={applyEmailValidity}
           disabled={disabled}
         />
-        <Button type="submit" variant="brand" disabled={disabled}>
+        <Button
+          type="submit"
+          variant="brand"
+          disabled={disabled}
+          onClick={syncEmailValidityBeforeSubmit}
+        >
           {state === "submitting" ? "Signing up..." : "Sign Up"}
         </Button>
       </div>
 
-      {state === "error" && (
+      {state === "error" && errorMessage && (
+        <p role="alert" className="text-sm text-red-600">
+          {errorMessage}
+        </p>
+      )}
+      {state === "error" && !errorMessage && (
         <p className="text-sm text-red-600">
           Something went wrong. Try emailing{" "}
           <a

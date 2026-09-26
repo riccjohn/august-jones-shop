@@ -1,3 +1,11 @@
+/**
+ * Pure, Cloudflare-types-free by design (unlike contact.ts) so it can be
+ * imported from src/ tests to check ContactForm's real POST body against it
+ * — the root tsconfig has no @cloudflare/workers-types wiring, and pulling
+ * that in via contact.ts's PagesFunction/Response usage breaks `tsc` at the
+ * root. Keep this file free of Cloudflare-specific types.
+ */
+
 import { getStringField, isObject, isValidEmail } from "./validate";
 
 export interface ContactPayload {
@@ -15,45 +23,40 @@ export interface ContactPayload {
 }
 
 /**
- * Pure, Cloudflare-types-free by design (unlike contact.ts) so it can be
- * imported from src/ tests to check ContactForm's real POST body against it
- * — the root tsconfig has no @cloudflare/workers-types wiring, and pulling
- * that in via contact.ts's PagesFunction/Response usage breaks `tsc` at the
- * root. Keep this file free of Cloudflare-specific types.
+ * Names the fields that make `value` an invalid contact payload, in form
+ * order. Empty means valid. A body that isn't an object at all is reported as
+ * "payload"; a filled honeypot is reported as "website". Only names are
+ * returned — never submitted values — so the result is safe to log.
  */
-export function isContactPayload(value: unknown): value is ContactPayload {
+export function findInvalidContactFields(value: unknown): string[] {
   if (!isObject(value)) {
-    return false;
+    return ["payload"];
   }
 
-  const firstName = getStringField(value, "firstName");
-  const lastName = getStringField(value, "lastName");
   const email = getStringField(value, "email");
-  const instagram = Reflect.get(value, "instagram");
-  const team = getStringField(value, "team");
-  const pieceType = getStringField(value, "pieceType");
-  const size = getStringField(value, "size");
-  const materialsSource = getStringField(value, "materialsSource");
-  const message = Reflect.get(value, "message");
-  const policyAgreed = Reflect.get(value, "policyAgreed");
+  const checks: [string, boolean][] = [
+    ["firstName", Boolean(getStringField(value, "firstName"))],
+    ["lastName", Boolean(getStringField(value, "lastName"))],
+    ["email", Boolean(email && isValidEmail(email))],
+    ["instagram", typeof Reflect.get(value, "instagram") === "string"],
+    ["team", Boolean(getStringField(value, "team"))],
+    ["pieceType", Boolean(getStringField(value, "pieceType"))],
+    ["size", Boolean(getStringField(value, "size"))],
+    ["materialsSource", Boolean(getStringField(value, "materialsSource"))],
+    ["message", typeof Reflect.get(value, "message") === "string"],
+    ["policyAgreed", Reflect.get(value, "policyAgreed") === true],
+  ];
+  const invalid = checks.filter(([, ok]) => !ok).map(([name]) => name);
 
   // Reject if honeypot is filled (non-empty website field)
   const website = Reflect.get(value, "website");
   if (typeof website === "string" && website.length > 0) {
-    return false;
+    invalid.push("website");
   }
 
-  return Boolean(
-    firstName &&
-      lastName &&
-      email &&
-      isValidEmail(email) &&
-      typeof instagram === "string" &&
-      team &&
-      pieceType &&
-      size &&
-      materialsSource &&
-      typeof message === "string" &&
-      policyAgreed === true,
-  );
+  return invalid;
+}
+
+export function isContactPayload(value: unknown): value is ContactPayload {
+  return findInvalidContactFields(value).length === 0;
 }
