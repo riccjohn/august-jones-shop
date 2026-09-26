@@ -12,7 +12,11 @@ import {
   trackEmailSignupError,
 } from "@/lib/analytics";
 import { CONTACT_EMAIL } from "@/lib/constants";
-import { applyEmailValidity, blockInvalidEmail } from "@/lib/email-validity";
+import {
+  applyEmailValidity,
+  blockInvalidEmail,
+  syncEmailValidityBeforeSubmit,
+} from "@/lib/email-validity";
 
 export function EmailSignupForm({
   source,
@@ -79,7 +83,12 @@ export function EmailSignupForm({
           onChange={applyEmailValidity}
           disabled={disabled}
         />
-        <Button type="submit" variant="brand" disabled={disabled}>
+        <Button
+          type="submit"
+          variant="brand"
+          disabled={disabled}
+          onClick={syncEmailValidityBeforeSubmit}
+        >
           {state === "submitting" ? "Signing up..." : "Sign Up"}
         </Button>
       </div>

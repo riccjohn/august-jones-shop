@@ -261,6 +261,27 @@ describe("EmailSignupForm", () => {
       expect(email).toBeInvalid();
     });
 
+    it("submits a corrected email set without a change event, instead of keeping the stale error", async () => {
+      const user = userEvent.setup();
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response(null, { status: 200 }));
+      vi.stubGlobal("fetch", mockFetch);
+      render(<EmailSignupForm source="footer" />);
+      const email = screen.getByRole("textbox", { name: /email/i });
+
+      await user.type(email, "jane@gmail");
+      await user.tab();
+      // Simulates autofill fixing the typo: React sees no event.
+      Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value",
+      )?.set?.call(email, "jane@gmail.com");
+      await user.click(screen.getByRole("button", { name: "Sign Up" }));
+
+      expect(mockFetch).toHaveBeenCalledOnce();
+    });
+
     it("clears the validation error once the email is corrected", async () => {
       const user = userEvent.setup();
       render(<EmailSignupForm source="footer" />);

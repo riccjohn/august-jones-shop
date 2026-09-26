@@ -17,7 +17,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useFormSubmit } from "@/hooks/use-form-submit";
 import { trackContactFormError } from "@/lib/analytics";
-import { applyEmailValidity, blockInvalidEmail } from "@/lib/email-validity";
+import {
+  applyEmailValidity,
+  blockInvalidEmail,
+  syncEmailValidityBeforeSubmit,
+} from "@/lib/email-validity";
 
 type FormOption = { value: string; label: string };
 
@@ -380,6 +384,7 @@ export function ContactForm() {
           size="lg"
           variant="brand"
           disabled={disabled}
+          onClick={syncEmailValidityBeforeSubmit}
           className="h-14 w-full text-base font-medium uppercase tracking-widest sm:w-auto sm:px-12"
         >
           {state === "submitting" ? "Sending..." : "Request a Custom"}

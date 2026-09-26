@@ -526,6 +526,29 @@ describe("ContactForm", () => {
       expect(mockFetch).not.toHaveBeenCalled();
     });
 
+    it("submits a corrected email set without a change event, instead of keeping the stale error", async () => {
+      const user = userEvent.setup();
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue(new Response(null, { status: 200 }));
+      vi.stubGlobal("fetch", mockFetch);
+      render(<ContactForm />);
+      await fillForm(user, { email: "jane@gmail" });
+      // Simulates autofill fixing the typo: React sees no event.
+      Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        "value",
+      )?.set?.call(
+        screen.getByRole("textbox", { name: /^email$/i }),
+        "jane@gmail.com",
+      );
+      await user.click(
+        screen.getByRole("button", { name: /request a custom/i }),
+      );
+
+      expect(mockFetch).toHaveBeenCalledOnce();
+    });
+
     it("clears the validation error once the email is corrected", async () => {
       const user = userEvent.setup();
       render(<ContactForm />);

@@ -20,6 +20,20 @@ export function applyEmailValidity(e: React.ChangeEvent<HTMLInputElement>) {
 }
 
 /**
+ * onClick for the submit button. The click runs before the browser's own
+ * validation (pressing Enter in a field clicks the default button too), so a
+ * value that changed without a change event (some autofill and restore paths)
+ * is judged on what's in the field now, not on a stale message from an earlier
+ * typo that would otherwise block a valid email.
+ */
+export function syncEmailValidityBeforeSubmit(
+  e: React.MouseEvent<HTMLButtonElement>,
+) {
+  const input = e.currentTarget.form?.elements.namedItem("email");
+  if (input instanceof HTMLInputElement) syncEmailValidity(input);
+}
+
+/**
  * Submit-time backstop for values set without a change event (some autofill
  * and restore paths). Re-checks the form's email field and, if it's bad, shows
  * the browser's validation bubble. Returns true when submission should stop.
