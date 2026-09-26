@@ -137,7 +137,9 @@ async function upsertContactCustomer(
 }
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
-  const raw = await context.request.json<unknown>();
+  // Unparseable JSON becomes undefined, so it gets the same 400 as any other
+  // non-object body instead of an uncaught 500.
+  const raw = await context.request.json<unknown>().catch(() => undefined);
   if (!isContactPayload(raw)) {
     return rejectedInputResponse(
       "Contact form",

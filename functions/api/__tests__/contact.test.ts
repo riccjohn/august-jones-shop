@@ -65,6 +65,16 @@ function makeContext(body: unknown): Parameters<typeof onRequestPost>[0] {
   } as Parameters<typeof onRequestPost>[0];
 }
 
+function makeRawContext(body: string): Parameters<typeof onRequestPost>[0] {
+  return {
+    request: new Request("https://example.com/api/contact", {
+      method: "POST",
+      body,
+    }),
+    env,
+  } as Parameters<typeof onRequestPost>[0];
+}
+
 function makeRequestMock(responses: {
   customerCreate?: unknown;
   customerUpdate?: unknown;
@@ -222,5 +232,15 @@ describe("onRequestPost rejecting invalid payloads", () => {
 
     expect(res.status).toBe(400);
     expect(Sentry.captureMessage).not.toHaveBeenCalled();
+  });
+  it("returns a 400, not a 500, when the body is not valid JSON", async () => {
+    const res = await onRequestPost(makeRawContext("not json"));
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: "All fields are required" });
+    expect(Sentry.captureMessage).toHaveBeenCalledWith(
+      "Contact form rejected: invalid payload",
+      "warning",
+    );
   });
 });
