@@ -19,72 +19,6 @@ export interface AugustJonesEvent {
 
 export const allEvents: AugustJonesEvent[] = [
   {
-    id: "marina-fest-door-county-2026-09-05",
-    marketName: "Marina Fest - Door County",
-    sessions: [
-      {
-        startDate: "2026-09-05T09:00-05:00",
-        endDate: "2026-09-05T17:00-05:00",
-      },
-      {
-        startDate: "2026-09-06T09:00-05:00",
-        endDate: "2026-09-06T17:00-05:00",
-      },
-    ],
-    venueName: "Sister Bay Marina",
-    address: {
-      street: "10708 N Bay Shore Dr.",
-      city: "Sister Bay",
-      state: "WI",
-      zip: "54234",
-    },
-    mapsUrl: "https://maps.app.goo.gl/Ncz5e6YZKGGMK2hZ6",
-    eventWebsiteUrl:
-      "https://sisterbay.com/events/marina-fest-labor-day-weekend/",
-  },
-  {
-    id: "milwaukee-night-market-2026-09-16",
-    address: {
-      street:
-        "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
-      city: "Milwaukee",
-      state: "WI",
-      zip: "53203",
-    },
-    mapsUrl: "https://maps.app.goo.gl/MY3NKXeRmr5wBfUD6",
-    eventWebsiteUrl: "https://www.mkenightmarket.com/",
-    marketName: "Milwaukee Night Market",
-    sessions: [
-      {
-        startDate: "2026-09-16T17:00:00-05:00",
-        endDate: "2026-09-16T21:00:00-05:00",
-      },
-    ],
-    venueName:
-      "West Wisconsin Avenue between 2nd Street & Vel R. Phillips Avenue",
-    description:
-      "Come find August Jones at Milwaukee Night Market! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear. Follow my instagram for updates on exactly where my tent will be!",
-  },
-  {
-    id: "rusty-bee-2026-09-24",
-    address: {
-      street: "5134 E Cheryl Pkwy",
-      city: "Fitchburg",
-      state: "WI",
-      zip: "53711",
-    },
-    eventWebsiteUrl: "https://www.instagram.com/therustybeelounge/",
-    mapsUrl: "https://maps.app.goo.gl/hMBNM21yQBxh2adA7",
-    marketName: "Rusty Bee Night Market",
-    sessions: [
-      {
-        startDate: "2026-09-24T17:00:00-05:00",
-        endDate: "2026-09-24T21:00:00-05:00",
-      },
-    ],
-    venueName: "The Rusty Bee Lounge",
-  },
-  {
     id: "sauced-chicago-oct-2026",
     marketName: "Sauced Chicago",
     sessions: [
@@ -106,6 +40,28 @@ export const allEvents: AugustJonesEvent[] = [
     },
     mapsUrl: "https://mapq.st/4xQOueg",
     eventWebsiteUrl: "https://www.saucedmarket.com/chicago",
+  },
+  {
+    id: "milwaukee-night-market-2026-10-07",
+    address: {
+      street: "Booth 55 - West Wisconsin Ave - Between 2nd St & North MLK Dr",
+      city: "Milwaukee",
+      state: "WI",
+      zip: "53203",
+    },
+    mapsUrl: "https://maps.app.goo.gl/Ehex1BRUnZQdmrn56",
+    eventWebsiteUrl: "https://www.mkenightmarket.com/",
+    marketName: "Milwaukee Night Market",
+    sessions: [
+      {
+        startDate: "2026-10-07T17:00:00-05:00",
+        endDate: "2026-10-07T21:00:00-05:00",
+      },
+    ],
+    venueName:
+      "Booth 55 - West Wisconsin Avenue between 2nd Street & North MLK Dr",
+    description:
+      "Come find August Jones at Milwaukee Night Market! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear. Follow my instagram for updates on exactly where my tent will be!",
   },
   {
     id: "chicago-artisan-market-2026-10-18",
@@ -134,29 +90,6 @@ export const allEvents: AugustJonesEvent[] = [
     eventWebsiteUrl: "https://chicagoartisanmarket.com/tickets-fulton-market/",
   },
   {
-    id: "sauced-madison-2026-09-11",
-    marketName: "Sauced Night Market - Madison",
-    eventWebsiteUrl: "https://www.saucedmarket.com/madison",
-    venueName: "Garver Feed Mill",
-    address: {
-      street: "3241 Garver Green",
-      city: "Madison",
-      state: "WI",
-      zip: "53704",
-    },
-    sessions: [
-      {
-        startDate: "2026-09-11T17:00:00-05:00",
-        endDate: "2026-09-11T22:00:00-05:00",
-      },
-      {
-        startDate: "2026-09-12T17:00:00-05:00",
-        endDate: "2026-09-12T22:00:00-05:00",
-      },
-    ],
-    mapsUrl: "https://maps.app.goo.gl/3VEQJu6EJYiB3q9GA",
-  },
-  {
     id: "rusty-bee-2026-10-22",
     address: {
       street: "5134 E Cheryl Pkwy",
@@ -174,6 +107,52 @@ export const allEvents: AugustJonesEvent[] = [
       },
     ],
     venueName: "The Rusty Bee Lounge",
+  },
+  {
+    id: "sauced-madison-2026-11-20",
+    marketName: "Sauced Night Market - Madison",
+    eventWebsiteUrl: "https://www.saucedmarket.com/",
+    venueName: "Madison Public Market",
+    address: {
+      street: "202 N First St",
+      city: "Madison",
+      state: "WI",
+      zip: "53704",
+    },
+    sessions: [
+      {
+        startDate: "2026-11-20T17:00:00-05:00",
+        endDate: "2026-11-20T22:00:00-05:00",
+      },
+      {
+        startDate: "2026-11-21T17:00:00-05:00",
+        endDate: "2026-11-21T22:00:00-05:00",
+      },
+    ],
+    mapsUrl: "https://maps.app.goo.gl/gNQKDFiGDmoFn7Gn9",
+  },
+  {
+    id: "sauced-milwaukee-2026-12-04",
+    marketName: "Sauced Night Market - Milwaukee",
+    eventWebsiteUrl: "https://www.saucedmarket.com/",
+    venueName: "Pilot Project Brewing MKE",
+    address: {
+      street: "1128 N 9th St",
+      city: "Milwaukee",
+      state: "WI",
+      zip: "53233",
+    },
+    sessions: [
+      {
+        startDate: "2026-12-04T17:00-05:00",
+        endDate: "2026-12-04T22:00-05:00",
+      },
+      {
+        startDate: "2026-12-05T17:00-05:00",
+        endDate: "2026-12-05T22:00-05:00",
+      },
+    ],
+    mapsUrl: "https://maps.app.goo.gl/RZ2wySz5evhFLQLe8",
   },
 ];
 
