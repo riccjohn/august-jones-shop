@@ -112,9 +112,9 @@ export const allEvents: AugustJonesEvent[] = [
     id: "sauced-madison-2026-11-20",
     marketName: "Sauced Night Market - Madison",
     eventWebsiteUrl: "https://www.saucedmarket.com/",
-    venueName: "Madison Public Market",
+    venueName: "Garver Feed Mill",
     address: {
-      street: "202 N First St",
+      street: "3241 Garver Green",
       city: "Madison",
       state: "WI",
       zip: "53704",
@@ -129,7 +129,7 @@ export const allEvents: AugustJonesEvent[] = [
         endDate: "2026-11-21T22:00:00-05:00",
       },
     ],
-    mapsUrl: "https://maps.app.goo.gl/gNQKDFiGDmoFn7Gn9",
+    mapsUrl: "https://maps.app.goo.gl/T19WpVe5bwx5AMCs7",
   },
   {
     id: "sauced-milwaukee-2026-12-04",
