@@ -1,7 +1,9 @@
 export interface EventSession {
-  // Must use an explicit UTC offset (e.g. "-05:00"), never "Z". See EVENT_TIMEZONE.
+  // Local Central time with no offset, e.g. "2026-11-20T17:00". The correct
+  // CST/CDT offset is added automatically (see normalizeEvent). An explicit
+  // offset is also accepted and left untouched; never use "Z".
   startDate: string;
-  // Must use an explicit UTC offset (e.g. "-05:00"), never "Z". See EVENT_TIMEZONE.
+  // Same format as startDate.
   endDate: string;
 }
 
@@ -17,18 +19,63 @@ export interface AugustJonesEvent {
   discount?: { code: string; label: string };
 }
 
-export const allEvents: AugustJonesEvent[] = [
+export const EVENT_TIMEZONE = "America/Chicago";
+
+const LOCAL_DATETIME = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/;
+
+const offsetFormat = new Intl.DateTimeFormat("en-US", {
+  timeZone: EVENT_TIMEZONE,
+  timeZoneName: "longOffset",
+});
+
+// "GMT-05:00" -> "-05:00" for the given instant, in EVENT_TIMEZONE.
+function offsetAt(ms: number): string {
+  const name = offsetFormat
+    .formatToParts(new Date(ms))
+    .find((part) => part.type === "timeZoneName")?.value;
+  return name?.replace("GMT", "") || "+00:00";
+}
+
+function offsetToMs(offset: string): number {
+  const [h, m] = offset.slice(1).split(":").map(Number);
+  return (offset[0] === "-" ? -1 : 1) * (h * 60 + m) * 60_000;
+}
+
+// Turns a local Central time ("2026-11-20T17:00") into an ISO string with the
+// right CST/CDT offset for that date. Strings that already carry an offset
+// pass through unchanged.
+export function withEventOffset(value: string): string {
+  const match = LOCAL_DATETIME.exec(value);
+  if (!match) return value;
+  const [y, mo, d, h, mi, sec] = match.slice(1).map((n) => Number(n ?? 0));
+  const asUtc = Date.UTC(y, mo - 1, d, h, mi, sec);
+  // Resolve the offset at the actual instant (re-check once for DST edges).
+  const guess = offsetAt(asUtc - offsetToMs(offsetAt(asUtc)));
+  return `${value}${guess}`;
+}
+
+function normalizeEvent(event: AugustJonesEvent): AugustJonesEvent {
+  return {
+    ...event,
+    sessions: event.sessions.map((session) => ({
+      startDate: withEventOffset(session.startDate),
+      endDate: withEventOffset(session.endDate),
+    })) as AugustJonesEvent["sessions"],
+  };
+}
+
+const rawEvents: AugustJonesEvent[] = [
   {
     id: "sauced-chicago-oct-2026",
     marketName: "Sauced Chicago",
     sessions: [
       {
-        startDate: "2026-10-02T17:00-05:00",
-        endDate: "2026-10-02T22:00-05:00",
+        startDate: "2026-10-02T17:00",
+        endDate: "2026-10-02T22:00",
       },
       {
-        startDate: "2026-10-03T17:00-05:00",
-        endDate: "2026-10-03T22:00-05:00",
+        startDate: "2026-10-03T17:00",
+        endDate: "2026-10-03T22:00",
       },
     ],
     venueName: "HOSTE",
@@ -54,8 +101,8 @@ export const allEvents: AugustJonesEvent[] = [
     marketName: "Milwaukee Night Market",
     sessions: [
       {
-        startDate: "2026-10-07T17:00:00-05:00",
-        endDate: "2026-10-07T21:00:00-05:00",
+        startDate: "2026-10-07T17:00:00",
+        endDate: "2026-10-07T21:00:00",
       },
     ],
     venueName:
@@ -70,8 +117,8 @@ export const allEvents: AugustJonesEvent[] = [
       "Come find August Jones at Chicago Artisan Market! Click the event name above to visit the organizer's site and use the code below for free admission",
     sessions: [
       {
-        startDate: "2026-10-18T11:00-05:00",
-        endDate: "2026-10-18T17:00-05:00",
+        startDate: "2026-10-18T11:00",
+        endDate: "2026-10-18T17:00",
       },
     ],
     venueName: "Morgan MFG",
@@ -102,8 +149,8 @@ export const allEvents: AugustJonesEvent[] = [
     marketName: "Rusty Bee Night Market",
     sessions: [
       {
-        startDate: "2026-10-22T17:00:00-05:00",
-        endDate: "2026-10-22T21:00:00-05:00",
+        startDate: "2026-10-22T17:00:00",
+        endDate: "2026-10-22T21:00:00",
       },
     ],
     venueName: "The Rusty Bee Lounge",
@@ -121,12 +168,12 @@ export const allEvents: AugustJonesEvent[] = [
     },
     sessions: [
       {
-        startDate: "2026-11-20T17:00:00-05:00",
-        endDate: "2026-11-20T22:00:00-05:00",
+        startDate: "2026-11-20T17:00:00",
+        endDate: "2026-11-20T22:00:00",
       },
       {
-        startDate: "2026-11-21T17:00:00-05:00",
-        endDate: "2026-11-21T22:00:00-05:00",
+        startDate: "2026-11-21T17:00:00",
+        endDate: "2026-11-21T22:00:00",
       },
     ],
     mapsUrl: "https://maps.app.goo.gl/T19WpVe5bwx5AMCs7",
@@ -144,17 +191,19 @@ export const allEvents: AugustJonesEvent[] = [
     },
     sessions: [
       {
-        startDate: "2026-12-04T17:00-05:00",
-        endDate: "2026-12-04T22:00-05:00",
+        startDate: "2026-12-04T17:00",
+        endDate: "2026-12-04T22:00",
       },
       {
-        startDate: "2026-12-05T17:00-05:00",
-        endDate: "2026-12-05T22:00-05:00",
+        startDate: "2026-12-05T17:00",
+        endDate: "2026-12-05T22:00",
       },
     ],
     mapsUrl: "https://maps.app.goo.gl/RZ2wySz5evhFLQLe8",
   },
 ];
+
+export const allEvents: AugustJonesEvent[] = rawEvents.map(normalizeEvent);
 
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -164,8 +213,6 @@ export function getEventDescription(event: AugustJonesEvent): string {
     `Come find August Jones at ${event.marketName}! Browse one-of-a-kind upcycled sports fashion — hoodies, jackets, and streetwear handmade from pro sports jerseys and fan gear.`
   );
 }
-
-export const EVENT_TIMEZONE = "America/Chicago";
 
 export function formatEventDate(date: Date): string {
   return date.toLocaleDateString("en-US", {

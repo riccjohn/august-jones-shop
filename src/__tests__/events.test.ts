@@ -9,6 +9,7 @@ import {
   getUpcomingEvents,
   isEventPast,
   sortEventsByDate,
+  withEventOffset,
 } from "@/data/events";
 
 // ---------------------------------------------------------------------------
@@ -538,5 +539,60 @@ describe("isEventPast", () => {
     // With now after the event ends: past
     const afterEnd = new Date("2026-05-02T23:00:00-05:00");
     expect(isEventPast(event, afterEnd)).toBe(true);
+  });
+});
+
+describe("withEventOffset", () => {
+  it("adds CDT (-05:00) during daylight saving time", () => {
+    expect(withEventOffset("2026-10-02T17:00")).toBe("2026-10-02T17:00-05:00");
+  });
+
+  it("adds CST (-06:00) after daylight saving ends", () => {
+    expect(withEventOffset("2026-11-20T17:00")).toBe("2026-11-20T17:00-06:00");
+    expect(withEventOffset("2026-12-04T17:00:00")).toBe(
+      "2026-12-04T17:00:00-06:00",
+    );
+  });
+
+  it("switches offset exactly at the fall-back change (Nov 1, 2026)", () => {
+    expect(withEventOffset("2026-10-31T17:00")).toBe("2026-10-31T17:00-05:00");
+    expect(withEventOffset("2026-11-01T10:00")).toBe("2026-11-01T10:00-06:00");
+    expect(withEventOffset("2026-11-01T17:00")).toBe("2026-11-01T17:00-06:00");
+  });
+
+  it("switches offset exactly at the spring-forward change (Mar 14, 2027)", () => {
+    expect(withEventOffset("2027-03-13T17:00")).toBe("2027-03-13T17:00-06:00");
+    expect(withEventOffset("2027-03-14T10:00")).toBe("2027-03-14T10:00-05:00");
+    expect(withEventOffset("2027-03-14T17:00")).toBe("2027-03-14T17:00-05:00");
+  });
+
+  it("shows the same wall-clock time on both sides of a DST change", () => {
+    for (const day of [
+      "2026-10-31",
+      "2026-11-01",
+      "2027-03-13",
+      "2027-03-14",
+    ]) {
+      expect(formatEventTime(new Date(withEventOffset(`${day}T17:00`)))).toBe(
+        "5 PM",
+      );
+    }
+  });
+
+  it("leaves strings with an explicit offset untouched", () => {
+    expect(withEventOffset("2026-11-20T17:00-06:00")).toBe(
+      "2026-11-20T17:00-06:00",
+    );
+  });
+
+  it("displays entered times as 5–10 PM year-round", () => {
+    for (const day of ["2026-10-02", "2026-11-20", "2026-12-04"]) {
+      expect(formatEventTime(new Date(withEventOffset(`${day}T17:00`)))).toBe(
+        "5 PM",
+      );
+      expect(formatEventTime(new Date(withEventOffset(`${day}T22:00`)))).toBe(
+        "10 PM",
+      );
+    }
   });
 });
