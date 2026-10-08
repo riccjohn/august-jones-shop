@@ -114,6 +114,14 @@ See `docs/sentry.md` for setup.
 Three separate tsconfigs, so a single typecheck never covers the whole repo — `functions/`
 and `relay/` are excluded from the root one and each needs its own `-p` run.
 
+## Manual QA
+
+**Run `docs/qa-manual.md` before shipping any PR that touches UI, navigation, analytics, or the contact form.**
+
+The checklist is agent-runnable using Playwright MCP browser tools. It covers visual checks, hover states, mobile layout, external link destinations, form success/error states, and SEO structured data — things the automated e2e suite does not assert.
+
+The checklist includes a self-update step (Section 12): after every run, the agent checks for new pages or components not yet covered and updates the doc itself. Keep the checklist current.
+
 ## Tech Stack
 
 - **Next.js 16** with App Router, React 19, TypeScript (strict mode)
