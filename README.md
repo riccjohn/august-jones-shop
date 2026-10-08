@@ -61,8 +61,8 @@ Add a new entry to the `events` array:
   marketName: "Market Name",            // used in the card title: "August Jones at <marketName>"
   sessions: [
     {
-      startDate: "2026-09-06T10:00:00-05:00",  // ISO 8601, see datetime format note below
-      endDate:   "2026-09-06T16:00:00-05:00",
+      startDate: "2026-09-06T10:00",  // local Central time, see datetime format note below
+      endDate:   "2026-09-06T16:00",
     },
     // add more sessions for multi-day events
   ],
@@ -77,14 +77,13 @@ Add a new entry to the `events` array:
 
 ### Datetime format
 
-Dates use ISO 8601 with an explicit `America/Chicago` offset:
+Enter times as plain **local Central time** (`America/Chicago`) — exactly what a customer would read on the clock, in 24-hour format, with **no UTC offset**:
 
 ```
-YYYY-MM-DDTHH:MM:SS-05:00   ← CDT (summer, March–November)
-YYYY-MM-DDTHH:MM:SS-06:00   ← CST (winter, November–March)
+YYYY-MM-DDTHH:MM        ← e.g. "2026-11-20T17:00" is 5 PM
 ```
 
-To generate these strings easily, use **[timestamp.online](https://timestamp.online)** — pick the date, time, and `America/Chicago` timezone, then copy the ISO 8601 output.
+The correct offset (`-05:00` CDT in summer, `-06:00` CST in winter) is added automatically for each date by `withEventOffset()` in `src/data/events.ts`, so daylight saving changes need no manual handling. Seconds are optional. A string that already includes an explicit offset (e.g. `-06:00`) is left as-is; never use `Z` (UTC).
 
 ### How events are filtered
 

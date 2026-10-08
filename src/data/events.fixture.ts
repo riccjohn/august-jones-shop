@@ -4,6 +4,8 @@ import type { AugustJonesEvent } from "./events";
 // Names, venues, and addresses are intentionally absurd so it's obvious
 // when fixture data is being served instead of real data.
 // Each event covers specific test scenarios — do not change IDs or dates.
+// These bypass normalizeEvent (see event-source.e2e.ts), so times keep explicit
+// offsets; real data in events.ts uses plain local times instead.
 export const fixtureEvents: AugustJonesEvent[] = [
   {
     // Covers: title-links-to-website, single-day session count, city chip (Madison), TODAY badge
