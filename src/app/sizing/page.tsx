@@ -60,14 +60,14 @@ const VEST_ROWS: VestRow[] = [
   },
   {
     size: "L",
-    croppedWidth: '23"',
+    croppedWidth: '22 1/2"',
     croppedLength: '22 1/2"',
     fullWidth: '23"',
     fullLength: '24"',
   },
   {
     size: "XL",
-    croppedWidth: '24 1/2"',
+    croppedWidth: '24"',
     croppedLength: '23"',
     fullWidth: '24 1/2"',
     fullLength: '25"',
