@@ -52,7 +52,7 @@ WAF -> Custom rules in older layouts) -> Create rule.
 Expression (use "Edit expression"):
 
 ```
-(http.user_agent contains "meta-externalagent") or (http.user_agent contains "meta-externalads") or (http.user_agent contains "meta-webindexer") or (http.user_agent contains "GPTBot") or (http.user_agent contains "ClaudeBot") or (http.user_agent contains "CCBot") or (http.user_agent contains "Bytespider")
+(lower(http.user_agent) contains "meta-externalagent" or lower(http.user_agent) contains "meta-externalads" or lower(http.user_agent) contains "meta-webindexer" or lower(http.user_agent) contains "gptbot" or lower(http.user_agent) contains "claudebot" or lower(http.user_agent) contains "ccbot" or lower(http.user_agent) contains "bytespider") and not (http.request.uri.path eq "/robots.txt")
 ```
 
 Steps:
@@ -63,8 +63,11 @@ Steps:
 4. Set the action to **Block** and deploy.
 5. Run the verification below.
 
-The `contains` operator is case-sensitive, which matches the published user-agent tokens.
-If a vendor changes its casing, add a second clause.
+`contains` is case-sensitive, so the rule lowercases the user agent first and the tokens
+are written in lowercase. The `/robots.txt` exemption is deliberate: under RFC 9309 a 4xx
+response means robots.txt is "unavailable", and a crawler may then crawl without
+restriction. Blocked crawlers must be able to read the Disallow groups, so that the
+advisory layer still works if this rule is ever disabled.
 
 ## Verify
 
@@ -77,10 +80,18 @@ for ua in meta-externalagent meta-externalads meta-webindexer GPTBot ClaudeBot C
   curl -s -o /dev/null -w '%{http_code}\n' -A "$ua" https://www.augustjones.shop/
 done
 
-# Must NOT be blocked (expect 200): link previews, fetcher, search, Perplexity, browsers
+# Must NOT be blocked (expect 200): link previews, fetcher, search, Perplexity, browsers.
+# Googlebot/Bingbot from a non-Google/Bing IP can be challenged by Cloudflare's own bot
+# protection; if one is not 200, check Security Events before treating it as this rule.
 for ua in facebookexternalhit meta-externalfetcher Googlebot Bingbot PerplexityBot "Mozilla/5.0"; do
   printf '%s ' "$ua"
   curl -s -o /dev/null -w '%{http_code}\n' -A "$ua" https://www.augustjones.shop/
+done
+
+# robots.txt must stay readable by blocked agents (expect 200, not 403)
+for ua in meta-externalagent GPTBot ClaudeBot; do
+  printf '%s ' "$ua"
+  curl -s -o /dev/null -w '%{http_code}\n' -A "$ua" https://www.augustjones.shop/robots.txt
 done
 
 # robots.txt itself should show the Disallow groups (and no duplicate groups
@@ -89,7 +100,7 @@ curl -s https://www.augustjones.shop/robots.txt
 ```
 
 Then paste a site URL into the Facebook Sharing Debugger and confirm the preview still
-renders. In the dashboard, Security -> Events should show the Block hits from the curl
+renders. In the dashboard, Security -> Analytics -> Events (Security -> Events in older layouts) should show the Block hits from the curl
 runs.
 
 Note: robots.txt changes can take up to 24 hours to be picked up by crawlers.
@@ -98,7 +109,7 @@ Note: robots.txt changes can take up to 24 hours to be picked up by crawlers.
 
 Dashboard: Security -> Security rules -> `Block AI crawlers` -> disable (or delete). Takes
 effect without a deploy. To drop the advisory layer, revert `public/robots.txt` and
-redeploy. The two layers are independent.
+redeploy. The two layers are independent because the rule exempts `/robots.txt`.
 
 ## Optional: AI Crawl Control
 
@@ -112,7 +123,7 @@ whether it consumed a WAF rule slot.
 
 - **Spoofable.** The user agent is client-supplied. This stops honest crawlers only.
 - **Meta behavior is unverified.** Nothing in Meta's terms commits it to honoring
-  robots.txt. Monitor after **2026-11-20**: check Security -> Events and Umami for
+  robots.txt. Monitor after **2026-11-20**: check Security Events (Security -> Analytics -> Events) and Umami for
   crawler traffic, and whether any Meta agent gets through under an unlisted user agent.
 - **Free plan limit.** Free allows 5 custom rules and no regex. This rule uses one. Open:
   confirm the plan, and whether AI Crawl Control rules count toward the 5.

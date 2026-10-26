@@ -40,18 +40,6 @@ function parseRobots(text: string): { groups: Group[]; sitemaps: string[] } {
   return { groups, sitemaps };
 }
 
-const robotsText = readFileSync(
-  resolve(process.cwd(), "public/robots.txt"),
-  "utf8",
-);
-const { groups, sitemaps } = parseRobots(robotsText);
-
-const disallowsRoot = (g: Group) =>
-  g.rules.some((r) => r.type === "disallow" && r.value === "/");
-const groupsFor = (agent: string) =>
-  groups.filter((g) => g.agents.includes(agent.toLowerCase()));
-const isBlocked = (agent: string) => groupsFor(agent).some(disallowsRoot);
-
 const BLOCKED = [
   "meta-externalagent",
   "meta-externalads",
@@ -72,36 +60,136 @@ const MUST_STAY_ALLOWED = [
   "Bingbot",
 ];
 
+const SITEMAP = "https://www.augustjones.shop/sitemap.xml";
+
+// A non-empty Disallow of any shape (/, /*, /about/, /?) restricts crawling.
+const hasDisallow = (g: Group) =>
+  g.rules.some((r) => r.type === "disallow" && r.value !== "");
+
+// Crawlers match their product token loosely, so a token like `facebook*` or
+// `meta-external` also covers `facebookexternalhit` / `meta-externalfetcher`.
+const covers = (token: string, agent: string) => {
+  const t = token.replace(/\*+$/, "");
+  return t !== "" && (agent.includes(t) || t.includes(agent));
+};
+
+// Returns every way `text` breaks the crawler policy; empty means it is sound.
+function policyViolations(text: string): string[] {
+  const { groups, sitemaps } = parseRobots(text);
+  const violations: string[] = [];
+  const named = (agent: string) => agent.toLowerCase();
+  const blocked = new Set(BLOCKED.map(named));
+
+  for (const agent of BLOCKED) {
+    const isBlocked = groups.some(
+      (g) =>
+        g.agents.includes(named(agent)) &&
+        g.rules.some((r) => r.type === "disallow" && r.value === "/") &&
+        !g.rules.some((r) => r.type === "allow" && r.value === "/"),
+    );
+    if (!isBlocked) violations.push(`${agent} is not blocked from /`);
+  }
+
+  for (const agent of MUST_STAY_ALLOWED) {
+    const restricted = groups.some(
+      (g) => g.agents.some((t) => covers(t, named(agent))) && hasDisallow(g),
+    );
+    if (restricted) violations.push(`${agent} has a Disallow rule`);
+  }
+
+  const star = groups.filter((g) => g.agents.includes("*"));
+  if (
+    !star.some((g) =>
+      g.rules.some((r) => r.type === "allow" && r.value === "/"),
+    )
+  )
+    violations.push("* group does not allow /");
+  if (star.some(hasDisallow)) violations.push("* group has a Disallow rule");
+
+  for (const g of groups) {
+    if (!hasDisallow(g)) continue;
+    for (const a of g.agents)
+      if (!blocked.has(a) && a !== "*")
+        violations.push(`${a} has a Disallow but is not in the blocklist`);
+  }
+
+  if (!sitemaps.includes(SITEMAP)) violations.push("sitemap line missing");
+  return violations;
+}
+
+const robotsText = readFileSync(
+  resolve(process.cwd(), "public/robots.txt"),
+  "utf8",
+);
+const { groups } = parseRobots(robotsText);
+const groupsFor = (agent: string) =>
+  groups.filter((g) => g.agents.includes(agent.toLowerCase()));
+
 describe("public/robots.txt", () => {
-  it.each(BLOCKED)("blocks %s from the whole site", (agent) => {
-    expect(isBlocked(agent)).toBe(true);
+  it("satisfies the crawler policy", () => {
+    expect(policyViolations(robotsText)).toEqual([]);
   });
 
-  it("still allows everything for the * group", () => {
-    const star = groupsFor("*");
-    expect(star.length).toBeGreaterThan(0);
-    expect(
-      star.some((g) =>
-        g.rules.some((r) => r.type === "allow" && r.value === "/"),
-      ),
-    ).toBe(true);
-    expect(star.some(disallowsRoot)).toBe(false);
+  it.each(BLOCKED)("has a group blocking %s", (agent) => {
+    expect(groupsFor(agent).length).toBeGreaterThan(0);
+  });
+});
+
+describe("policyViolations (guards against false passes)", () => {
+  const withExtra = (extra: string) => `${robotsText}\n${extra}\n`;
+
+  it.each([
+    [
+      "wildcard path Disallow on a protected bot",
+      "User-agent: facebookexternalhit\nDisallow: /*",
+    ],
+    [
+      "section Disallow on a protected bot",
+      "User-agent: Googlebot\nDisallow: /about/",
+    ],
+    [
+      "prefix-pattern group that covers a protected bot",
+      "User-agent: facebook*\nDisallow: /",
+    ],
+    [
+      "partial-token group that covers a protected bot",
+      "User-agent: meta-external\nDisallow: /",
+    ],
+    [
+      "query Disallow on a protected bot",
+      "User-agent: PerplexityBot\nDisallow: /?",
+    ],
+    ["Disallow on an unlisted agent", "User-agent: SomeOtherBot\nDisallow: /"],
+  ])("flags: %s", (_name, extra) => {
+    expect(policyViolations(withExtra(extra)).length).toBeGreaterThan(0);
   });
 
-  it("keeps the sitemap line", () => {
-    expect(sitemaps).toContain("https://www.augustjones.shop/sitemap.xml");
+  it("flags a Disallow added to the * group", () => {
+    const text = robotsText.replace(
+      "Allow: /\n",
+      "Allow: /\nDisallow: /about/\n",
+    );
+    expect(text).not.toBe(robotsText);
+    expect(policyViolations(text)).toContain("* group has a Disallow rule");
   });
 
-  it.each(MUST_STAY_ALLOWED)("does not block %s", (agent) => {
-    expect(isBlocked(agent)).toBe(false);
+  it("flags a blocked agent that also has Allow: /", () => {
+    const text = robotsText.replace(
+      "User-agent: GPTBot\nDisallow: /",
+      "User-agent: GPTBot\nAllow: /\nDisallow: /",
+    );
+    expect(text).not.toBe(robotsText);
+    expect(policyViolations(text)).toContain("GPTBot is not blocked from /");
   });
 
-  it("only disallows / for agents in the explicit blocklist", () => {
-    const allowedBlocked = new Set(BLOCKED.map((a) => a.toLowerCase()));
-    const offenders = groups
-      .filter(disallowsRoot)
-      .flatMap((g) => g.agents)
-      .filter((a) => !allowedBlocked.has(a));
-    expect(offenders).toEqual([]);
+  it("flags a missing sitemap", () => {
+    const text = robotsText.replace(/^Sitemap:.*$/m, "");
+    expect(policyViolations(text)).toContain("sitemap line missing");
+  });
+
+  it("flags a missing blocked agent", () => {
+    const text = robotsText.replace(/User-agent: CCBot\nDisallow: \/\n/, "");
+    expect(text).not.toBe(robotsText);
+    expect(policyViolations(text)).toContain("CCBot is not blocked from /");
   });
 });

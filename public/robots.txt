@@ -2,7 +2,7 @@
 User-agent: *
 Allow: /
 
-# Block Meta's AI training / indexing crawlers.
+# Block Meta's AI crawlers (training, indexing and ads).
 # (meta-externalfetcher and facebookexternalhit stay allowed so link previews work.)
 User-agent: meta-externalagent
 Disallow: /

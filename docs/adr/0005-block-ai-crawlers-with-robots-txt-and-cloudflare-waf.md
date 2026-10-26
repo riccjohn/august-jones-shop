@@ -30,7 +30,9 @@ Two layers:
    of the seven crawlers that actually fetch pages: `meta-externalagent`, `meta-externalads`,
    `meta-webindexer`, `GPTBot`, `ClaudeBot`, `CCBot`, `Bytespider`. `Google-Extended` and
    `Applebot-Extended` are robots.txt-only tokens and never appear as a request user agent,
-   so they are not in the rule.
+   so they are not in the rule. The rule exempts `/robots.txt`: a 4xx there means
+   "unavailable" under RFC 9309 and lets a crawler ignore the Disallow groups, which would
+   make the two layers dependent instead of independent.
 
 Deliberate exclusions:
 
