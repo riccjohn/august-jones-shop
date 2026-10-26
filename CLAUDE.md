@@ -98,6 +98,15 @@ without revisiting `docs/adr/0004-adopt-sentry-for-pages-functions-error-trackin
 form content into a Sentry report. A Sentry uptime monitor pings the relay's `/healthz`.
 See `docs/sentry.md` for setup.
 
+## AI crawler protection
+
+`public/robots.txt` disallows AI crawlers (Meta, GPTBot, ClaudeBot, CCBot, Bytespider,
+Google-Extended, Applebot-Extended), backed by one Cloudflare WAF custom rule that blocks
+their user agents. The WAF rule lives only in the Cloudflare dashboard. Never block
+`facebookexternalhit` or `meta-externalfetcher` (link previews), and never block by ASN
+alone. See `docs/adr/0005-block-ai-crawlers-with-robots-txt-and-cloudflare-waf.md` and
+`docs/crawler-protection.md`.
+
 ## Commands
 
 - `pnpm dev` — Start dev server (http://localhost:3000)
