@@ -134,6 +134,15 @@ export default function RootLayout({
             strategy="afterInteractive"
           />
         )}
+        {process.env.NEXT_PUBLIC_CF_BEACON_TOKEN && (
+          <script
+            type="module"
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon={JSON.stringify({
+              token: process.env.NEXT_PUBLIC_CF_BEACON_TOKEN,
+            })}
+          />
+        )}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
