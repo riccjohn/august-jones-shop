@@ -98,6 +98,12 @@ from the zone-level traffic report. There's no export button there; `pnpm export
 (see [scripts/README.md](../scripts/README.md)) pulls the same data to a CSV via Cloudflare's
 GraphQL Analytics API.
 
+Like `cloud.umami.is`/`gateway.umami.is`, the beacon's domain (`static.cloudflareinsights.com`)
+is on common ad-blocker and DNS-filter blocklists — so a report of zero Cloudflare Web
+Analytics data isn't necessarily a sign the beacon is broken; check it the same way as a
+missing Umami event (disable blockers, or cross-check against Umami's numbers for the same
+period) before assuming it's misconfigured.
+
 ## Viewing the Dashboard
 
 Log in at https://cloud.umami.is to see:
