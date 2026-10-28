@@ -81,20 +81,17 @@ Redeploy the Cloudflare Pages project for the environment variable to take effec
 
 ## Cloudflare Web Analytics (supplementary)
 
-A second, privacy-first RUM beacon from Cloudflare runs alongside Umami, gated by
-`NEXT_PUBLIC_CF_BEACON_TOKEN`. It's JS/beacon-based like Umami — not the zone-level
-"Analytics & Logs" traffic view in the Cloudflare dashboard, which counts every HTTP
-request (including bots and crawlers) and will always show much higher numbers than
-either RUM tool.
+A second, privacy-first RUM beacon from Cloudflare runs alongside Umami. Unlike Umami,
+it requires **no code or env var in this repo** — Cloudflare Pages auto-injects the
+beacon script at the edge for any Pages project linked to a Web Analytics site in the
+dashboard (**Workers & Pages → august-jones-shop → Analytics → Web Analytics**), using
+its own `<!-- Cloudflare Pages Analytics -->`-wrapped `<script defer>` tag. That link is
+already configured for this project's production domains
+(`augustjones.shop`, `www.augustjones.shop`, `august-jones-shop.pages.dev`).
 
-### Setup
-
-1. In the Cloudflare dashboard: **Analytics & Logs → Web Analytics → Add a site**, scoped
-   to `augustjones.shop`, `www.augustjones.shop`, and the `*.pages.dev` preview domain.
-   Copy the **Site Token** from the generated snippet (do not use Cloudflare's "auto-install"
-   toggle — this repo injects the beacon itself, in `src/app/layout.tsx`).
-2. Set `NEXT_PUBLIC_CF_BEACON_TOKEN` in `.env.local` (local dev) and in Cloudflare Pages →
-   Settings → Variables and secrets (production), then redeploy.
+It's JS/beacon-based like Umami — not the zone-level "Analytics & Logs" traffic view in
+the Cloudflare dashboard, which counts every HTTP request (including bots and crawlers)
+and will always show much higher numbers than either RUM tool.
 
 View results at **Analytics & Logs → Web Analytics** in the dashboard — a separate view
 from the zone-level traffic report.
@@ -126,5 +123,5 @@ pnpm test:e2e e2e/analytics.spec.ts
 | File | Purpose |
 |---|---|
 | `src/lib/analytics.ts` | Client-side tracking functions |
-| `src/app/layout.tsx` | Umami + Cloudflare beacon script tags |
+| `src/app/layout.tsx` | Umami script tag |
 | `e2e/analytics.spec.ts` | Playwright tests |
