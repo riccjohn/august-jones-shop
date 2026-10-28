@@ -94,8 +94,10 @@ for ua in meta-externalagent GPTBot ClaudeBot; do
   curl -s -o /dev/null -w '%{http_code}\n' -A "$ua" https://www.augustjones.shop/robots.txt
 done
 
-# robots.txt itself should show the Disallow groups (and no duplicate groups
-# if AI Crawl Control / managed robots.txt is enabled)
+# Live robots.txt is Cloudflare's managed block followed by public/robots.txt.
+# Expect all three Meta groups (meta-externalagent, meta-externalads, meta-webindexer);
+# meta-externalagent will appear twice (managed + ours), which is harmless. Confirm
+# facebookexternalhit, meta-externalfetcher and PerplexityBot have no group.
 curl -s https://www.augustjones.shop/robots.txt
 ```
 
@@ -111,13 +113,24 @@ Dashboard: Security -> Security rules -> `Block AI crawlers` -> disable (or dele
 effect without a deploy. To drop the advisory layer, revert `public/robots.txt` and
 redeploy. The two layers are independent because the rule exempts `/robots.txt`.
 
-## Optional: AI Crawl Control
+## Cloudflare managed robots.txt (enabled)
 
-Cloudflare's AI Crawl Control and managed robots.txt are free on all plans and can add AI
-crawler rules and merge directives into `/robots.txt`. Not enabled by this decision.
-Whether Meta's crawlers appear in its list is unverified (check the Crawlers table). If
-enabled, curl `/robots.txt` afterward for duplicate or conflicting groups, and check
-whether it consumed a WAF rule slot.
+Cloudflare's managed robots.txt is enabled on this zone (observed 2026-10-28). It prepends
+a content-signal header (`search=yes, ai-train=no`) and a long list of AI and other bot
+groups to `/robots.txt`, then serves `public/robots.txt` after it. Consequences:
+
+- It already disallows `meta-externalagent`, GPTBot, ClaudeBot, CCBot, Bytespider,
+  Google-Extended and Applebot-Extended, so those groups are duplicated by ours. The
+  groups agree, so this is harmless.
+- It does **not** cover `meta-externalads` or `meta-webindexer`; only `public/robots.txt`
+  does. Keep ours.
+- It also disallows Baiduspider, PetalBot, GoogleOther and Amazonbot. That is acceptable
+  here, but re-check the managed list if search traffic from a new engine matters.
+- It has no group for `facebookexternalhit`, `meta-externalfetcher` or PerplexityBot. If a
+  future managed-list update adds one, link previews break: re-run the verify commands.
+- Because Cloudflare edits the served file, `public/robots.txt` alone is not the whole
+  policy. The Vitest guard only covers our file.
+- Whether AI Crawl Control rules consume a WAF rule slot is still unverified (see below).
 
 ## Limits and open items
 

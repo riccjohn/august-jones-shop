@@ -58,10 +58,11 @@ rule, dashboard steps and verification are in `docs/crawler-protection.md`.
 - **`_headers` / `X-Robots-Tag`** — no effect on AI crawlers. Headers apply to static assets
   only and are a noindex signal, not an access control; a site-wide noindex would destroy
   SEO. The one plausible use, noindex on `*.pages.dev`, is out of scope here.
-- **Cloudflare AI Crawl Control / managed robots.txt (optional)** — free on all plans, but
-  whether Meta's crawlers are in its list is unverified, and it may consume one of the
-  Free plan's WAF rule slots (undocumented). Can be enabled additionally; if so, curl
-  `/robots.txt` afterward and check for duplicate or conflicting groups.
+- **Cloudflare AI Crawl Control / managed robots.txt** — free on all plans. The managed
+  robots.txt turned out to be already enabled (observed 2026-10-28): it prepends its own
+  groups, covers `meta-externalagent` but not `meta-externalads` or `meta-webindexer`, and
+  so does not replace our file. Whether AI Crawl Control consumes a Free-plan WAF rule slot
+  is undocumented. See `docs/crawler-protection.md` for the consequences.
 
 ## Consequences
 
