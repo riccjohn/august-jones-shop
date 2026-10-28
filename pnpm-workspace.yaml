@@ -6,6 +6,10 @@ overrides:
   # GHSA advisories fixed in 8.5.18; next pins 8.4.31
   postcss: ">=8.5.18"
   # libvips CVEs (GHSA-f88m-g3jw-g9cj) fixed in 0.35.0; next pins 0.34.5
+  # NOTE: sharp is also a direct dependency in package.json (^0.35.5). pnpm writes
+  # THIS override range into pnpm-lock.yaml as sharp's specifier, not the package.json
+  # one. If CI fails with ERR_PNPM_OUTDATED_LOCKFILE and the lockfile shows
+  # `specifier: ^0.35.5`, run `pnpm install` to regenerate it (expect '>=0.35.0').
   sharp: ">=0.35.0"
   # GHSA advisories fixed in 8.2.4; vitest/@vitejs/plugin-react pin 8.2.0
   vite: ">=8.2.4"
