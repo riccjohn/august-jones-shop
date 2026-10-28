@@ -27,7 +27,7 @@ const { since, until, out } = parseArgs(process.argv.slice(2));
 const untilDate = until ? new Date(until) : new Date();
 const sinceDate = since
   ? new Date(since)
-  : new Date(untilDate.getTime() - 30 * 24 * 3600 * 1000);
+  : new Date(untilDate.getTime() - 90 * 24 * 3600 * 1000);
 
 const token = process.env.CLOUDFLARE_API_TOKEN;
 if (!token) {

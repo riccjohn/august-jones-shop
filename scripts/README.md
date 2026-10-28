@@ -4,7 +4,7 @@ Exports Cloudflare Web Analytics (RUM) daily pageview counts to CSV via the Grap
 Analytics API — the dashboard has no export button for this data.
 
 ```bash
-# Last 30 days, printed to stdout
+# Last 90 days, printed to stdout
 pnpm export:analytics
 
 # Custom range, written to a file
