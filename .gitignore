@@ -61,6 +61,9 @@ node_modules/
 # Image optimization - original source files (not for deployment)
 original_images/
 
+# Web analytics export output (scripts/export-web-analytics.mjs)
+/analytics*.csv
+
 # Task tracking
 .yaks
 .yaks/

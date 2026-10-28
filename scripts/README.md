@@ -1,3 +1,21 @@
+# Web Analytics Export
+
+Exports Cloudflare Web Analytics (RUM) daily pageview counts to CSV via the GraphQL
+Analytics API — the dashboard has no export button for this data.
+
+```bash
+# Last 90 days, printed to stdout
+pnpm export:analytics
+
+# Custom range, written to a file
+pnpm export:analytics --since=2026-10-01 --until=2026-10-28 --out=analytics.csv
+```
+
+Requires `CLOUDFLARE_API_TOKEN` env var — a token with the "Account Analytics" Read
+permission (dash.cloudflare.com → My Profile → API Tokens → Create Token → Custom token).
+See the comment at the top of `export-web-analytics.mjs` for details, and
+[docs/analytics.md](../docs/analytics.md) for where to find this data in the dashboard.
+
 # Image Optimization
 
 ## Overview

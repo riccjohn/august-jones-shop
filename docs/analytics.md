@@ -94,7 +94,9 @@ the Cloudflare dashboard, which counts every HTTP request (including bots and cr
 and will always show much higher numbers than either RUM tool.
 
 View results at **Analytics & Logs → Web Analytics** in the dashboard — a separate view
-from the zone-level traffic report.
+from the zone-level traffic report. There's no export button there; `pnpm export:analytics`
+(see [scripts/README.md](../scripts/README.md)) pulls the same data to a CSV via Cloudflare's
+GraphQL Analytics API.
 
 ## Viewing the Dashboard
 
