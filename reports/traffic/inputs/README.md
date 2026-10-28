@@ -13,10 +13,12 @@ real customer/order data.
 | `drafts.csv` | Shopify Admin → Orders → Drafts tab → search `tag:contact-form` → Export → CSV | `scripts/report/parse-shopify-drafts.mjs` |
 | `cloudflare.csv` | Cloudflare dashboard → Analytics & Logs → Web Analytics → Export (optional) | `scripts/report/parse-cloudflare.mjs` |
 | `instagram.csv` | Meta Business Suite → Content → Export (optional) | `scripts/report/parse-instagram.mjs` |
+| `narrative.json` | Written by Claude from the finished `report-data.json` | read as-is by `generate-html.mjs`, shape below |
 
-`umami.json` and `events.json` aren't raw exports, so there's no parser for
-them — they're written directly in the shapes below. Worked, runnable
-examples of every file (synthetic data) are in `scripts/report/examples/`.
+`umami.json`, `events.json`, and `narrative.json` aren't raw exports, so
+there's no parser for them — they're written directly in the shapes below.
+Worked, runnable examples of every file (synthetic data) are in
+`scripts/report/examples/`.
 
 ## `umami.json` shape
 
@@ -49,5 +51,30 @@ examples of every file (synthetic data) are in `scripts/report/examples/`.
 
 `date` is free text (used for display and for matching a month abbreviation
 against `monthly_trend`, not parsed as a real Date) — keep the 3-letter month
-abbreviation (Jan…Dec) in it somewhere so the dashboard's event markers can
-match it to a month.
+abbreviation (Jan…Dec) in it somewhere so the page's event markers can
+match it to a month. `generate-html.mjs` also makes a best effort to pull
+one exact day out of it (`extractFirstDate`) to mark the sales/requests/
+Cloudflare daily charts — a single date like `"Oct 22, 2026"` works; a
+range like `"Nov 20 – Dec 5, 2026"` may not resolve to a day, which is fine
+for an upcoming event with no traffic to mark yet.
+
+## `narrative.json` shape
+
+```json
+{
+  "title": "Traffic & Trends",
+  "asOf": "2026-10-28",
+  "takeaway": "Visitors are up 781% over the last 6 months, driven mostly by Instagram and a couple of market pop-ups.",
+  "opportunities": [
+    "UTM-tag each market's promotion link so event correlations become exact instead of inferred."
+  ],
+  "dataNotes": [
+    "Cloudflare and Umami disagree on Oct 18 — worth a look directly in both dashboards."
+  ]
+}
+```
+
+All fields optional; `generate-html.mjs` falls back to sensible defaults
+(or omits the section) for anything missing. Write `takeaway` and
+`opportunities` from what `report-data.json` actually shows for *this*
+run — don't carry last run's wording forward unless it's still true.

@@ -35,19 +35,38 @@ node scripts/report/build-report-data.mjs \
   --out reports/traffic/report-data.json
 ```
 
-## Why these are scripted and the dashboard build isn't
+`generate-html.mjs` renders that `report-data.json`, plus a short hand-
+written `narrative.json` (the takeaway sentence, opportunities, data notes
+— see `reports/traffic/inputs/README.md`), into one self-contained
+`dashboard.html`. No external JS and no CDN scripts — charts are plain SVG
+built by `lib/svg-charts.mjs`'s arithmetic, so the file opens by
+double-click or attaches to an email with nothing else to load:
+
+```bash
+node scripts/report/generate-html.mjs \
+  --in reports/traffic/report-data.json \
+  --narrative reports/traffic/inputs/narrative.json \
+  --out reports/traffic/dashboard.html
+```
+
+A source `build-report-data.mjs` marked `{"status":"missing"}` renders as a
+plain "not available this run" note in the page rather than vanishing
+silently or breaking the build.
+
+## Why these are scripted and the page text isn't
 
 Summing order revenue, deduping Shopify's one-row-per-line-item export,
 zero-filling Cloudflare's gap days, matching an export's actual column
-names — these have one right answer, and an LLM re-deriving them by eye
-from a CSV dump is exactly where arithmetic slips in. Scripting them means
-the same input always produces the same output, and a wrong number is a bug
-in a ~60-line function you can read, not a transcription error buried in a
-chat transcript.
+names, laying out a chart's bars and axis ticks — these have one right
+answer, and an LLM re-deriving them by eye from a CSV dump (or a canvas) is
+exactly where arithmetic slips in. Scripting them means the same input
+always produces the same page, and a wrong number is a bug in a short,
+readable function, not a transcription error buried in a chat transcript.
 
-Writing the dashboard itself (what to chart, how to lay it out, how to
-word a takeaway) stays a judgment call for whoever runs the skill — these
-scripts hand that step clean, correct numbers instead of raw exports.
+Writing the handful of sentences in `narrative.json` (the takeaway, what
+to do next) stays a judgment call for whoever runs the skill — the scripts
+hand that step clean, correct numbers and a finished page instead of raw
+exports.
 
 ## `lib/`
 
@@ -56,6 +75,11 @@ scripts hand that step clean, correct numbers instead of raw exports.
   `line.split(",")` corrupts rows with commas in an address or a note).
 - `dates.mjs` — `toISODate`, `fillZeroDays` (see parse-cloudflare.mjs's doc
   comment for why zero-fill matters), `sumBy`.
+- `format.mjs` — number/date/money formatting shared by the generated page.
+- `svg-charts.mjs` — dependency-free SVG chart builders (`groupedBarChart`,
+  `horizontalBarChart`, `dailySeriesChart`), colored entirely through CSS
+  `var(--token)` strings so the page's own stylesheet (light/dark mode
+  included) controls the palette — these functions never hardcode a color.
 
 ## `examples/`
 

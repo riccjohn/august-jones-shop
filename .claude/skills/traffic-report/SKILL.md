@@ -1,29 +1,30 @@
 ---
 name: traffic-report
-description: Build or refresh the August Jones traffic & trends dashboard — interviews the user for each data source (Umami, Shopify orders/drafts, Cloudflare, Instagram), runs the deterministic parsers in scripts/report/, and publishes/updates the Dashboard Artifact. Use when asked to build, update, or refresh the traffic report or dashboard, or to correlate web traffic with sales, custom requests, or Instagram posts.
+description: Build or refresh the August Jones traffic & trends report — interviews the user for each data source (Umami, Shopify orders/drafts, Cloudflare, Instagram), runs the deterministic parsers and page generator in scripts/report/, and writes a self-contained dashboard.html. Use when asked to build, update, or refresh the traffic report or dashboard, or to correlate web traffic with sales, custom requests, or Instagram posts.
 ---
 
 # Traffic report
 
-Builds the shareable dashboard that ties web traffic (Umami), physical
-events, sales and custom requests (Shopify), and Instagram posts together —
-the one published at a `claude.ai/artifact/...` URL. There's no live
-connector for any of these sources (Umami Free has no API, Shopify needs a
-credential nobody's set up yet, Cloudflare/Instagram are manual exports), so
-every run is: gather this run's data → crunch it deterministically → author/
-update the dashboard page with it.
+Builds the shareable report that ties web traffic (Umami), physical events,
+sales and custom requests (Shopify), and Instagram posts together — a
+self-contained `dashboard.html` file (no Claude Artifact, no account needed
+to view it — open it by double-click, attach it to an email, or host it
+anywhere). There's no live connector for any of these sources (Umami Free
+has no API, Shopify needs a credential nobody's set up yet, Cloudflare/
+Instagram are manual exports), so every run is: gather this run's data →
+crunch it deterministically → render the page.
 
 Read `scripts/report/README.md` and `reports/traffic/inputs/README.md`
 before the first run — they document exactly what each script does and
-the shape of the two hand-authored JSON files (`umami.json`, `events.json`).
+the shape of the two hand-authored JSON files (`umami.json`, `events.json`,
+plus the short `narrative.json` for the written parts — step 3 below).
 
 ## 0. Resume or start fresh
 
-Check for `reports/traffic/artifact-url.txt`. If it exists, this is an
-update to an existing dashboard — reuse that URL with the `Artifact` tool
-(`action: "read"` it first, per the tool's own rules for updating an
-artifact from an earlier conversation) rather than creating a new one. If
-it doesn't exist, this is the first run.
+Check for `reports/traffic/inputs/narrative.json`. If it exists, this is a
+refresh of a previous report — read it back to the user as the current
+narrative and ask whether it still holds or needs updating, rather than
+writing it from scratch. If it doesn't exist, this is the first run.
 
 ## 1. The interview — one piece at a time
 
@@ -85,71 +86,61 @@ node scripts/report/build-report-data.mjs \
   --cloudflare reports/traffic/inputs/cloudflare.csv \
   --instagram reports/traffic/inputs/instagram.csv \
   --out reports/traffic/report-data.json
-
-node scripts/report/split-datasets.mjs \
-  --in reports/traffic/report-data.json \
-  --out-dir reports/traffic/datasets
 ```
 
-Drop any `--flag` whose file doesn't exist this run — both scripts handle
-missing inputs gracefully (`build-report-data.mjs` marks that section
-`{"status":"missing"}`; `split-datasets.mjs` just skips the dataset file
-and tells you what it skipped). Read the summary each script prints before
-continuing — it's the fast way to catch a bad export before it reaches the
-dashboard.
+Drop any `--flag` whose file doesn't exist this run — the script handles
+missing inputs gracefully, marking that section `{"status":"missing"}`
+rather than failing. Read the summary it prints before continuing — it's
+the fast way to catch a bad export before it reaches the page.
 
-## 3. Publish to the Dashboard Artifact
+## 3. Write the narrative, then render
 
-This part is judgment, not a script — the data's already correct, this is
-about presenting it well. Call `Artifact` with `action: "quickstart"`,
-`intent: "other"` (or go straight to `type_url`
-`https://claude.ai/artifact/GZLZthZ2sQjn7T16skfdeF` if you already know it)
-and **read that type's own `SKILL.md`, `artifact-type/reference/
-design-defaults.md`, and `artifact-type/reference/one-writer.md` fresh —
-they're versioned and may have changed since this skill was written.**
-What follows is this report's own accumulated decisions, not a substitute
-for those files:
+The numbers are correct by this point; what's left is the handful of
+sentences a script can't write. Create or update
+`reports/traffic/inputs/narrative.json` yourself — look at
+`report-data.json` and write:
 
-- **One dataset doc per file** in `reports/traffic/datasets/`: upload each
-  with `Artifact` `action: "publish"`, `asset: true`, `file_path` pointing
-  at it (JSON files go one at a time, per that tool's own rules), then
-  write a `datasets/<id>` document via `ArtifactData` pointing at the
-  resulting `/_blob/...` url, `source: {kind: "file", ...}`, `fixed: true`
-  (this is point-in-time data from exports/screenshots, not a live query).
-  Dataset ids match the filenames in `reports/traffic/datasets/` minus
-  `.json`.
-- **The page opens `<meta name="dash-one-writer">`.** Static text (headings,
-  labels, analysis prose) goes directly in the HTML; only the numbers
-  themselves are `data-draw` elements filled by `dash.draw(name, fn)` from
-  `dash.data(datasetId)`. Don't have a script build sentences.
-- **Brand touches already settled**: Bebas Neue (Google Fonts) for headings,
-  everything else on the type's own `--color-*`/`--cds-*` tokens so it
-  still works in dark mode. Don't reach for the site's literal hex values
-  (`#222`/`#f6f4f0`/`#ffb612`) — the dashboard's tokens already adapt to
-  theme, and literal colors would break that.
-- **New sections this skill adds beyond the original traffic-only build**:
-  a sales-over-time chart from `daily_sales`, a custom-requests chart from
-  `daily_requests`, a small Cloudflare cross-check panel from
-  `cloudflare_pageviews` (note where it disagrees with Umami rather than
-  silently picking one), and an Instagram posts timeline from
-  `instagram_posts` — ideally overlaid on the same timeline as the events
-  calendar and the sales/requests charts so a reader can see a post or a
-  market next to the sales bump it may have driven. Don't claim causation
-  the data doesn't support; say "around the same time as" rather than
-  "caused."
-- Look at the rendered page once after publishing (the type's own
-  `read`/`screenshot` call), fix anything genuinely broken, then stop —
-  don't loop on polish the user didn't ask for.
+- `title` — defaults to "Traffic & Trends" if omitted
+- `asOf` — the report date
+- `takeaway` — one sentence, the real headline number from the data (don't
+  round or estimate; read it out of `report-data.json`)
+- `opportunities` — a short list of concrete next steps, grounded in what
+  this run's data actually shows (not boilerplate — e.g. only suggest a
+  UTM-tagging fix if the events/traffic correlation in this data is
+  genuinely fuzzy)
+- `dataNotes` — caveats worth flagging (a discrepancy between sources, a
+  short date range, anything approximate)
 
-After publishing, write the artifact's URL to
-`reports/traffic/artifact-url.txt` (create the file; it's gitignored) so
-the next run updates in place instead of creating a duplicate dashboard.
+`reports/traffic/inputs/README.md` has the full shape and an example.
+When tying sources together in `opportunities`/`dataNotes`, say "around the
+same time as" rather than "caused" — the generated page already marks
+Instagram-post and event days on the sales/requests/Cloudflare charts
+(`buildDayMarkers` in `generate-html.mjs`), which shows correlation, not
+causation.
+
+Then render:
+
+```bash
+node scripts/report/generate-html.mjs \
+  --in reports/traffic/report-data.json \
+  --narrative reports/traffic/inputs/narrative.json \
+  --out reports/traffic/dashboard.html
+```
+
+Every section whose source data is missing renders as a plain "not
+available this run" note rather than disappearing silently, so the output
+file always says what it does and doesn't cover — no need to explain that
+in chat beyond a one-line summary.
+
+`reports/traffic/dashboard.html` is gitignored (it's generated, and
+usually contains real business numbers) — tell the user where it is so
+they can open it, and that re-running the skill overwrites it in place.
 
 ## Handoff
 
-Tell the user, briefly: what's new in this version, which optional sources
-were included vs. skipped and why, and the one line the Dashboard type's
-own `design-defaults.md` asks you to give about where the numbers can come
-from next (e.g. "sales come from a one-time CSV export — if you ever want
-this live, that means a read-only Shopify Admin API token"). Don't recap
-every number in chat; the dashboard is where that lives.
+Tell the user, briefly: the file's path, what's new in this version, which
+optional sources were included vs. skipped and why, and — only if it's
+true this run — where a skipped number could come from next (e.g. "sales
+came from a one-time CSV export; a read-only Shopify Admin API token would
+make that live"). Don't recap every number in chat; the page is where that
+lives.

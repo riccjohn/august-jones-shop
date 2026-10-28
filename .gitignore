@@ -73,4 +73,4 @@ original_images/
 !/reports/traffic/inputs/README.md
 !/reports/traffic/inputs/.gitkeep
 /reports/traffic/report-data.json
-/reports/traffic/artifact-url.txt
+/reports/traffic/dashboard.html
