@@ -122,7 +122,7 @@ Then restart the dev server and hard refresh your browser (Cmd+Shift+R on Mac, C
 
 The site uses **Umami Cloud** for analytics — pageviews, referrers, countries, and custom event tracking (Shop Now clicks, Instagram clicks, email clicks). Configured via `NEXT_PUBLIC_UMAMI_WEBSITE_ID` in Cloudflare Pages Settings → Variables and secrets.
 
-A supplementary **Cloudflare Web Analytics** beacon (`NEXT_PUBLIC_CF_BEACON_TOKEN`) also runs, separate from the zone-level "Analytics & Logs" traffic view, which includes bots and isn't comparable to either RUM tool.
+**Cloudflare Web Analytics** also runs, injected automatically by Cloudflare Pages at the edge — no code or env var required. This is separate from the zone-level "Analytics & Logs" traffic view, which includes bots and isn't comparable to either RUM tool. See [docs/analytics.md](./docs/analytics.md).
 
 See **[docs/analytics.md](./docs/analytics.md)** for full setup instructions and how to share the dashboard with August.
 
@@ -158,7 +158,7 @@ This site is configured for deployment on **Cloudflare Pages** as a static expor
 
 1. Push changes to GitHub
 2. Cloudflare Pages automatically builds and deploys
-3. Set `NEXT_PUBLIC_UMAMI_WEBSITE_ID` and `NEXT_PUBLIC_CF_BEACON_TOKEN` in Cloudflare Pages Settings → Variables and secrets (see Analytics Setup above)
+3. Set `NEXT_PUBLIC_UMAMI_WEBSITE_ID` in Cloudflare Pages Settings → Variables and secrets (see Analytics Setup above)
 
 The Fly.io relay deploys separately, from `.github/workflows/deploy-relay.yml`, on pushes
 to `main` that touch `relay/**`. It is a different service on a different host with its own
