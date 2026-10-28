@@ -79,6 +79,26 @@ In Cloudflare Pages (production): **Workers & Pages → august-jones-shop → Se
 
 Redeploy the Cloudflare Pages project for the environment variable to take effect.
 
+## Cloudflare Web Analytics (supplementary)
+
+A second, privacy-first RUM beacon from Cloudflare runs alongside Umami, gated by
+`NEXT_PUBLIC_CF_BEACON_TOKEN`. It's JS/beacon-based like Umami — not the zone-level
+"Analytics & Logs" traffic view in the Cloudflare dashboard, which counts every HTTP
+request (including bots and crawlers) and will always show much higher numbers than
+either RUM tool.
+
+### Setup
+
+1. In the Cloudflare dashboard: **Analytics & Logs → Web Analytics → Add a site**, scoped
+   to `augustjones.shop`, `www.augustjones.shop`, and the `*.pages.dev` preview domain.
+   Copy the **Site Token** from the generated snippet (do not use Cloudflare's "auto-install"
+   toggle — this repo injects the beacon itself, in `src/app/layout.tsx`).
+2. Set `NEXT_PUBLIC_CF_BEACON_TOKEN` in `.env.local` (local dev) and in Cloudflare Pages →
+   Settings → Variables and secrets (production), then redeploy.
+
+View results at **Analytics & Logs → Web Analytics** in the dashboard — a separate view
+from the zone-level traffic report.
+
 ## Viewing the Dashboard
 
 Log in at https://cloud.umami.is to see:
@@ -106,5 +126,5 @@ pnpm test:e2e e2e/analytics.spec.ts
 | File | Purpose |
 |---|---|
 | `src/lib/analytics.ts` | Client-side tracking functions |
-| `src/app/layout.tsx` | Umami script tag |
+| `src/app/layout.tsx` | Umami + Cloudflare beacon script tags |
 | `e2e/analytics.spec.ts` | Playwright tests |
