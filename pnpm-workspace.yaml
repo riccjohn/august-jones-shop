@@ -7,6 +7,12 @@ overrides:
   postcss: ">=8.5.18"
   # libvips CVEs (GHSA-f88m-g3jw-g9cj) fixed in 0.35.0; next pins 0.34.5
   sharp: ">=0.35.0"
+  # GHSA advisories fixed in 8.2.4; vitest/@vitejs/plugin-react pin 8.2.0
+  vite: ">=8.2.4"
+  # GHSA-69qq-6xxg-xvh3 fixed in 1.2.2; vite's postcss dep pins 1.2.1
+  source-map-js: ">=1.2.2"
+  # GHSA-c88q-6jcg-9rr8 fixed in 1.8.2; serve (devDependency) pins 1.8.1
+  compression: ">=1.8.2"
 allowBuilds:
   msw: false
   sharp: false
