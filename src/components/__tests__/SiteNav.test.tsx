@@ -67,12 +67,12 @@ describe("SiteNav", () => {
       expect(links.length).toBeGreaterThan(0);
     });
 
-    it("contains a link to /contact", () => {
+    it("contains a link to /customs", () => {
       render(<SiteNav />);
       const mainNav = screen.getByRole("navigation", {
         name: "Main navigation",
       });
-      const links = mainNav.querySelectorAll("a[href='/contact']");
+      const links = mainNav.querySelectorAll("a[href='/customs']");
       expect(links.length).toBeGreaterThan(0);
     });
 
@@ -124,14 +124,14 @@ describe("SiteNav", () => {
       expect(mobileNav.querySelector("a[href='/events']")).toBeInTheDocument();
     });
 
-    it("contains a link to /contact in mobile navigation", async () => {
+    it("contains a link to /customs in mobile navigation", async () => {
       const user = userEvent.setup();
       render(<SiteNav />);
       await user.click(screen.getByRole("button", { name: "Open menu" }));
       const mobileNav = screen.getByRole("navigation", {
         name: "Mobile navigation",
       });
-      expect(mobileNav.querySelector("a[href='/contact']")).toBeInTheDocument();
+      expect(mobileNav.querySelector("a[href='/customs']")).toBeInTheDocument();
     });
 
     it("contains a link to /join in mobile navigation", async () => {

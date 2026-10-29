@@ -1,4 +1,5 @@
-# Cloudflare Pages redirects. Short, shareable URL for custom commissions,
-# which live on the contact page.
-/customs  /contact/  301
-/customs/ /contact/  301
+# Cloudflare Pages redirects.
+# Custom commissions moved from /contact to /customs; keep old links (Instagram
+# bio, indexed URLs) working.
+/contact  /customs/  301
+/contact/ /customs/  301
