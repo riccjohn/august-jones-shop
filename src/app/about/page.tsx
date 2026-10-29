@@ -207,7 +207,7 @@ export default function AboutPage() {
                 variant="brand"
                 className="h-14 gap-3 px-10 text-base font-medium uppercase tracking-widest"
               >
-                <Link href="/contact">
+                <Link href="/customs">
                   <span>Get in Touch</span>
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>

@@ -70,7 +70,7 @@ export const Footer = () => {
                 Sizing
               </Link>
               <Link
-                href="/contact"
+                href="/customs"
                 className="text-sm text-foreground/75 transition-colors duration-200 hover:text-accent"
               >
                 Contact
