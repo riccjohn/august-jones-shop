@@ -70,3 +70,10 @@ original_images/
 
 # Lightfactory research / planning
 .light
+
+# Traffic report data (business/customer data gathered per-run — never committed)
+/reports/traffic/inputs/*
+!/reports/traffic/inputs/README.md
+!/reports/traffic/inputs/.gitkeep
+/reports/traffic/report-data.json
+/reports/traffic/dashboard.html
