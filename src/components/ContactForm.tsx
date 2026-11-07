@@ -193,7 +193,7 @@ export function ContactForm() {
               id="firstName"
               name="firstName"
               type="text"
-              placeholder="Jane"
+              placeholder="Jordan"
               required
               disabled={disabled}
             />
@@ -204,7 +204,7 @@ export function ContactForm() {
               id="lastName"
               name="lastName"
               type="text"
-              placeholder="Doe"
+              placeholder="Rivera"
               required
               disabled={disabled}
             />
