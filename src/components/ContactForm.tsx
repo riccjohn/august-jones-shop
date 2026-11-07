@@ -204,7 +204,7 @@ export function ContactForm() {
               id="lastName"
               name="lastName"
               type="text"
-              placeholder="Rivera"
+              placeholder="Love"
               required
               disabled={disabled}
             />
