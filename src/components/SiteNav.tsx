@@ -11,7 +11,7 @@ import { SHOP_URL } from "@/lib/constants";
 const NAV_LINKS = [
   { label: "About", href: "/about", key: "about" },
   { label: "Events", href: "/events", key: "events" },
-  { label: "Customs & Contact", href: "/contact", key: "contact" },
+  { label: "Customs & Contact", href: "/customs", key: "contact" },
   { label: "Join", href: "/join", key: "join" },
 ] as const;
 

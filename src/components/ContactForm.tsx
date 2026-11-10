@@ -17,6 +17,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useFormSubmit } from "@/hooks/use-form-submit";
 import { trackContactFormError } from "@/lib/analytics";
+import { CUSTOM_PIECES, formatPriceRange } from "@/lib/custom-pieces";
 import {
   applyEmailValidity,
   blockInvalidEmail,
@@ -26,17 +27,10 @@ import {
 type FormOption = { value: string; label: string };
 
 const PIECE_TYPES: FormOption[] = [
-  { value: "fanny-pack", label: "Fanny Pack ($85–$115)" },
-  { value: "cropped-flannel", label: "Cropped Flannel ($110–$145)" },
-  {
-    value: "cropped-military-jacket",
-    label: "Cropped Military Jacket ($195–$245)",
-  },
-  {
-    value: "full-length-military-jacket",
-    label: "Full Length Military Jacket ($195–$245)",
-  },
-  { value: "vest", label: "Vest ($285–$350)" },
+  ...CUSTOM_PIECES.map((piece) => ({
+    value: piece.value,
+    label: `${piece.name} (${formatPriceRange(piece)})`,
+  })),
   { value: "other", label: "Other - please describe below" },
 ];
 

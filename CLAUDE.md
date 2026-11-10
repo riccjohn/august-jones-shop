@@ -12,7 +12,7 @@ This is the main marketing website (not a storefront). Pages:
 
 - **Home (`/`)** — Landing page with brief brand description and CTA linking to the shop
 - **About (`/about`)** — Background on the brand and maker
-- **Contact (`/contact`)** — Contact form
+- **Customs (`/customs`)** — Custom commissions: pieces & prices, request form, order policy (`/contact` 301s here)
 
 Product purchases happen on a separate shop (https://store.augustjones.shop); this site drives traffic there.
 

@@ -1,0 +1,5 @@
+# Cloudflare Pages redirects.
+# Custom commissions moved from /contact to /customs; keep old links (Instagram
+# bio, indexed URLs) working.
+/contact  /customs/  301
+/contact/ /customs/  301
