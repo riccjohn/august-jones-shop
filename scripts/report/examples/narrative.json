@@ -1,0 +1,12 @@
+{
+  "title": "Traffic & Trends",
+  "asOf": "2026-10-28",
+  "takeaway": "Visitors are up 781% over the last 6 months, driven mostly by Instagram and a couple of market pop-ups.",
+  "opportunities": [
+    "UTM-tag each market's promotion link so event correlations become exact instead of inferred.",
+    "Build an Umami funnel for email signup to see where signups drop off."
+  ],
+  "dataNotes": [
+    "Sample data for a dry run of the generator — not a real report."
+  ]
+}

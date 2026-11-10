@@ -1,0 +1,31 @@
+{
+  "kpis": [
+    {
+      "window": "Last 6 months",
+      "metric": "visitors",
+      "label": "Visitors",
+      "value": 1400,
+      "unit": "count",
+      "change_pct": 781,
+      "change_good": true
+    }
+  ],
+  "monthly_trend": [{ "month": "Oct 2026", "visitors": 270, "views": 410 }],
+  "channels": [{ "channel": "Direct", "visitors": 604, "share": 43 }],
+  "referrers": [
+    { "referrer": "Instagram", "visitors_6mo": 378, "visitors_90d": 253 }
+  ],
+  "custom_events": [{ "event": "Shop click", "count": 464, "share": 78 }],
+  "top_pages": [
+    {
+      "path": "/ (home)",
+      "visitors": 694,
+      "views": 851,
+      "bounce": 42,
+      "duration_sec": 42
+    }
+  ],
+  "audience": [
+    { "type": "country", "name": "United States", "visitors": 767, "share": 94 }
+  ]
+}
